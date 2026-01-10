@@ -3,7 +3,7 @@
  * Handles authentication API calls and token management
  */
 
-const API_URL = (typeof process !== 'undefined' && process.env?.VITE_API_URL) || 'http://localhost:8000';
+const API_URL = import.meta.env?.VITE_API_URL || 'http://localhost:8000';
 
 export interface User {
     id: string;
