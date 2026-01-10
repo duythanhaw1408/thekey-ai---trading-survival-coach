@@ -5,25 +5,25 @@ import type { Trade, UserProcessEvaluation, DojoInteractionData } from '../types
 import { BrainCircuitIcon, ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon } from './icons';
 
 interface ProcessDojoModalProps {
-  trade: Trade;
-  onClose: () => void;
-  onSave: (evaluation: UserProcessEvaluation, interactionData: DojoInteractionData) => void;
+    trade: Trade;
+    onClose: () => void;
+    onSave: (evaluation: UserProcessEvaluation, interactionData: DojoInteractionData) => void;
 }
 
 const steps = [
-  { id: 1, title: 'Bối cảnh Giao dịch' },
-  { id: 2, title: 'Sự rõ ràng của Setup' },
-  { id: 3, title: 'Chất lượng Kế hoạch' },
-  { id: 4, title: 'Quản lý Rủi ro' },
-  { id: 5, title: 'Kỷ luật Thực thi' },
-  { id: 6, title: 'Trạng thái Cảm xúc' },
-  { id: 7, title: 'Bài học Chính' },
+    { id: 1, title: 'Bối cảnh Giao dịch' },
+    { id: 2, title: 'Sự rõ ràng của Setup' },
+    { id: 3, title: 'Chất lượng Kế hoạch' },
+    { id: 4, title: 'Quản lý Rủi ro' },
+    { id: 5, title: 'Kỷ luật Thực thi' },
+    { id: 6, title: 'Trạng thái Cảm xúc' },
+    { id: 7, title: 'Bài học Chính' },
 ];
 
 const sliderVariants = {
-  enter: (direction: number) => ({ x: direction > 0 ? '100%' : '-100%', opacity: 0 }),
-  center: { zIndex: 1, x: 0, opacity: 1 },
-  exit: (direction: number) => ({ zIndex: 0, x: direction < 0 ? '100%' : '-100%', opacity: 0 }),
+    enter: (direction: number) => ({ x: direction > 0 ? '100%' : '-100%', opacity: 0 }),
+    center: { zIndex: 1, x: 0, opacity: 1 },
+    exit: (direction: number) => ({ zIndex: 0, x: direction < 0 ? '100%' : '-100%', opacity: 0 }),
 };
 
 const EvaluationSlider: React.FC<{ label: string; value: number; onChange: (value: number) => void; minLabel: string; maxLabel: string; }> = ({ label, value, onChange, minLabel, maxLabel }) => {
@@ -33,13 +33,13 @@ const EvaluationSlider: React.FC<{ label: string; value: number; onChange: (valu
         <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">{label}</label>
             <div className="relative flex items-center">
-                 <input
+                <input
                     type="range" min="1" max="10" value={value}
                     onChange={(e) => onChange(parseInt(e.target.value, 10))}
                     className={`w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer ${accentColor}`}
                 />
             </div>
-             <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <div className="flex justify-between text-xs text-gray-500 mt-1">
                 <span>{minLabel}</span>
                 <span className={`font-bold text-lg ${valueColor}`}>{value}</span>
                 <span>{maxLabel}</span>
@@ -98,7 +98,7 @@ export const ProcessDojoModal: React.FC<ProcessDojoModalProps> = ({ trade, onClo
 
     const handleNext = () => (step < steps.length - 1) && (setDirection(1), setStep(s => s + 1));
     const handlePrev = () => (step > 0) && (setDirection(-1), setStep(s => s - 1));
-    
+
     const handleSave = (e: React.FormEvent) => {
         e.preventDefault();
         const interactionData: DojoInteractionData = {
@@ -125,7 +125,7 @@ export const ProcessDojoModal: React.FC<ProcessDojoModalProps> = ({ trade, onClo
                 <div className="space-y-3">
                     <label className="block text-sm font-medium text-gray-300">Kế hoạch của bạn đã được xác định TRƯỚC KHI vào lệnh chưa?</label>
                     {['hadPredefinedEntry', 'hadPredefinedSL', 'hadPredefinedTP'].map(key => (
-                         <label key={key} className="flex items-center p-3 bg-gray-700 rounded-md cursor-pointer hover:bg-gray-600 transition-colors has-[:checked]:bg-blue-900/50 has-[:checked]:ring-1 has-[:checked]:ring-accent-blue">
+                        <label key={key} className="flex items-center p-3 bg-gray-700 rounded-md cursor-pointer hover:bg-gray-600 transition-colors has-[:checked]:bg-blue-900/50 has-[:checked]:ring-1 has-[:checked]:ring-accent-blue">
                             <input type="checkbox" checked={evaluation[key as keyof UserProcessEvaluation] as boolean} onChange={(e) => handleChange(key as keyof UserProcessEvaluation, e.target.checked)} className="h-4 w-4 rounded border-gray-500 bg-gray-600 text-accent-blue focus:ring-accent-blue" />
                             <span className="ml-3 text-gray-300 text-sm">
                                 {key === 'hadPredefinedEntry' && 'Điểm vào lệnh (Entry)'}
@@ -152,7 +152,21 @@ export const ProcessDojoModal: React.FC<ProcessDojoModalProps> = ({ trade, onClo
             case 6: return (
                 <div>
                     <label htmlFor="reflection" className="block text-sm font-medium text-gray-300 mb-2">Bài học quan trọng nhất từ quy trình này là gì?</label>
-                    <textarea id="reflection" rows={5} value={evaluation.reflection} onChange={(e) => handleChange('reflection', e.target.value)} placeholder="VD: Tôi đã tuân thủ stop-loss dù cảm thấy sợ hãi. Đó là một chiến thắng về kỷ luật." className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-gray-200 focus:outline-none focus:ring-2 focus:ring-accent-yellow" />
+                    <textarea
+                        id="reflection"
+                        rows={5}
+                        value={evaluation.reflection}
+                        onChange={(e) => handleChange('reflection', e.target.value)}
+                        onKeyDown={(e) => {
+                            // Prevent Enter from submitting form
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                                e.stopPropagation();
+                            }
+                        }}
+                        placeholder="VD: Tôi đã tuân thủ stop-loss dù cảm thấy sợ hãi. Đó là một chiến thắng về kỷ luật."
+                        className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-gray-200 focus:outline-none focus:ring-2 focus:ring-accent-yellow"
+                    />
+                    <p className="text-xs text-gray-500 mt-2">Nhấn "Save & Analyze" khi hoàn tất</p>
                 </div>
             );
             default: return null;
@@ -187,7 +201,7 @@ export const ProcessDojoModal: React.FC<ProcessDojoModalProps> = ({ trade, onClo
                                 })}
                             </ul>
                         </div>
-                        
+
                         {/* Right Side: Content & Navigation */}
                         <div className="w-2/3 flex flex-col">
                             <div className="p-8 min-h-[350px] relative flex items-center justify-center flex-grow">
