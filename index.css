@@ -1,0 +1,199 @@
+:root {
+  --bg-black: #030303;
+  --panel-glass: rgba(18, 18, 20, 0.75);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --accent-primary: #00A3FF;
+  --accent-primary-neon: #00F2FF;
+  --accent-red: #FF3B30;
+  --accent-red-neon: #FF003C;
+  --accent-yellow: #FFCC00;
+  --accent-yellow-neon: #FFEA00;
+  --accent-green: #34C759;
+  --accent-green-neon: #00FF55;
+  --text-main: #FFFFFF;
+  --text-secondary: #9FA2AC;
+  --glass-blur: blur(30px);
+  --bento-gap: 1.25rem;
+  --card-radius: 24px;
+  --transition-speed: 0.4s;
+
+  /* Premium Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.4);
+  --shadow-neon: 0 0 20px rgba(0, 163, 255, 0.15);
+}
+
+html,
+body {
+  background-color: var(--bg-black);
+  color: var(--text-main);
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100%;
+  overflow-y: auto !important;
+}
+
+/* Glassmorphism Utility */
+.glass-panel {
+  background: var(--panel-glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--card-radius);
+  transition: all var(--transition-speed) ease;
+}
+
+.glass-panel:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+}
+
+/* Bento Grid Layout */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--bento-gap);
+  padding: var(--bento-gap);
+}
+
+.bento-card {
+  background: var(--panel-glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--card-radius);
+  padding: 1.5rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-speed) ease;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #FFF 0%, rgba(255, 255, 255, 0.7) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Grid Spans */
+.span-full {
+  grid-column: span 12;
+}
+
+.span-8 {
+  grid-column: span 8;
+}
+
+.span-4 {
+  grid-column: span 4;
+}
+
+.span-6 {
+  grid-column: span 6;
+}
+
+.span-3 {
+  grid-column: span 3;
+}
+
+@media (max-width: 1024px) {
+
+  .span-8,
+  .span-4,
+  .span-6,
+  .span-3 {
+    grid-column: span 12;
+  }
+}
+
+/* Neon Accents */
+.neon-text-blue {
+  text-shadow: 0 0 10px var(--accent-primary-neon);
+}
+
+.neon-text-red {
+  text-shadow: 0 0 10px var(--accent-red-neon);
+}
+
+.neon-border-blue {
+  border-color: var(--accent-primary-neon) !important;
+}
+
+/* Micro-interactions */
+.hover-scale {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Animations */
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-entrance {
+  animation: slideUpFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Premium Pro Utilities */
+.text-gradient {
+  background: linear-gradient(135deg, #FFF 0%, rgba(255, 255, 255, 0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.panel-glow {
+  position: relative;
+}
+
+.panel-glow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 20px rgba(0, 163, 255, 0.05);
+  pointer-events: none;
+}
+
+.active-shrink:active {
+  transform: scale(0.96);
+}
+
+.neon-glow-hover:hover {
+  box-shadow: 0 0 30px rgba(0, 163, 255, 0.2);
+  border-color: rgba(0, 242, 255, 0.4);
+}

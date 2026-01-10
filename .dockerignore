@@ -1,0 +1,50 @@
+# .dockerignore
+# Ignore files to keep Docker image small
+
+# Dependencies
+node_modules
+.venv
+venv
+__pycache__
+
+# Build output
+dist
+build
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Testing
+coverage
+.nyc_output
+
+# Environment files (use docker-compose env)
+.env
+.env.local
+.env.*.local
+*.env
+
+# Git
+.git
+.gitignore
+
+# Docs
+*.md
+!README.md
+
+# Misc
+.DS_Store
+Thumbs.db
+*.log
+*.zip
+*.tar.gz
+
+# Test files
+tests
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx

@@ -1,0 +1,106 @@
+
+import React from 'react';
+import type { Trade, TradeAnalysis } from '../types';
+import { ShieldCheckIcon, AlertTriangleIcon, FileTextIcon, BrainCircuitIcon } from './icons';
+import { TradeAnalysisDetail } from './TradeAnalysisDetail';
+
+interface TradeHistoryListProps {
+    tradeHistory: Trade[];
+    onAnalyze: (trade: Trade) => void;
+    onCloseTrade: (trade: Trade) => void;
+    isAnalyzing: boolean;
+    selectedTrade: Trade | null;
+    analysis: TradeAnalysis | null;
+    onClearAnalysis: () => void;
+    mode?: 'LIST_ONLY' | 'DETAIL_ONLY' | 'FULL';
+}
+
+const DecisionIcon: React.FC<{ decision: Trade['decision'] }> = ({ decision }) => {
+    switch (decision) {
+        case 'ALLOW':
+            return <span title="Allowed"><ShieldCheckIcon className="w-4 h-4 text-accent-green" /></span>;
+        case 'WARN':
+            return <span title="Warned"><AlertTriangleIcon className="w-4 h-4 text-accent-yellow" /></span>;
+        case 'BLOCK':
+            return <span title="Blocked"><AlertTriangleIcon className="w-4 h-4 text-accent-red" /></span>;
+        default:
+            return null;
+    }
+}
+
+export const TradeHistoryList: React.FC<TradeHistoryListProps> = ({ tradeHistory, onAnalyze, onCloseTrade, isAnalyzing, selectedTrade, analysis, onClearAnalysis, mode = 'FULL' }) => {
+
+    return (
+        <div className="space-y-4 flex flex-col h-full w-full">
+            {mode !== 'DETAIL_ONLY' && (
+                <h2 className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] px-3 pt-4">Entry Log & Analytics</h2>
+            )}
+
+            {tradeHistory.length === 0 && mode !== 'DETAIL_ONLY' ? (
+                <div className="flex flex-col items-center justify-center text-center p-8 glass-panel border-dashed flex-1 bg-white/[0.02] mx-3 mb-3">
+                    <FileTextIcon className="w-8 h-8 text-white/10 mb-2" />
+                    <h3 className="font-bold text-white/40 uppercase tracking-widest text-[10px]">No Records</h3>
+                </div>
+            ) : (
+                <div className="flex flex-col flex-1 overflow-hidden">
+                    {/* Trade List Panel */}
+                    {(mode === 'FULL' || mode === 'LIST_ONLY') && (
+                        <div className={`space-y-2 px-3 pb-4 overflow-y-auto custom-scrollbar w-full ${selectedTrade && mode === 'FULL' ? 'hidden md:block' : 'block'}`}>
+                            {tradeHistory.map(trade => {
+                                const isSelected = selectedTrade?.id === trade.id;
+
+                                return (
+                                    <div key={trade.id} className={`glass-panel p-3 hover:border-white/20 transition-all cursor-pointer w-full ${isSelected ? 'border-accent-primary bg-accent-primary/10' : ''}`} onClick={() => onAnalyze(trade)}>
+                                        <div className="flex justify-between items-center">
+                                            <div className="flex items-center space-x-3 min-w-0">
+                                                <div className={`p-1.5 rounded-lg flex-shrink-0 ${isSelected ? 'bg-accent-primary/20' : 'bg-white/5'}`}>
+                                                    <DecisionIcon decision={trade.decision} />
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <p className="font-bold text-sm tracking-tight flex items-center">
+                                                        {trade.asset}
+                                                        <span className={`ml-2 font-bold text-[8px] px-1.5 py-0.5 rounded-full uppercase ${trade.direction === 'BUY' ? 'bg-accent-green/10 text-accent-green border border-accent-green/20' : 'bg-accent-red/10 text-accent-red border border-accent-red/20'}`}>
+                                                            {trade.direction}
+                                                        </span>
+                                                    </p>
+                                                    <p className="text-[10px] font-mono text-text-secondary opacity-50">#{String(trade.id).slice(0, 8)}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex-shrink-0 ml-2">
+                                                {trade.status === 'OPEN' ? (
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); onCloseTrade(trade); }}
+                                                        className="text-[9px] font-black uppercase tracking-widest py-1 px-2.5 rounded-full bg-accent-primary text-white hover:brightness-110 transition-all border border-white/10 active:scale-95 shadow-lg shadow-accent-primary/20"
+                                                    >
+                                                        Review
+                                                    </button>
+                                                ) : (
+                                                    <div className="flex items-center space-x-1 bg-white/5 px-2 py-1 rounded-lg border border-white/5">
+                                                        <BrainCircuitIcon className="w-3 h-3 text-accent-yellow-neon" />
+                                                        <span className="text-[10px] font-black text-white">{trade.processEvaluation?.totalProcessScore || 0}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {/* Detail View Panel - Only shown in FULL mode or if specifically requested */}
+                    {mode === 'FULL' && selectedTrade && (
+                        <div className="w-full h-full overflow-auto p-3">
+                            <TradeAnalysisDetail
+                                trade={selectedTrade}
+                                analysis={analysis}
+                                isAnalyzing={isAnalyzing}
+                                onClose={onClearAnalysis}
+                            />
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};
