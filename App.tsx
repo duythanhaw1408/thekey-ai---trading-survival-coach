@@ -210,11 +210,16 @@ const App: React.FC = () => {
         }
       }
 
-      // Check for checkin
-      const { questions } = await api.getCheckinQuestions();
-      if (questions && questions.length > 0) {
-        setDailyQuestions(questions);
-        setShowCheckin(true);
+      // Check for checkin - only show once per day
+      const today = new Date().toDateString();
+      const lastCheckinDate = localStorage.getItem('thekey_last_checkin_date');
+
+      if (lastCheckinDate !== today) {
+        const { questions } = await api.getCheckinQuestions();
+        if (questions && questions.length > 0) {
+          setDailyQuestions(questions);
+          setShowCheckin(true);
+        }
       }
 
       const initialMsg = await api.getInitialMessage();
@@ -628,7 +633,7 @@ const App: React.FC = () => {
 
   const handleCheckinSubmit = async (answers: { [key: string]: string }) => {
     setShowCheckin(false);
-    localStorage.setItem('lastCheckinDate', new Date().toISOString().split('T')[0]);
+    localStorage.setItem('thekey_last_checkin_date', new Date().toDateString());
     if (!dailyQuestions) return;
 
     setActiveTab('EXECUTION'); // Force transition to execution view for check-in analysis
