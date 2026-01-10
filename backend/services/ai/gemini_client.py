@@ -163,29 +163,46 @@ class GeminiClient:
 
     async def get_trade_evaluation(self, context: Dict) -> Dict:
         """Evaluate a proposed trade for risk and protection rule violations."""
+        # Extract trade data for clarity
+        trade = context.get('trade', {})
+        position_size_usd = trade.get('positionSize', 0)  # This is ALWAYS in USD
+        entry_price = trade.get('entryPrice', 0)
+        stop_loss = trade.get('stopLoss', 0)
+        account_balance = context.get('account_balance', 1000)
+        
+        # Pre-calculate risk for AI context
+        potential_loss = 0
+        if entry_price > 0 and stop_loss > 0:
+            price_diff_pct = abs(entry_price - stop_loss) / entry_price
+            potential_loss = position_size_usd * price_diff_pct
+        
         prompt = f"""
         You are THEKEY's Protection Guardian. Evaluate this trade request.
         
         Context:
-        - Account Balance: {context.get('account_balance', 'Unknown')}
+        - Account Balance: ${account_balance:,.2f}
         - User Stats: {json.dumps(context.get('stats', {}))}
         - Recent Patterns: {context.get('active_pattern', 'None')}
         - Market Danger: {context.get('market_danger', 'Unknown')}
-        - New Trade: {json.dumps(context.get('trade', {}))}
         - Settings: {json.dumps(context.get('settings', {}))}
         
-        Rules:
+        Trade Details:
+        - Position Size: ${position_size_usd:,.2f} USD (This is the TOTAL VOLUME in USD, NOT coin quantity)
+        - Entry Price: ${entry_price:,.2f}
+        - Stop Loss: ${stop_loss:,.2f}
+        - Potential Loss: ${potential_loss:,.2f} (pre-calculated)
+        - Direction: {trade.get('direction', 'BUY')}
+        - Reasoning: {trade.get('reasoning', 'None')}
+        
+        IMPORTANT RULES:
         1. Decision: ALLOW, WARN, or BLOCK.
-        2. Volume vs Capital: 
-           - Compare 'positionSize' (Total Volume) against 'Account Balance'.
-           - If trade volume > 20% of balance -> WARN (High leverage risk).
-           - If trade volume > settings.get('maxPositionSizeUSD') -> BLOCK/WARN.
-        3. Risk Management:
-           - Calculate potential loss: abs(entryPrice - stopLoss) * positionSize / entryPrice (if data available).
-           - If potential loss > (Account Balance * settings.get('riskPerTradePct') / 100) -> WARN/BLOCK.
-           - This is the MOST IMPORTANT rule. If risk is within limit, be more lenient on volume.
-        4. Discipline: Check 'reasoning'. If it's too short (e.g. "ok", "test"), be stricter and warn about discipline.
-        5. Integrate revenge trade and market context.
+        2. Position Size is ALREADY in USD (e.g., $900 means trader wants to open a $900 position, NOT 900 coins)
+        3. DO NOT multiply positionSize by entryPrice - it's already the total USD value!
+        4. Compare Position Size (${position_size_usd:,.2f}) directly against Account Balance (${account_balance:,.2f}):
+           - If Position Size > 20% of Balance → WARN
+           - If Position Size > 50% of Balance → BLOCK (excessive risk)
+        5. Check Potential Loss (${potential_loss:,.2f}) against Risk Per Trade limit:
+           - If Potential Loss > {context.get('settings', {}).get('riskPerTradePct', 2)}% of Balance → WARN/BLOCK
         6. Provide clear 'reason' in Vietnamese.
         
         Return JSON structure exactly:
@@ -208,7 +225,7 @@ class GeminiClient:
                 "decision": "WARN",
                 "reason": "AI services đang bảo trì nhẹ. Hãy tự kiểm tra kỷ luật trước khi vào lệnh.",
                 "cooldown": 0,
-                "recommended_size": context.get('trade', {}).get('positionSize', 50)
+                "recommended_size": position_size_usd
             }
 
     async def analyze_trade(self, trade_data: Dict, user_stats: Dict) -> Dict:
