@@ -170,7 +170,10 @@ const App: React.FC = () => {
         pnl: trade.pnl,
         reasoning: trade.notes || trade.reasoning,
         decisionReason: trade.ai_reason || trade.decisionReason,
-        mode: simulationMode ? 'SIMULATION' : 'LIVE'  // Match current UI mode
+        mode: simulationMode ? 'SIMULATION' : 'LIVE',
+        // Process Dojo evaluation data
+        userProcessEvaluation: trade.user_process_evaluation,
+        processEvaluation: trade.process_evaluation
       }));
       console.log('[App] Transformed trades:', transformedHistory);
       setTradeHistory(transformedHistory);
@@ -464,13 +467,26 @@ const App: React.FC = () => {
     setTradeToClose(null); setTradeToEvaluate(closedTrade);
   };
 
-  const handleSaveUserEvaluation = (userEvaluation: UserProcessEvaluation, interactionData: DojoInteractionData) => {
+  const handleSaveUserEvaluation = async (userEvaluation: UserProcessEvaluation, interactionData: DojoInteractionData) => {
     if (!tradeToEvaluate) return;
     const aiEvaluation = processEvaluationEngine.evaluateTradeProcess(tradeToEvaluate, userEvaluation);
     const newShadowScore = shadowScoreEngine.calculateShadowScore({ ...tradeToEvaluate, userProcessEvaluation: userEvaluation, processEvaluation: aiEvaluation }, userEvaluation, interactionData);
     setShadowScore(newShadowScore);
     const evaluatedTrade: Trade = { ...tradeToEvaluate, userProcessEvaluation: userEvaluation, processEvaluation: aiEvaluation };
     behavioralGraphEngine.addTradeToGraph(evaluatedTrade);
+
+    // Persist evaluation to database
+    try {
+      await api.updateTradeEvaluation(String(tradeToEvaluate.id), {
+        user_process_evaluation: userEvaluation,
+        process_evaluation: aiEvaluation,
+        process_score: aiEvaluation.totalProcessScore
+      });
+      console.log('[App] Process evaluation saved to DB successfully');
+    } catch (error) {
+      console.error('[App] Error saving process evaluation to DB:', error);
+    }
+
     setTradeHistory(prev => {
       const newHistory = prev.map(t => t.id === tradeToEvaluate.id ? evaluatedTrade : t);
       const recentEvals = newHistory.filter(t => t.processEvaluation && (simulationMode ? t.mode === 'SIMULATION' : t.mode === 'LIVE')).slice(0, 10);

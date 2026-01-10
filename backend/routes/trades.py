@@ -45,3 +45,28 @@ async def close_trade(trade_id: str, pnl: float, exit_price: float, user: User =
     db_trade.status = "CLOSED"
     db.commit()
     return db_trade
+
+
+class TradeEvaluationUpdate(BaseModel):
+    user_process_evaluation: Optional[dict] = None
+    process_evaluation: Optional[dict] = None
+    process_score: Optional[float] = None
+
+
+@router.put("/{trade_id}/evaluation")
+async def update_trade_evaluation(trade_id: str, data: TradeEvaluationUpdate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Update a trade with process evaluation data from Dojo"""
+    db_trade = db.query(Trade).filter(Trade.id == trade_id, Trade.user_id == user.id).first()
+    if not db_trade:
+        raise HTTPException(status_code=404, detail="Trade not found or unauthorized")
+    
+    if data.user_process_evaluation:
+        db_trade.user_process_evaluation = data.user_process_evaluation
+    if data.process_evaluation:
+        db_trade.process_evaluation = data.process_evaluation
+    if data.process_score is not None:
+        db_trade.process_score = data.process_score
+    
+    db.commit()
+    db.refresh(db_trade)
+    return db_trade

@@ -25,3 +25,8 @@ class Trade(Base):
     tags = Column(ARRAY(String))
     notes = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Process Dojo evaluation data
+    user_process_evaluation = Column(JSON)  # User's 7-step self-evaluation
+    process_evaluation = Column(JSON)  # AI-generated process evaluation
+    process_score = Column(Numeric)  # Total process score (0-100)
