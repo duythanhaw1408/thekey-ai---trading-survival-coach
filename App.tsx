@@ -153,7 +153,8 @@ const App: React.FC = () => {
       console.log('[App] Rehydrating data for user:', user.email);
       // Load Trade History
       const history = await api.getTradeHistory();
-      setTradeHistory(history);
+      console.log('[App] Loaded trade history from API:', history?.length || 0, 'trades', history);
+      setTradeHistory(history || []);
 
       // Load Progress Summary
       const summary = await api.getProgressSummary();
@@ -397,16 +398,25 @@ const App: React.FC = () => {
         newTrade.status = 'CLOSED';
       } else {
         // 2. Record Trade in Backend if allowed
-        await api.recordTrade({
-          ...trade,
-          user_id: userProfile.id,
-          symbol: trade.asset,
-          side: trade.direction,
-          entry_price: trade.entryPrice,
-          quantity: trade.positionSize / trade.entryPrice,
-          entry_time: new Date().toISOString(),
-          status: 'OPEN'
-        });
+        try {
+          const savedTrade = await api.recordTrade({
+            ...trade,
+            user_id: userProfile.id,
+            symbol: trade.asset,
+            side: trade.direction,
+            entry_price: trade.entryPrice,
+            quantity: trade.positionSize / trade.entryPrice,
+            entry_time: new Date().toISOString(),
+            status: 'OPEN'
+          });
+          console.log('[App] Trade saved to DB successfully:', savedTrade);
+          // Use the DB's ID for the trade
+          if (savedTrade?.id) {
+            newTrade.id = savedTrade.id;
+          }
+        } catch (saveError) {
+          console.error('[App] Error saving trade to database:', saveError);
+        }
       }
 
       setTradeHistory(prev => [newTrade, ...prev]);
