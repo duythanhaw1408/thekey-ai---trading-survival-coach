@@ -152,9 +152,28 @@ const App: React.FC = () => {
     try {
       console.log('[App] Rehydrating data for user:', user.email);
       // Load Trade History
-      const history = await api.getTradeHistory();
-      console.log('[App] Loaded trade history from API:', history?.length || 0, 'trades', history);
-      setTradeHistory(history || []);
+      const rawHistory = await api.getTradeHistory();
+      console.log('[App] Loaded trade history from API:', rawHistory?.length || 0, 'trades', rawHistory);
+
+      // Transform API response to frontend Trade format
+      const transformedHistory = (rawHistory || []).map((trade: any) => ({
+        id: trade.id,
+        timestamp: new Date(trade.entry_time || trade.created_at),
+        asset: trade.symbol || trade.asset,
+        direction: trade.side || trade.direction,
+        entryPrice: trade.entry_price || trade.entryPrice,
+        takeProfit: trade.take_profit || trade.takeProfit,
+        stopLoss: trade.stop_loss || trade.stopLoss,
+        positionSize: trade.quantity ? (trade.quantity * (trade.entry_price || 1)) : trade.positionSize,
+        status: trade.status || 'OPEN',
+        decision: trade.ai_decision || trade.decision || 'ALLOW',
+        pnl: trade.pnl,
+        reasoning: trade.notes || trade.reasoning,
+        decisionReason: trade.ai_reason || trade.decisionReason,
+        mode: 'LIVE'
+      }));
+      console.log('[App] Transformed trades:', transformedHistory);
+      setTradeHistory(transformedHistory);
 
       // Load Progress Summary
       const summary = await api.getProgressSummary();
