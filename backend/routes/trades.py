@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from models import get_db, Trade, User
 from services.auth.dependencies import get_current_user
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Any
 from datetime import datetime
 import uuid
 
@@ -20,6 +20,30 @@ class TradeBase(BaseModel):
 class TradeCreate(TradeBase):
     pass
 
+class TradeResponse(BaseModel):
+    id: Any
+    symbol: str
+    side: str
+    entry_price: float
+    exit_price: Optional[float] = None
+    quantity: float
+    pnl: Optional[float] = None
+    pnl_pct: Optional[float] = None
+    entry_time: datetime
+    exit_time: Optional[datetime] = None
+    status: Optional[str] = None
+    ai_decision: Optional[str] = None
+    ai_reason: Optional[str] = None
+    notes: Optional[str] = None
+    created_at: Optional[datetime] = None
+    # Process Dojo fields
+    user_process_evaluation: Optional[dict] = None
+    process_evaluation: Optional[dict] = None
+    process_score: Optional[float] = None
+    
+    class Config:
+        from_attributes = True
+
 @router.post("/")
 async def create_trade(trade: TradeCreate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     db_trade = Trade(user_id=user.id, **trade.dict())
@@ -28,7 +52,7 @@ async def create_trade(trade: TradeCreate, user: User = Depends(get_current_user
     db.refresh(db_trade)
     return db_trade
 
-@router.get("/")
+@router.get("/", response_model=List[TradeResponse])
 async def get_user_trades(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     trades = db.query(Trade).filter(Trade.user_id == user.id).order_by(Trade.entry_time.desc()).all()
     return trades
