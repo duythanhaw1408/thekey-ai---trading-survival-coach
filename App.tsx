@@ -170,7 +170,7 @@ const App: React.FC = () => {
         pnl: trade.pnl,
         reasoning: trade.notes || trade.reasoning,
         decisionReason: trade.ai_reason || trade.decisionReason,
-        mode: 'LIVE'
+        mode: simulationMode ? 'SIMULATION' : 'LIVE'  // Match current UI mode
       }));
       console.log('[App] Transformed trades:', transformedHistory);
       setTradeHistory(transformedHistory);
