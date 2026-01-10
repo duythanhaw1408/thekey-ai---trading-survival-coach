@@ -64,18 +64,28 @@ async def record_correlation(data: TradeOutcomeCorrelation, user: User = Depends
         
         # Determine bucket (e.g. 75 -> 70 bucket)
         bucket = (data.process_score_bucket // 10) * 10
+        pattern = data.pattern_type or 'NONE'
         
+        # Simple INSERT - if fails due to duplicate, just ignore
         cursor.execute("""
             INSERT INTO trade_outcome_correlations 
                 (process_score_bucket, profitability, emotion_at_entry, pattern_type, trade_count, total_pnl, avg_pnl)
             VALUES (%s, %s, %s, %s, 1, %s, %s)
-            ON CONFLICT (process_score_bucket, profitability, emotion_at_entry, COALESCE(pattern_type, '')) 
-            DO UPDATE SET 
-                trade_count = trade_outcome_correlations.trade_count + 1,
-                total_pnl = trade_outcome_correlations.total_pnl + EXCLUDED.total_pnl,
-                avg_pnl = (trade_outcome_correlations.total_pnl + EXCLUDED.total_pnl) / (trade_outcome_correlations.trade_count + 1),
+            ON CONFLICT DO NOTHING
+        """, (bucket, data.profitability, data.emotion_at_entry, pattern, data.pnl, data.pnl))
+        
+        # If insert succeeded or not, also try to update existing record
+        cursor.execute("""
+            UPDATE trade_outcome_correlations 
+            SET trade_count = trade_count + 1,
+                total_pnl = total_pnl + %s,
+                avg_pnl = (total_pnl + %s) / (trade_count + 1),
                 last_updated = NOW()
-        """, (bucket, data.profitability, data.emotion_at_entry, data.pattern_type or '', data.pnl, data.pnl))
+            WHERE process_score_bucket = %s 
+              AND profitability = %s 
+              AND emotion_at_entry = %s
+              AND pattern_type = %s
+        """, (data.pnl, data.pnl, bucket, data.profitability, data.emotion_at_entry, pattern))
         
         conn.commit()
         cursor.close()
@@ -100,7 +110,10 @@ async def record_shadow_pattern(data: ShadowScorePattern, user: User = Depends(g
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # Upsert logic for shadow patterns
+        # Convert outcome to numeric value
+        outcome_value = 1.0 if data.outcome == 'WIN' else (-1.0 if data.outcome == 'LOSS' else 0.0)
+        
+        # Try insert first
         cursor.execute("""
             INSERT INTO shadow_score_patterns 
                 (trust_level, average_honesty_score, outcome_correlation, sample_size)
@@ -108,11 +121,10 @@ async def record_shadow_pattern(data: ShadowScorePattern, user: User = Depends(g
             ON CONFLICT (trust_level) 
             DO UPDATE SET 
                 average_honesty_score = (shadow_score_patterns.average_honesty_score * shadow_score_patterns.sample_size + EXCLUDED.average_honesty_score) / (shadow_score_patterns.sample_size + 1),
-                outcome_correlation = (shadow_score_patterns.outcome_correlation * shadow_score_patterns.sample_size + 
-                    (CASE WHEN EXCLUDED.trust_level = 'WIN' THEN 1 WHEN EXCLUDED.trust_level = 'LOSS' THEN -1 ELSE 0 END)) / (shadow_score_patterns.sample_size + 1),
+                outcome_correlation = (shadow_score_patterns.outcome_correlation * shadow_score_patterns.sample_size + EXCLUDED.outcome_correlation) / (shadow_score_patterns.sample_size + 1),
                 sample_size = shadow_score_patterns.sample_size + 1,
                 updated_at = NOW()
-        """, (data.trust_level, data.honesty_score, data.outcome))
+        """, (data.trust_level, data.honesty_score, outcome_value))
         
         conn.commit()
         cursor.close()
