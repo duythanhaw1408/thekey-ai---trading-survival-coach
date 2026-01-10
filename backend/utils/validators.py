@@ -70,10 +70,10 @@ def validate_password(password: str) -> PasswordValidationResult:
     else:
         suggestions.append("Thêm ký tự đặc biệt (!@#$%^&*) để tăng độ mạnh")
     
-    # Common password patterns check
-    common_patterns = ['password', '123456', 'qwerty', 'abc123', 'letmein', 'admin']
-    if any(pattern in password.lower() for pattern in common_patterns):
-        errors.append("Mật khẩu chứa chuỗi dễ đoán")
+    # Common password patterns check - only block exact common passwords
+    common_passwords = ['password', '12345678', 'qwerty12', 'abc12345', 'letmein1', 'admin123', 'password1', 'qwertyui']
+    if password.lower() in common_passwords:
+        errors.append("Mật khẩu quá phổ biến, vui lòng chọn mật khẩu khác")
         score = max(0, score - 30)
     
     # Determine strength
