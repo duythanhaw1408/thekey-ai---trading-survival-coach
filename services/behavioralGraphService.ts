@@ -14,7 +14,13 @@ export class BehavioralGraphEngine {
     public buildGraphFromHistory(tradeHistory: Trade[]): void {
         this.graph.nodes.clear();
         this.graph.edges.clear();
-        
+
+        // Guard against null/undefined trade history
+        if (!tradeHistory || !Array.isArray(tradeHistory)) {
+            console.log("Behavioral graph: No valid trade history to build from");
+            return;
+        }
+
         const sortedHistory = [...tradeHistory].reverse(); // Process in chronological order
         for (const trade of sortedHistory) {
             if (trade.status === 'CLOSED' && trade.userProcessEvaluation) {
@@ -23,7 +29,7 @@ export class BehavioralGraphEngine {
         }
         console.log("Behavioral graph built from history:", this.graph);
     }
-    
+
     private addOrUpdateNode(id: string, type: NodeType, label: string, data: Record<string, any> = {}): GraphNode {
         if (this.graph.nodes.has(id)) {
             const node = this.graph.nodes.get(id)!;
@@ -107,40 +113,40 @@ export class BehavioralGraphEngine {
         }
 
         report.fingerprint.primaryDriver = "Profit Seeking";
-        
+
         const emotionTriggerEdge = this.findStrongestEdgeFromNodeType('CONTEXT', 'TRIGGERS');
         if (emotionTriggerEdge) {
             const emotionNode = this.graph.nodes.get(emotionTriggerEdge.target)!;
             const contextNode = this.graph.nodes.get(emotionTriggerEdge.source)!;
             report.fingerprint.emotionalTrigger = `The context of '${contextNode.label}' often triggers '${emotionNode.label}'.`;
         }
-        
+
         const actionNodes = Array.from(this.graph.nodes.values()).filter(n => n.type === 'ACTION');
         const avgSize = actionNodes.reduce((sum, node) => sum + (node.data.size || 0), 0) / actionNodes.length;
         report.fingerprint.riskTendency = avgSize > 150 ? 'Tends toward high-risk setups.' : 'Generally maintains controlled risk.';
 
         const strongestPath = this.findStrongestPath();
         if (strongestPath.length >= 4) {
-             const [context, emotion, , outcome] = strongestPath.map(id => this.graph.nodes.get(id)!);
-             report.activePattern = {
-                 name: `Pattern: ${emotion.label} Trading`,
-                 description: `When in a '${context.label}' state, you tend to feel '${emotion.label}', which often results in a '${outcome.label}'.`,
-                 impact: `This pattern can lead to predictable outcomes. Understanding it is the first step to changing it.`
-             };
+            const [context, emotion, , outcome] = strongestPath.map(id => this.graph.nodes.get(id)!);
+            report.activePattern = {
+                name: `Pattern: ${emotion.label} Trading`,
+                description: `When in a '${context.label}' state, you tend to feel '${emotion.label}', which often results in a '${outcome.label}'.`,
+                impact: `This pattern can lead to predictable outcomes. Understanding it is the first step to changing it.`
+            };
         }
 
         if (report.activePattern.name !== 'No significant pattern detected.') {
-             report.predictions.nextWeekFocus = `Interrupting the '${report.activePattern.name}' pattern.`;
-             const contextLabel = report.fingerprint.emotionalTrigger.split("'")[1];
-             if(contextLabel) report.predictions.potentialRisk = `When you notice the '${contextLabel}' context, be mindful of the urge to act.`;
-             const emotionLabel = report.fingerprint.emotionalTrigger.split("'")[3];
-             if(emotionLabel) report.recommendations.action = `When you feel '${emotionLabel}', pause for 5 minutes before deciding on an action.`;
-             report.recommendations.metric = 'Instances of this pattern occurring.';
+            report.predictions.nextWeekFocus = `Interrupting the '${report.activePattern.name}' pattern.`;
+            const contextLabel = report.fingerprint.emotionalTrigger.split("'")[1];
+            if (contextLabel) report.predictions.potentialRisk = `When you notice the '${contextLabel}' context, be mindful of the urge to act.`;
+            const emotionLabel = report.fingerprint.emotionalTrigger.split("'")[3];
+            if (emotionLabel) report.recommendations.action = `When you feel '${emotionLabel}', pause for 5 minutes before deciding on an action.`;
+            report.recommendations.metric = 'Instances of this pattern occurring.';
         }
 
         return report;
     }
-    
+
     private findStrongestEdgeFromNodeType(nodeType: NodeType, edgeType: EdgeType): GraphEdge | null {
         return Array.from(this.graph.edges.values())
             .filter(edge => {
@@ -153,17 +159,17 @@ export class BehavioralGraphEngine {
     private findStrongestPath(): string[] {
         const contextNodes = Array.from(this.graph.nodes.values()).filter(n => n.type === 'CONTEXT');
         if (contextNodes.length === 0) return [];
-        
-        const startNode = contextNodes.sort((a,b) => b.count - a.count)[0];
-        
+
+        const startNode = contextNodes.sort((a, b) => b.count - a.count)[0];
+
         const path: string[] = [startNode.id];
         let currentNodeId = startNode.id;
-        
+
         for (let i = 0; i < 3; i++) {
             const nextEdge = Array.from(this.graph.edges.values())
                 .filter(e => e.source === currentNodeId)
-                .sort((a,b) => b.weight - a.weight)[0];
-                
+                .sort((a, b) => b.weight - a.weight)[0];
+
             if (nextEdge) {
                 path.push(nextEdge.target);
                 currentNodeId = nextEdge.target;
@@ -171,7 +177,7 @@ export class BehavioralGraphEngine {
                 break;
             }
         }
-        
+
         return path.length > 2 ? path : [];
     }
 }
