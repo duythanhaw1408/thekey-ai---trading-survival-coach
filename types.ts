@@ -81,6 +81,7 @@ export type TraderArchetype = 'ANALYTICAL_TRADER' | 'EMOTIONAL_TRADER' | 'SYSTEM
 export interface UserProfile {
     id: string;
     email?: string;
+    username?: string; // Anonymous display name
     isPro?: boolean;
     accountBalance: number;
     xp?: number;

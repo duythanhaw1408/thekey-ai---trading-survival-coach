@@ -54,7 +54,11 @@ async def create_trade(trade: TradeCreate, user: User = Depends(get_current_user
 
 @router.get("/", response_model=List[TradeResponse])
 async def get_user_trades(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    print(f"[DEBUG] /api/trades/ called for user_id: {user.id}, email: {user.email}")
     trades = db.query(Trade).filter(Trade.user_id == user.id).order_by(Trade.entry_time.desc()).all()
+    print(f"[DEBUG] Found {len(trades)} trades for user {user.email}")
+    if trades:
+        print(f"[DEBUG] First trade ID: {trades[0].id}, Entry: {trades[0].entry_time}")
     return trades
 
 @router.put("/{trade_id}/close")

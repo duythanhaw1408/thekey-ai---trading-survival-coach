@@ -99,6 +99,26 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ userProfile, onSave,
         </header>
 
         <form onSubmit={handleSave} className="flex-grow overflow-y-auto p-6 space-y-6">
+          {/* Username Section - For Anonymity */}
+          <div className="bg-background p-4 rounded-md border border-divider">
+            <h3 className="text-sm font-semibold text-text-secondary mb-4 flex items-center">
+              <span className="w-2 h-2 bg-accent-primary rounded-full mr-2"></span>
+              Anonymous Display Name
+            </h3>
+            <div>
+              <label className="text-xs text-text-secondary uppercase mb-1 block">Username (hiển thị công khai)</label>
+              <input
+                type="text"
+                value={profile.username || ''}
+                onChange={(e) => setProfile(prev => ({ ...prev, username: e.target.value }))}
+                placeholder="VD: trader_001, shadow_master..."
+                className="w-full bg-background border border-divider rounded-md py-2 px-3 text-accent-primary font-mono focus:border-accent-primary outline-none"
+                maxLength={20}
+              />
+              <p className="text-[10px] text-gray-500 mt-1">3-20 ký tự, chỉ chữ cái, số và underscore (_)</p>
+            </div>
+          </div>
+
           <ArchetypeDisplay archetype={profile.archetype} rationale={archetypeRationale} onDiscover={handleDiscover} isLoading={isDiscovering} />
 
           <div className="bg-background p-4 rounded-md border border-divider">

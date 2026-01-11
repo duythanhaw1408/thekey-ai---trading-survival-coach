@@ -138,6 +138,13 @@ export const api = {
         body: JSON.stringify(trade),
     }),
     getTradeHistory: () => request('/api/trades/'),  // No userId needed - backend uses auth token
+
+    // User Profile
+    updateUsername: (username: string) => request('/api/users/username', {
+        method: 'PUT',
+        body: JSON.stringify({ username }),
+    }),
+
     updateTradeEvaluation: (tradeId: string, data: {
         user_process_evaluation?: any;
         process_evaluation?: any;

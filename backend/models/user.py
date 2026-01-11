@@ -10,6 +10,7 @@ class User(Base):
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, nullable=False)
+    username = Column(String(50), unique=True, nullable=True)  # Anonymous display name
     password_hash = Column(String)
     google_id = Column(String, unique=True)
     created_at = Column(DateTime, default=datetime.utcnow)

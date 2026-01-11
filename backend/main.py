@@ -23,7 +23,7 @@ from middleware.security import limiter, logger, log_request_middleware
 
 # Import models and routes
 from models import get_db, Base
-from routes import protection, reflection, trades, progress, learning, auth
+from routes import protection, reflection, trades, progress, learning, auth, users
 
 # ============================================
 # App Configuration
@@ -127,6 +127,7 @@ api_v1.include_router(reflection.router)
 api_v1.include_router(trades.router)
 api_v1.include_router(progress.router)
 api_v1.include_router(learning.router)
+api_v1.include_router(users.router)
 
 app.include_router(api_v1)
 
@@ -137,6 +138,7 @@ app.include_router(reflection.router)
 app.include_router(trades.router)
 app.include_router(progress.router)
 app.include_router(learning.router)
+app.include_router(users.router)
 
 # ============================================
 # Startup & Shutdown Events
