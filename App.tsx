@@ -85,7 +85,9 @@ const App: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [showProfile, setShowProfile] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile>(DEFAULT_USER_PROFILE);
-  const [notificationPermission, setNotificationPermission] = useState(Notification.permission);
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(
+    typeof Notification !== 'undefined' ? Notification.permission : 'default'
+  );
   const [selectedTradeForAnalysis, setSelectedTradeForAnalysis] = useState<Trade | null>(null);
   const [tradeAnalysis, setTradeAnalysis] = useState<TradeAnalysis | null>(null);
   const [isAnalyzingTrade, setIsAnalyzingTrade] = useState(false);
@@ -369,7 +371,7 @@ const App: React.FC = () => {
   }, [selectedTradeForAnalysis, tradeAnalysis, tradeHistory]);
 
   const handleRequestNotificationPermission = async () => {
-    if (Notification.permission === 'default') {
+    if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
       const permission = await Notification.requestPermission();
       setNotificationPermission(permission);
     }

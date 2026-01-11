@@ -193,7 +193,9 @@ export function useAppState(): AppState {
     // Profile & Settings
     const [showProfile, setShowProfile] = useState(false);
     const [userProfile, setUserProfile] = useState<UserProfile>(DEFAULT_USER_PROFILE);
-    const [notificationPermission, setNotificationPermission] = useState(Notification.permission);
+    const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(
+        typeof Notification !== 'undefined' ? Notification.permission : 'default'
+    );
 
     // Trade Analysis
     const [selectedTradeForAnalysis, setSelectedTradeForAnalysis] = useState<Trade | null>(null);

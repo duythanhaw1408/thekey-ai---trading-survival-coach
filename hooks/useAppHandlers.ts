@@ -109,7 +109,7 @@ export function useAppHandlers(
      * Request browser notification permission
      */
     const handleRequestNotificationPermission = useCallback(async () => {
-        if (Notification.permission === 'default') {
+        if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
             const permission = await Notification.requestPermission();
             state.setNotificationPermission(permission);
         }
