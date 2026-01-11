@@ -39,6 +39,7 @@ import { cacheService } from './services/cacheService';
 import { crowdWisdomService } from './services/crowdWisdomService';
 import { useAuth } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { LanguageProvider } from './contexts/LanguageContext';
 
 const DEFAULT_USER_PROFILE: UserProfile = {
   id: '', // Will be set from auth context
@@ -830,4 +831,10 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+const AppWithLanguage = () => (
+  <LanguageProvider>
+    <App />
+  </LanguageProvider>
+);
+
+export default AppWithLanguage;

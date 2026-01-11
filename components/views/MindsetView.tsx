@@ -1,33 +1,44 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
-import type { BehavioralReport, ShadowScore, ProcessStats } from '../../types';
+import type { BehavioralReport, ShadowScore, ProcessStats, WeeklyReport, WeeklyGoals } from '../../types';
 import { BrainCircuitIcon, ShieldCheckIcon } from '../icons';
 import { ProcessMetricsDisplay } from '../ProcessMetricsDisplay';
 import { ProtectionSettings } from '../ProtectionSettings';
 import type { UserProfile } from '../../types';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { ShadowScoreCard } from '../ShadowScoreCard';
+import { WeeklyGoalsCard } from '../WeeklyGoalsCard';
+import { WeeklyReportCard } from '../WeeklyReportCard';
+
 
 interface MindsetViewProps {
     behavioralReport: BehavioralReport | null;
     shadowScore: ShadowScore | null;
-    processStats: ProcessStats | null;
     onGenerateReport: () => void;
-    tradeCount: number;
-    profile: UserProfile;
-    onUpdateProfile: (updates: Partial<UserProfile>) => void;
-    onSaveProfile: () => Promise<void>;
+    tradeHistory: any[]; // Assuming tradeHistory is an array, adjust type if needed
+    weeklyReport: WeeklyReport | null;
+    weeklyGoals: WeeklyGoals | null;
+    onGetWeeklyReport: () => void;
+    onGetWeeklyGoals: () => void;
+    isLoadingReport: boolean;
+    isLoadingGoals: boolean;
 }
 
 export const MindsetView: React.FC<MindsetViewProps> = ({
     behavioralReport,
     shadowScore,
-    processStats,
     onGenerateReport,
-    tradeCount,
-    profile,
-    onUpdateProfile,
-    onSaveProfile
+    tradeHistory,
+    weeklyReport,
+    weeklyGoals,
+    onGetWeeklyReport,
+    onGetWeeklyGoals,
+    isLoadingReport,
+    isLoadingGoals,
 }) => {
+    const { t } = useLanguage();
+    const tradeCount = tradeHistory?.length || 0;
+
     return (
         <div className="space-y-6 animate-entrance">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -46,19 +57,17 @@ export const MindsetView: React.FC<MindsetViewProps> = ({
                     </div>
 
                     {!behavioralReport ? (
-                        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center border-2 border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
-                            <BrainCircuitIcon className="w-10 h-10 text-accent-primary/30 mb-4" />
-                            <p className="text-white font-bold text-sm mb-2">
-                                Phân tích Hành vi AI
-                            </p>
-                            <p className="text-text-secondary text-xs mb-4 max-w-xs">
-                                AI sẽ phân tích sâu mẫu hành vi, trigger cảm xúc và đưa ra chiến lược phù hợp cho bạn.
+                        <div className="p-6 text-center border border-dashed border-white/10 rounded-xl bg-white/[0.02]">
+                            <BrainCircuitIcon className="w-10 h-10 text-accent-primary/30 mx-auto mb-3" />
+                            <p className="text-sm font-bold text-white mb-2">{t('mindset.analysisBehaviorAI')}</p>
+                            <p className="text-xs text-gray-500 mb-4 max-w-xs mx-auto">
+                                {t('mindset.analysisBehaviorDesc')}
                             </p>
 
                             {/* Progress indicator */}
                             <div className="w-full max-w-xs mb-4">
                                 <div className="flex justify-between text-[10px] text-gray-500 mb-1">
-                                    <span>Tiến độ mở khóa</span>
+                                    <span>{t('mindset.unlockProgress')}</span>
                                     <span>{Math.min(tradeCount, 5)}/5 trades</span>
                                 </div>
                                 <div className="h-2 bg-white/10 rounded-full overflow-hidden">
@@ -74,33 +83,33 @@ export const MindsetView: React.FC<MindsetViewProps> = ({
                                 disabled={tradeCount < 5}
                                 className="px-6 py-3 bg-accent-primary text-black font-black uppercase text-xs tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(34,211,238,0.3)]"
                             >
-                                {tradeCount < 5 ? `Cần thêm ${5 - tradeCount} trade với Dojo` : '🧠 Tạo Báo Cáo Hành Vi'}
+                                {tradeCount < 5 ? t('mindset.needMoreTrades', { count: 5 - tradeCount }) : t('mindset.generateReport')}
                             </button>
 
                             {tradeCount < 5 && (
                                 <p className="text-[10px] text-gray-500 mt-3 max-w-xs">
-                                    💡 <span className="text-accent-yellow">Tip:</span> Vào EXECUTION → Nhập lệnh → Đóng lệnh → Hoàn thành Dojo
+                                    💡 <span className="text-accent-yellow">{t('common.tipLabel')}</span> {t('mindset.tipGoToDojo')}
                                 </p>
                             )}
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="bg-white/[0.03] p-5 rounded-2xl border border-white/5 group hover:border-accent-primary/30 transition-all">
-                                <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">Emotional Trigger</h4>
-                                <p className="text-sm font-medium text-white/90 leading-relaxed">{behavioralReport.fingerprint.emotionalTrigger}</p>
+                                <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{t('mindset.emotionalTrigger')}</h4>
+                                <p className="text-sm font-medium text-white/90 leading-relaxed">{behavioralReport.fingerprint.emotionalTrigger || t('common.notEnoughData')}</p>
                             </div>
                             <div className="bg-white/[0.03] p-5 rounded-2xl border border-white/5 group hover:border-accent-yellow/30 transition-all">
-                                <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">Active Pattern</h4>
-                                <p className="text-sm font-black text-accent-yellow uppercase tracking-tight">{behavioralReport.activePattern.name}</p>
-                                <p className="text-[11px] italic text-text-secondary mt-1 opacity-70">"{behavioralReport.activePattern.description}"</p>
+                                <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{t('mindset.activePattern')}</h4>
+                                <p className="text-sm font-black text-accent-yellow uppercase tracking-tight">{behavioralReport.activePattern.name || t('mindset.noSignificantPattern')}</p>
+                                <p className="text-[11px] italic text-text-secondary mt-1 opacity-70">"{behavioralReport.activePattern.description || t('mindset.behaviorConsistent')}"</p>
                             </div>
                             <div className="bg-white/[0.03] p-5 rounded-2xl border border-white/5 group hover:border-accent-primary/30 transition-all">
-                                <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">Strategic Focus</h4>
-                                <p className="text-sm font-medium text-white/90 leading-relaxed">{behavioralReport.predictions.nextWeekFocus}</p>
+                                <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{t('mindset.strategicFocus')}</h4>
+                                <p className="text-sm font-medium text-white/90 leading-relaxed">{behavioralReport.predictions.nextWeekFocus || t('mindset.maintainDiscipline')}</p>
                             </div>
                             <div className="bg-white/[0.03] p-5 rounded-2xl border border-white/5 group hover:border-accent-green/30 transition-all">
-                                <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">Survival Protocol</h4>
-                                <p className="text-sm font-bold text-accent-green">{behavioralReport.recommendations.action}</p>
+                                <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{t('mindset.survivalProtocol')}</h4>
+                                <p className="text-sm font-bold text-accent-green">{behavioralReport.recommendations.action || t('mindset.continueCheckins')}</p>
                             </div>
                         </div>
                     )}
@@ -109,11 +118,14 @@ export const MindsetView: React.FC<MindsetViewProps> = ({
                 {/* Shadow Score & Trust Level */}
                 <div className="flex flex-col gap-6">
                     <div className="bento-card p-6 bg-black/40 border-white/5">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em]">Self-Awareness Engine</h3>
-                            <ShieldCheckIcon className="w-5 h-5 text-accent-primary/50" />
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-sm font-black text-white/40 uppercase tracking-[0.2em]">
+                                {t('mindset.behavioralFingerprint')}
+                            </h2>
+                            <span className="px-2 py-1 bg-accent-primary/10 text-accent-primary text-[10px] font-bold uppercase tracking-wider rounded-md border border-accent-primary/20">
+                                {t('mindset.aiDeepAnalysis')}
+                            </span>
                         </div>
-
                         {!shadowScore ? (
                             <div className="p-6 text-center border border-white/10 rounded-2xl bg-white/[0.02]">
                                 <ShieldCheckIcon className="w-8 h-8 text-accent-primary/30 mx-auto mb-3" />

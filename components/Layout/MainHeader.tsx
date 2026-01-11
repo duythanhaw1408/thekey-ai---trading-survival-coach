@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { KeyIcon, SettingsIcon, BellIcon, TerminalIcon, AcademicCapIcon } from '../icons';
 import { StreakIndicator } from '../StreakIndicator';
 import { OnlineIndicator } from '../EngagementWidgets';
+import { LanguageSelector } from '../LanguageSelector';
 import type { CrisisData } from '../../types';
 
 interface MainHeaderProps {
@@ -46,6 +47,7 @@ export const MainHeader: React.FC<MainHeaderProps> = ({
 
             <div className="flex items-center gap-6">
                 <StreakIndicator streak={streak} />
+                <LanguageSelector />
 
                 <div className="flex items-center gap-2 h-10 px-1 bg-white/5 rounded-full border border-white/10">
                     <button className="p-2 hover:bg-white/10 rounded-full transition-colors relative group">
