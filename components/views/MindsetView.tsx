@@ -46,18 +46,42 @@ export const MindsetView: React.FC<MindsetViewProps> = ({
                     </div>
 
                     {!behavioralReport ? (
-                        <div className="flex-1 flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-white/5 rounded-2xl">
-                            <BrainCircuitIcon className="w-12 h-12 text-white/10 mb-4" />
-                            <p className="text-text-secondary text-sm mb-6 max-w-xs">
-                                Phân tích hành vi sâu sắc dựa trên lịch sử giao dịch và tâm lý của bạn.
+                        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center border-2 border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
+                            <BrainCircuitIcon className="w-10 h-10 text-accent-primary/30 mb-4" />
+                            <p className="text-white font-bold text-sm mb-2">
+                                Phân tích Hành vi AI
                             </p>
+                            <p className="text-text-secondary text-xs mb-4 max-w-xs">
+                                AI sẽ phân tích sâu mẫu hành vi, trigger cảm xúc và đưa ra chiến lược phù hợp cho bạn.
+                            </p>
+
+                            {/* Progress indicator */}
+                            <div className="w-full max-w-xs mb-4">
+                                <div className="flex justify-between text-[10px] text-gray-500 mb-1">
+                                    <span>Tiến độ mở khóa</span>
+                                    <span>{Math.min(tradeCount, 5)}/5 trades</span>
+                                </div>
+                                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-accent-primary transition-all duration-500"
+                                        style={{ width: `${Math.min(tradeCount / 5 * 100, 100)}%` }}
+                                    />
+                                </div>
+                            </div>
+
                             <button
                                 onClick={onGenerateReport}
                                 disabled={tradeCount < 5}
                                 className="px-6 py-3 bg-accent-primary text-black font-black uppercase text-xs tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(34,211,238,0.3)]"
                             >
-                                {tradeCount < 5 ? `Cần ${5 - tradeCount} lệnh nữa` : 'Generate Fingerprint'}
+                                {tradeCount < 5 ? `Cần thêm ${5 - tradeCount} trade với Dojo` : '🧠 Tạo Báo Cáo Hành Vi'}
                             </button>
+
+                            {tradeCount < 5 && (
+                                <p className="text-[10px] text-gray-500 mt-3 max-w-xs">
+                                    💡 <span className="text-accent-yellow">Tip:</span> Vào EXECUTION → Nhập lệnh → Đóng lệnh → Hoàn thành Dojo
+                                </p>
+                            )}
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -91,8 +115,16 @@ export const MindsetView: React.FC<MindsetViewProps> = ({
                         </div>
 
                         {!shadowScore ? (
-                            <div className="p-8 text-center text-white/20 font-bold uppercase tracking-widest text-xs border border-white/5 rounded-2xl">
-                                Đang chờ dữ liệu đánh giá lệnh...
+                            <div className="p-6 text-center border border-white/10 rounded-2xl bg-white/[0.02]">
+                                <ShieldCheckIcon className="w-8 h-8 text-accent-primary/30 mx-auto mb-3" />
+                                <p className="text-white font-bold text-sm mb-2">Shadow Score</p>
+                                <p className="text-text-secondary text-xs mb-3">
+                                    Điểm tín nhiệm dựa trên độ trung thực tự đánh giá so với AI.
+                                </p>
+                                <div className="text-[10px] text-gray-500 bg-white/5 rounded-lg p-3">
+                                    <p className="mb-1">📊 <strong className="text-accent-yellow">Yêu cầu:</strong> Hoàn thành ít nhất 1 trade với Dojo</p>
+                                    <p>💡 Đóng lệnh → Hoàn thành 7 bước Dojo để bắt đầu tích lũy Shadow Score</p>
+                                </div>
                             </div>
                         ) : (
                             <div className="flex items-center justify-between p-6 bg-white/[0.03] rounded-2xl border border-white/10 relative overflow-hidden group">

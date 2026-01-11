@@ -37,9 +37,20 @@ export const TradeHistoryList: React.FC<TradeHistoryListProps> = ({ tradeHistory
             )}
 
             {tradeHistory.length === 0 && mode !== 'DETAIL_ONLY' ? (
-                <div className="flex flex-col items-center justify-center text-center p-8 glass-panel border-dashed flex-1 bg-white/[0.02] mx-3 mb-3">
-                    <FileTextIcon className="w-8 h-8 text-white/10 mb-2" />
-                    <h3 className="font-bold text-white/40 uppercase tracking-widest text-[10px]">No Records</h3>
+                <div className="flex flex-col items-center justify-center text-center p-6 glass-panel border-dashed flex-1 bg-white/[0.02] mx-3 mb-3">
+                    <FileTextIcon className="w-10 h-10 text-accent-primary/30 mb-3" />
+                    <h3 className="font-bold text-white text-sm mb-2">Chưa có lịch sử giao dịch</h3>
+                    <p className="text-text-secondary text-xs mb-4 max-w-xs">
+                        Ghi lại lệnh đầu tiên để bắt đầu theo dõi và phân tích hành vi trading.
+                    </p>
+                    <div className="text-[10px] text-gray-500 bg-white/5 rounded-lg p-3 w-full max-w-xs">
+                        <p className="font-semibold text-accent-yellow mb-2">📋 Cách thêm lệnh:</p>
+                        <ol className="text-left space-y-1">
+                            <li>1️⃣ Nhập thông tin lệnh ở form bên trên</li>
+                            <li>2️⃣ Bấm <strong className="text-white">Gửi</strong> để AI đánh giá</li>
+                            <li>3️⃣ Khi đóng lệnh, hoàn thành <strong className="text-white">Dojo</strong></li>
+                        </ol>
+                    </div>
                 </div>
             ) : (
                 <div className="flex flex-col flex-1 overflow-hidden">

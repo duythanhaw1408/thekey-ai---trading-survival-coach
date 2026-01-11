@@ -83,10 +83,15 @@ export const DashboardView: React.FC<DashboardViewProps> = (props) => {
                                 onClose={props.onClearAnalysis}
                             />
                         ) : (
-                            <div className="flex-1 flex flex-col items-center justify-center opacity-30">
-                                <BrainCircuitIcon className="w-12 h-12 text-accent-primary mx-auto mb-4 opacity-50" />
-                                <p className="text-sm font-mono uppercase tracking-[0.2em]">Protection Protocol Active</p>
-                                <p className="text-[10px] mt-2 opacity-60">SELECT A TRADE WITH DOJO EVALUATION TO VIEW ANALYSIS</p>
+                            <div className="flex-1 flex flex-col items-center justify-center p-8">
+                                <BrainCircuitIcon className="w-12 h-12 text-accent-primary/30 mb-4" />
+                                <p className="text-white font-bold text-sm mb-2">Chọn lệnh để xem phân tích</p>
+                                <p className="text-text-secondary text-xs mb-4 text-center max-w-xs">
+                                    Click vào lệnh có 🧠 (đã hoàn thành Dojo) trong tab EXECUTION để xem chi tiết đánh giá quy trình.
+                                </p>
+                                <div className="text-[10px] text-gray-500 bg-white/5 rounded-lg p-3 max-w-xs">
+                                    <p>💡 <span className="text-accent-yellow font-semibold">Tip:</span> Lệnh có badge xanh = đã có Dojo evaluation</p>
+                                </div>
                             </div>
                         )}
                     </div>
