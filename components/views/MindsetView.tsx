@@ -11,24 +11,34 @@ import { WeeklyGoalsCard } from '../WeeklyGoalsCard';
 import { WeeklyReportCard } from '../WeeklyReportCard';
 
 
+
 interface MindsetViewProps {
     behavioralReport: BehavioralReport | null;
     shadowScore: ShadowScore | null;
+    processStats: ProcessStats | null;
     onGenerateReport: () => void;
-    tradeHistory: any[]; // Assuming tradeHistory is an array, adjust type if needed
-    weeklyReport: WeeklyReport | null;
-    weeklyGoals: WeeklyGoals | null;
-    onGetWeeklyReport: () => void;
-    onGetWeeklyGoals: () => void;
-    isLoadingReport: boolean;
-    isLoadingGoals: boolean;
+    tradeCount: number;
+    profile: UserProfile;
+    onUpdateProfile: (updates: Partial<UserProfile>) => void;
+    onSaveProfile: () => Promise<void>;
+    // Optional new props for future features
+    weeklyReport?: WeeklyReport | null;
+    weeklyGoals?: WeeklyGoals | null;
+    onGetWeeklyReport?: () => void;
+    onGetWeeklyGoals?: () => void;
+    isLoadingReport?: boolean;
+    isLoadingGoals?: boolean;
 }
 
 export const MindsetView: React.FC<MindsetViewProps> = ({
     behavioralReport,
     shadowScore,
+    processStats,
     onGenerateReport,
-    tradeHistory,
+    tradeCount,
+    profile,
+    onUpdateProfile,
+    onSaveProfile,
     weeklyReport,
     weeklyGoals,
     onGetWeeklyReport,
@@ -37,7 +47,6 @@ export const MindsetView: React.FC<MindsetViewProps> = ({
     isLoadingGoals,
 }) => {
     const { t } = useLanguage();
-    const tradeCount = tradeHistory?.length || 0;
 
     return (
         <div className="space-y-6 animate-entrance">
