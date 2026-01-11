@@ -25,14 +25,14 @@ export class BehavioralGraphEngine {
         let addedCount = 0;
 
         for (const trade of sortedHistory) {
-            // Only add closed trades with user process evaluation
-            if (trade.status === 'CLOSED' && trade.userProcessEvaluation) {
+            // Accept ANY trade with user process evaluation (OPEN or CLOSED)
+            if (trade.userProcessEvaluation) {
                 this.addTradeToGraph(trade);
                 addedCount++;
             }
         }
 
-        console.log(`Behavioral graph built: ${addedCount}/${sortedHistory.length} trades added (CLOSED + with evaluation)`, this.graph);
+        console.log(`Behavioral graph built: ${addedCount}/${sortedHistory.length} trades added (with Dojo)`, this.graph);
     }
 
     private addOrUpdateNode(id: string, type: NodeType, label: string, data: Record<string, any> = {}): GraphNode {

@@ -21,6 +21,7 @@ class UserProfileResponse(BaseModel):
     id: str
     email: str
     username: Optional[str] = None
+    shadow_score: Optional[str] = None  # JSON string
     is_pro: bool = False
     xp: int = 0
     level: str = "NOVICE"
@@ -43,6 +44,7 @@ async def get_profile(user: User = Depends(get_current_user)):
         id=str(user.id),
         email=user.email,
         username=user.username,
+        shadow_score=user.shadow_score,
         is_pro=user.is_pro or False,
         xp=user.xp or 0,
         level=user.level or "NOVICE",
@@ -83,3 +85,21 @@ async def update_username(
     db.refresh(user)
     
     return {"success": True, "username": user.username}
+
+
+class ShadowScoreUpdate(BaseModel):
+    shadow_score: str  # JSON string
+
+
+@router.put("/shadow-score")
+async def update_shadow_score(
+    data: ShadowScoreUpdate,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Update user's shadow score (behavioral trust metrics)"""
+    user.shadow_score = data.shadow_score
+    db.commit()
+    db.refresh(user)
+    
+    return {"success": True}

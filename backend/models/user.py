@@ -45,3 +45,6 @@ class User(Base):
     survival_score = Column(Integer, default=50)
     current_streak = Column(Integer, default=0)
     total_trades = Column(Integer, default=0)
+    
+    # Shadow Score (JSON field for behavioral trust metrics)
+    shadow_score = Column(String)  # Stored as JSON string
