@@ -115,6 +115,8 @@ const App: React.FC = () => {
   const [weeklyReport, setWeeklyReport] = useState<WeeklyReport | null>(null);
   const [isLoadingReport, setIsLoadingReport] = useState(false);
   const [marketAnalysis, setMarketAnalysis] = useState<MarketAnalysis | null>(null);
+  const [traderArchetype, setTraderArchetype] = useState<TraderArchetypeAnalysis | null>(null);
+  const [isAnalyzingMindset, setIsAnalyzingMindset] = useState(false);
 
   // Engagement & Retention States
   const [streak, setStreak] = useState(0);
@@ -559,7 +561,7 @@ const App: React.FC = () => {
     });
 
     // Self-Learning: Record trade outcome for AI learning
-    learningEngine.learnFromTrade(evaluatedTrade, aiEvaluation, newShadowScore);
+    learningEngine.learnFromTrade(evaluatedTrade, aiEvaluation, aggregatedScore);
     console.log('[Learning] Trade outcome recorded for AI learning');
 
     setTradeToEvaluate(null); setSelectedTradeForAnalysis(evaluatedTrade);
@@ -621,9 +623,25 @@ const App: React.FC = () => {
     }
   };
 
-  const handleGenerateMindsetReport = () => {
-    const report = behavioralGraphEngine.generatePersonalBehaviorReport();
-    setBehavioralReport(report);
+  const handleGenerateMindsetReport = async () => {
+    setIsAnalyzingMindset(true);
+    try {
+      const report = behavioralGraphEngine.generatePersonalBehaviorReport();
+      setBehavioralReport(report);
+
+      // Fetch Archetype from Gemini
+      const analysis = await geminiService.getTraderArchetype(tradeHistory, checkinHistory);
+      setTraderArchetype(analysis);
+
+      // Update user profile archetype if it changed
+      if (analysis && analysis.archetype !== userProfile.archetype) {
+        setUserProfile(prev => ({ ...prev, archetype: analysis.archetype }));
+      }
+    } catch (error) {
+      console.error("Failed to generate mindset report:", error);
+    } finally {
+      setIsAnalyzingMindset(false);
+    }
   };
 
   // Sync user profile when auth user changes
@@ -810,6 +828,8 @@ const App: React.FC = () => {
                 {activeTab === 'MINDSET' && (
                   <MindsetView
                     behavioralReport={behavioralReport}
+                    traderArchetype={traderArchetype}
+                    isAnalyzing={isAnalyzingMindset}
                     shadowScore={shadowScore}
                     processStats={processStats}
                     onGenerateReport={handleGenerateMindsetReport}
