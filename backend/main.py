@@ -55,10 +55,19 @@ app.add_middleware(BaseHTTPMiddleware, dispatch=log_request_middleware)
 allowed_origins = [FRONTEND_URL]
 if ENV == "development":
     allowed_origins.extend(["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:3000"])
+else:
+    # Production: Allow vercel preview URLs and www subdomain
+    allowed_origins.extend([
+        "https://thekey-ai-trading-survival-coach.vercel.app",
+        "https://www.thekey-ai-trading-survival-coach.vercel.app",
+        "https://thekey-ai.vercel.app",
+    ])
 
+# Allow all origins matching *.vercel.app for preview deployments
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",  # Allow all Vercel preview URLs
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
