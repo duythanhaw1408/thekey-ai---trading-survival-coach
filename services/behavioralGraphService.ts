@@ -22,12 +22,17 @@ export class BehavioralGraphEngine {
         }
 
         const sortedHistory = [...tradeHistory].reverse(); // Process in chronological order
+        let addedCount = 0;
+
         for (const trade of sortedHistory) {
+            // Only add closed trades with user process evaluation
             if (trade.status === 'CLOSED' && trade.userProcessEvaluation) {
                 this.addTradeToGraph(trade);
+                addedCount++;
             }
         }
-        console.log("Behavioral graph built from history:", this.graph);
+
+        console.log(`Behavioral graph built: ${addedCount}/${sortedHistory.length} trades added (CLOSED + with evaluation)`, this.graph);
     }
 
     private addOrUpdateNode(id: string, type: NodeType, label: string, data: Record<string, any> = {}): GraphNode {
