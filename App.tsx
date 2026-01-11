@@ -153,7 +153,13 @@ const App: React.FC = () => {
       console.log('[App] Rehydrating data for user:', user.email);
       // Load Trade History
       const rawHistory = await api.getTradeHistory();
-      console.log('[App] Loaded trade history from API:', rawHistory?.length || 0, 'trades', rawHistory);
+      console.log('[App] Loaded trade history from API:', rawHistory?.length || 0, 'trades');
+      // Debug: Check if API returns process_evaluation
+      if (rawHistory && rawHistory.length > 0) {
+        console.log('[App] DEBUG First trade raw data:', JSON.stringify(rawHistory[0], null, 2));
+        console.log('[App] DEBUG Has process_evaluation:', !!rawHistory[0].process_evaluation);
+        console.log('[App] DEBUG Has user_process_evaluation:', !!rawHistory[0].user_process_evaluation);
+      }
 
       // Transform API response to frontend Trade format
       const transformedHistory = (rawHistory || []).map((trade: any) => ({
@@ -175,7 +181,7 @@ const App: React.FC = () => {
         userProcessEvaluation: trade.user_process_evaluation,
         processEvaluation: trade.process_evaluation
       }));
-      console.log('[App] Transformed trades:', transformedHistory);
+      console.log('[App] Transformed trades:', transformedHistory.length, 'trades');
       setTradeHistory(transformedHistory);
 
       // Load Progress Summary
