@@ -132,24 +132,29 @@ class AuthService {
     /**
      * Get current user
      */
-    async getCurrentUser(): Promise<User | null> {
+    async getCurrentUser(retry = true): Promise<User | null> {
         const token = this.getAccessToken();
         if (!token) return null;
 
         try {
+            console.log('[AuthService] Fetching /me...');
             const response = await fetch(`${API_URL}/auth/me`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
             if (!response.ok) {
-                if (response.status === 401) {
+                console.warn('[AuthService] /me status:', response.status);
+                if (response.status === 401 && retry) {
+                    console.log('[AuthService] Token expired, attempting refresh...');
                     // Try refresh
                     const refreshed = await this.refreshToken();
                     if (!refreshed) {
+                        console.log('[AuthService] Refresh failed, logging out...');
                         this.logout();
                         return null;
                     }
-                    return this.getCurrentUser();
+                    console.log('[AuthService] Refresh successful, retrying /me...');
+                    return this.getCurrentUser(false); // Only retry once
                 }
                 return null;
             }
