@@ -158,8 +158,8 @@ export const ProcessDojoModal: React.FC<ProcessDojoModalProps> = ({ trade, onClo
                         value={evaluation.reflection}
                         onChange={(e) => handleChange('reflection', e.target.value)}
                         onKeyDown={(e) => {
-                            // Prevent Enter from submitting form
-                            if (e.key === 'Enter' && !e.shiftKey) {
+                            // Allow Enter in textarea for newlines - don't let it bubble to form
+                            if (e.key === 'Enter') {
                                 e.stopPropagation();
                             }
                         }}
@@ -176,7 +176,15 @@ export const ProcessDojoModal: React.FC<ProcessDojoModalProps> = ({ trade, onClo
     return (
         <div className="fixed inset-0 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-gray-800 rounded-lg shadow-2xl max-w-3xl w-full">
-                <form onSubmit={handleSave}>
+                <form
+                    onSubmit={handleSave}
+                    onKeyDown={(e) => {
+                        // Prevent Enter key from submitting form (except when clicking submit button)
+                        if (e.key === 'Enter' && e.target instanceof HTMLTextAreaElement === false) {
+                            e.preventDefault();
+                        }
+                    }}
+                >
                     <div className="flex">
                         {/* Left Side: Step Navigator */}
                         <div className="w-1/3 p-6 border-r border-gray-700 bg-gray-800/50 rounded-l-lg">
