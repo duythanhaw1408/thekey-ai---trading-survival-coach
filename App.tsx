@@ -231,7 +231,7 @@ const App: React.FC = () => {
       const initialMsg = await api.getInitialMessage();
       setMessages([{ id: Date.now() + Math.random(), sender: 'ai', type: 'text', text: initialMsg || "Chào bạn!" }]);
 
-      behavioralGraphEngine.buildGraphFromHistory(history);
+      behavioralGraphEngine.buildGraphFromHistory(transformedHistory);
       marketDataService.startAutoRefresh();
 
     } catch (error) {

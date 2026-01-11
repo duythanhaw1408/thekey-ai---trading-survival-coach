@@ -85,7 +85,7 @@ const DashboardHeader: React.FC<{ stats: TraderStats, processStats: ProcessStats
 
 export const DashboardView: React.FC<DashboardViewProps> = (props) => {
     const tradeCount = props.tradeHistory?.length || 0;
-    const dojoCount = props.dojoCount ?? props.tradeHistory?.filter(t => t.processEvaluation).length || 0;
+    const dojoCount = props.dojoCount ?? (props.tradeHistory?.filter(t => t.processEvaluation).length || 0);
     const hasCheckin = props.hasCheckin ?? props.checkinHistory?.length > 0;
 
     return (
