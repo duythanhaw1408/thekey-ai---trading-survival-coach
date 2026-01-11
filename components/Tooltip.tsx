@@ -82,6 +82,11 @@ export const FeatureTooltips = {
     weeklyReport: "Báo cáo hiệu suất chi tiết với insights và đề xuất cải thiện",
     dojo: "7 bước đánh giá quy trình sau mỗi lệnh - giúp bạn học hỏi từ mỗi trade",
     checkin: "3 câu hỏi tâm lý hàng ngày giúp AI hiểu trạng thái tinh thần của bạn",
+    // Behavioral Fingerprint panels
+    emotionalTrigger: "Cảm xúc chủ đạo thường ảnh hưởng đến quyết định trading của bạn",
+    activePattern: "Mẫu hành vi lặp lại mà AI phát hiện từ lịch sử giao dịch",
+    strategicFocus: "Điểm cần tập trung cải thiện trong tuần tới dựa trên phân tích AI",
+    survivalProtocol: "Hành động cụ thể AI khuyến nghị để bảo vệ tài khoản của bạn",
 };
 
 // Helper component for info icon with tooltip

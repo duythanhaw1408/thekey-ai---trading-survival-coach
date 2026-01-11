@@ -6,6 +6,7 @@ import { ProcessMetricsDisplay } from '../ProcessMetricsDisplay';
 import { ProtectionSettings } from '../ProtectionSettings';
 import type { UserProfile } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { InfoTooltip, FeatureTooltips } from '../Tooltip';
 
 
 
@@ -101,20 +102,32 @@ export const MindsetView: React.FC<MindsetViewProps> = ({
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="bg-white/[0.03] p-5 rounded-2xl border border-white/5 group hover:border-accent-primary/30 transition-all">
-                                <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{t('mindset.emotionalTrigger')}</h4>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest">{t('mindset.emotionalTrigger')}</h4>
+                                    <InfoTooltip text={FeatureTooltips.emotionalTrigger} />
+                                </div>
                                 <p className="text-sm font-medium text-white/90 leading-relaxed">{behavioralReport.fingerprint.emotionalTrigger || t('common.notEnoughData')}</p>
                             </div>
                             <div className="bg-white/[0.03] p-5 rounded-2xl border border-white/5 group hover:border-accent-yellow/30 transition-all">
-                                <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{t('mindset.activePattern')}</h4>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest">{t('mindset.activePattern')}</h4>
+                                    <InfoTooltip text={FeatureTooltips.activePattern} />
+                                </div>
                                 <p className="text-sm font-black text-accent-yellow uppercase tracking-tight">{behavioralReport.activePattern.name || t('mindset.noSignificantPattern')}</p>
                                 <p className="text-[11px] italic text-text-secondary mt-1 opacity-70">"{behavioralReport.activePattern.description || t('mindset.behaviorConsistent')}"</p>
                             </div>
                             <div className="bg-white/[0.03] p-5 rounded-2xl border border-white/5 group hover:border-accent-primary/30 transition-all">
-                                <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{t('mindset.strategicFocus')}</h4>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest">{t('mindset.strategicFocus')}</h4>
+                                    <InfoTooltip text={FeatureTooltips.strategicFocus} />
+                                </div>
                                 <p className="text-sm font-medium text-white/90 leading-relaxed">{behavioralReport.predictions.nextWeekFocus || t('mindset.maintainDiscipline')}</p>
                             </div>
                             <div className="bg-white/[0.03] p-5 rounded-2xl border border-white/5 group hover:border-accent-green/30 transition-all">
-                                <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{t('mindset.survivalProtocol')}</h4>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest">{t('mindset.survivalProtocol')}</h4>
+                                    <InfoTooltip text={FeatureTooltips.survivalProtocol} />
+                                </div>
                                 <p className="text-sm font-bold text-accent-green">{behavioralReport.recommendations.action || t('mindset.continueCheckins')}</p>
                             </div>
                         </div>
