@@ -50,20 +50,35 @@ class AuthService {
      * Login with email/password
      */
     async login(email: string, password: string): Promise<AuthResponse> {
-        const response = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
+        try {
+            console.log('[AuthService] Attempting login to:', `${API_URL}/auth/login`);
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || 'Login failed');
+            const response = await fetch(`${API_URL}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            console.log('[AuthService] Login response status:', response.status);
+
+            if (!response.ok) {
+                const error = await response.json();
+                console.error('[AuthService] Login error:', error);
+                throw new Error(error.detail || 'Login failed');
+            }
+
+            const data: AuthResponse = await response.json();
+            this.saveTokens(data);
+            console.log('[AuthService] Login successful');
+            return data;
+        } catch (error) {
+            console.error('[AuthService] Login exception:', error);
+            // Provide more specific error messages
+            if (error instanceof TypeError && error.message.includes('fetch')) {
+                throw new Error('Không thể kết nối tới server. Vui lòng kiểm tra kết nối mạng.');
+            }
+            throw error;
         }
-
-        const data: AuthResponse = await response.json();
-        this.saveTokens(data);
-        return data;
     }
 
     /**

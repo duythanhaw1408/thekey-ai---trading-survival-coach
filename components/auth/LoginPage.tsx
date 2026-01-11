@@ -30,9 +30,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignup, onForgot
         }
 
         try {
+            console.log('[LoginPage] Starting login...');
             await login(email, password);
+            console.log('[LoginPage] Login successful');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Đăng nhập thất bại');
+            console.error('[LoginPage] Login error:', err);
+            const errorMessage = err instanceof Error ? err.message : 'Đăng nhập thất bại';
+            setError(errorMessage);
         }
     };
 
