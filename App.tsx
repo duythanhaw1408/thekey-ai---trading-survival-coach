@@ -69,6 +69,12 @@ const DEFAULT_USER_PROFILE: UserProfile = {
 
 const App: React.FC = () => {
   const { user, logout, isAuthenticated } = useAuth();
+
+  // Wake up Render server immediately
+  useEffect(() => {
+    api.ping();
+  }, []);
+
   const [stats, setStats] = useState<TraderStats>(() => ({
     survivalDays: 7,
     drawdownControl: 85,

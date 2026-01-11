@@ -105,6 +105,11 @@ const request = async <T = any>(endpoint: string, options: RequestInit = {}, _is
  * All methods return Promises and handle authentication automatically.
  */
 export const api = {
+    /** Pings the server to wake it up or check health */
+    ping: async () => {
+        try { fetch(`${API_BASE_URL}/health`, { mode: 'no-cors' }).catch(() => { }); } catch (e) { }
+    },
+
     // ==========================================
     // Protection & AI Guardian
     // ==========================================
