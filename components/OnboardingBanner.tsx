@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheckIcon, BrainCircuitIcon, TrendingUpIcon, TrophyIcon, XIcon } from './icons';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface OnboardingBannerProps {
     tradeCount: number;
@@ -26,29 +26,31 @@ export const OnboardingBanner: React.FC<OnboardingBannerProps> = ({
     hasCheckin,
     onDismiss
 }) => {
+    const { t } = useLanguage();
+
     const steps: StepInfo[] = [
         {
             id: 'checkin',
             icon: <ShieldCheckIcon className="w-5 h-5" />,
-            title: 'Daily Check-in',
-            description: 'Trả lời 3 câu hỏi tâm lý hàng ngày',
-            action: 'Đăng nhập mỗi ngày',
+            title: t('onboarding.dailyCheckin'),
+            description: t('onboarding.dailyCheckinDesc'),
+            action: t('onboarding.dailyCheckinAction'),
             completed: hasCheckin,
         },
         {
             id: 'trade',
             icon: <TrendingUpIcon className="w-5 h-5" />,
-            title: 'Ghi lại Lệnh Đầu Tiên',
-            description: 'Nhập thông tin trade vào Terminal',
-            action: 'Vào EXECUTION → Terminal',
+            title: t('onboarding.firstTrade'),
+            description: t('onboarding.firstTradeDesc'),
+            action: t('onboarding.firstTradeAction'),
             completed: tradeCount >= 1,
         },
         {
             id: 'dojo',
             icon: <BrainCircuitIcon className="w-5 h-5" />,
-            title: 'Hoàn thành Process Dojo',
-            description: 'Đánh giá quy trình sau khi đóng lệnh',
-            action: 'Đóng lệnh → Làm 7 bước Dojo',
+            title: t('onboarding.firstDojo'),
+            description: t('onboarding.firstDojoDesc'),
+            action: t('onboarding.firstDojoAction'),
             completed: dojoCount >= 1,
         },
     ];
@@ -84,13 +86,13 @@ export const OnboardingBanner: React.FC<OnboardingBannerProps> = ({
                             <TrophyIcon className="w-6 h-6 text-accent-primary" />
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-white">🚀 Bắt đầu với THEKEY</h3>
-                            <p className="text-xs text-text-secondary">Hoàn thành 3 bước để mở khóa toàn bộ tính năng AI</p>
+                            <h3 className="text-lg font-bold text-white">🚀 {t('onboarding.startWithKey')}</h3>
+                            <p className="text-xs text-text-secondary">{t('onboarding.complete3Steps')}</p>
                         </div>
                     </div>
                     <div className="text-right">
                         <p className="text-2xl font-black text-accent-primary">{completedCount}/{steps.length}</p>
-                        <p className="text-[10px] text-gray-500">hoàn thành</p>
+                        <p className="text-[10px] text-gray-500">{t('onboarding.completed')}</p>
                     </div>
                 </div>
 
@@ -115,8 +117,8 @@ export const OnboardingBanner: React.FC<OnboardingBannerProps> = ({
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
                             className={`relative p-4 rounded-xl border transition-all ${step.completed
-                                    ? 'bg-accent-green/10 border-accent-green/30'
-                                    : 'bg-white/5 border-white/10 hover:border-accent-primary/30'
+                                ? 'bg-accent-green/10 border-accent-green/30'
+                                : 'bg-white/5 border-white/10 hover:border-accent-primary/30'
                                 }`}
                         >
                             {/* Step Number */}
@@ -155,7 +157,7 @@ export const OnboardingBanner: React.FC<OnboardingBannerProps> = ({
 
                 {/* Motivation Text */}
                 <p className="text-center text-xs text-gray-500 mt-4">
-                    💡 Càng nhiều data, AI càng hiểu rõ hành vi trading của bạn và đưa ra insight chính xác hơn!
+                    💡 {t('onboarding.unlockTip')}
                 </p>
             </div>
         </motion.div>

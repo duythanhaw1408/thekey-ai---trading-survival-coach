@@ -10,6 +10,7 @@ import { BioStatusWidget } from '../BioStatusWidget';
 import { MarketIntelWidget } from '../MarketIntelWidget';
 import { OnboardingBanner } from '../OnboardingBanner';
 import { Tooltip, FeatureTooltips, InfoTooltip } from '../Tooltip';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface DashboardViewProps {
     stats: TraderStats;
@@ -43,13 +44,14 @@ interface DashboardViewProps {
 }
 
 const DashboardHeader: React.FC<{ stats: TraderStats, processStats: ProcessStats | null }> = ({ stats, processStats }) => {
+    const { t, language } = useLanguage();
     const isCrisisState = stats.consecutiveLosses >= 2;
     if (isCrisisState) {
         return (
             <div className="bg-accent-red/10 border border-accent-red/20 rounded-xl p-6 flex flex-col items-center justify-center text-center shadow-lg animate-pulse col-span-full">
                 <AlertTriangleIcon className="w-12 h-12 text-accent-red mb-3" />
-                <h3 className="text-xl font-bold text-white">BÌNH TĨNH. RỦI RO TRẢ THÙ ĐANG RẤT CAO.</h3>
-                <p className="text-text-secondary mt-2">Hệ thống bảo vệ khuyến nghị bạn nên nghỉ ngơi.</p>
+                <h3 className="text-xl font-bold text-white">{language === 'vi' ? 'BÌNH TĨNH. RỦI RO TRẢ THÙ ĐANG RẤT CAO.' : 'STAY CALM. REVENGE TRADING RISK IS VERY HIGH.'}</h3>
+                <p className="text-text-secondary mt-2">{language === 'vi' ? 'Hệ thống bảo vệ khuyến nghị bạn nên nghỉ ngơi.' : 'Protection system recommends you take a break.'}</p>
             </div>
         )
     }
@@ -57,25 +59,25 @@ const DashboardHeader: React.FC<{ stats: TraderStats, processStats: ProcessStats
         <>
             <StatusCard
                 icon={<TrophyIcon className="w-8 h-8 text-accent-primary" />}
-                label="Survival Days"
+                label={t('dashboard.survivalDays')}
                 value={stats.survivalDays.toString()}
                 tooltip={FeatureTooltips.survivalDays}
             />
             <StatusCard
                 icon={<ShieldCheckIcon className="w-8 h-8 text-accent-green" />}
-                label="Discipline Score"
+                label={t('dashboard.disciplineScore')}
                 value={`${stats.disciplineScore}%`}
                 tooltip={FeatureTooltips.disciplineScore}
             />
             <StatusCard
                 icon={<BrainCircuitIcon className="w-8 h-8 text-accent-yellow" />}
-                label="Avg Process Score"
+                label={t('dashboard.avgProcessScore')}
                 value={processStats ? `${processStats.averageScore}` : 'N/A'}
                 tooltip={FeatureTooltips.processScore}
             />
             <StatusCard
                 icon={processStats?.trend === 'IMPROVING' ? <TrendingUpIcon className="w-8 h-8 text-accent-green" /> : <TrendingDownIcon className="w-8 h-8 text-accent-red" />}
-                label="Process Trend"
+                label={t('dashboard.processTrend')}
                 value={processStats?.trend || 'STABLE'}
                 tooltip={FeatureTooltips.processTrend}
             />

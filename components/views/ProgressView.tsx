@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { MasteryData, Pod, WeeklyGoals, WeeklyReport, Trade, TraderStats } from '../../types';
 import { MasteryTracker } from '../MasteryTracker';
@@ -7,6 +6,7 @@ import { WeeklyReportCard } from '../WeeklyReportCard';
 import { CalendarIcon, FileTextIcon, TrophyIcon, ChartBarIcon } from '../icons';
 import { LearningInsights } from '../LearningInsights';
 import AIAccuracyDashboard from '../AIAccuracyDashboard';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface ProgressViewProps {
     masteryData: MasteryData | null;
@@ -37,6 +37,8 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
     tradeHistory,
     stats
 }) => {
+    const { t, language } = useLanguage();
+
     return (
         <div className="space-y-6 animate-entrance">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
