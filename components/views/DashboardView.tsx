@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import type { Trade, TraderStats, DetectedPattern, CheckinAnalysisResult, MasteryData, Pod, TradeAnalysis, ProcessStats, MarketAnalysis, BehavioralReport, ShadowScore, WeeklyGoals, WeeklyReport } from '../../types';
 import { StatusCard } from '../StatusCard';
@@ -9,6 +8,8 @@ import { TradeAnalysisDetail } from '../TradeAnalysisDetail';
 import { ShieldCheckIcon, TrendingDownIcon, TrophyIcon, BrainCircuitIcon, TrendingUpIcon, AlertTriangleIcon, KeyIcon, ActivityIcon } from '../icons';
 import { BioStatusWidget } from '../BioStatusWidget';
 import { MarketIntelWidget } from '../MarketIntelWidget';
+import { OnboardingBanner } from '../OnboardingBanner';
+import { Tooltip, FeatureTooltips, InfoTooltip } from '../Tooltip';
 
 interface DashboardViewProps {
     stats: TraderStats;
@@ -36,6 +37,9 @@ interface DashboardViewProps {
     onGetWeeklyReport: () => void;
     weeklyReport: WeeklyReport | null;
     isLoadingReport: boolean;
+    // New props for onboarding
+    dojoCount?: number;
+    hasCheckin?: boolean;
 }
 
 const DashboardHeader: React.FC<{ stats: TraderStats, processStats: ProcessStats | null }> = ({ stats, processStats }) => {
@@ -51,17 +55,48 @@ const DashboardHeader: React.FC<{ stats: TraderStats, processStats: ProcessStats
     }
     return (
         <>
-            <StatusCard icon={<TrophyIcon className="w-8 h-8 text-accent-primary" />} label="Survival Days" value={stats.survivalDays.toString()} />
-            <StatusCard icon={<ShieldCheckIcon className="w-8 h-8 text-accent-green" />} label="Discipline Score" value={`${stats.disciplineScore}%`} />
-            <StatusCard icon={<BrainCircuitIcon className="w-8 h-8 text-accent-yellow" />} label="Avg Process Score" value={processStats ? `${processStats.averageScore}` : 'N/A'} />
-            <StatusCard icon={processStats?.trend === 'IMPROVING' ? <TrendingUpIcon className="w-8 h-8 text-accent-green" /> : <TrendingDownIcon className="w-8 h-8 text-accent-red" />} label="Process Trend" value={processStats?.trend || 'STABLE'} />
+            <StatusCard
+                icon={<TrophyIcon className="w-8 h-8 text-accent-primary" />}
+                label="Survival Days"
+                value={stats.survivalDays.toString()}
+                tooltip={FeatureTooltips.survivalDays}
+            />
+            <StatusCard
+                icon={<ShieldCheckIcon className="w-8 h-8 text-accent-green" />}
+                label="Discipline Score"
+                value={`${stats.disciplineScore}%`}
+                tooltip={FeatureTooltips.disciplineScore}
+            />
+            <StatusCard
+                icon={<BrainCircuitIcon className="w-8 h-8 text-accent-yellow" />}
+                label="Avg Process Score"
+                value={processStats ? `${processStats.averageScore}` : 'N/A'}
+                tooltip={FeatureTooltips.processScore}
+            />
+            <StatusCard
+                icon={processStats?.trend === 'IMPROVING' ? <TrendingUpIcon className="w-8 h-8 text-accent-green" /> : <TrendingDownIcon className="w-8 h-8 text-accent-red" />}
+                label="Process Trend"
+                value={processStats?.trend || 'STABLE'}
+                tooltip={FeatureTooltips.processTrend}
+            />
         </>
     );
 };
 
 export const DashboardView: React.FC<DashboardViewProps> = (props) => {
+    const tradeCount = props.tradeHistory?.length || 0;
+    const dojoCount = props.dojoCount ?? props.tradeHistory?.filter(t => t.processEvaluation).length || 0;
+    const hasCheckin = props.hasCheckin ?? props.checkinHistory?.length > 0;
+
     return (
         <div className="space-y-6 animate-entrance">
+            {/* Onboarding Banner for New Users */}
+            <OnboardingBanner
+                tradeCount={tradeCount}
+                dojoCount={dojoCount}
+                hasCheckin={hasCheckin}
+            />
+
             {/* Top Row: Core Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <DashboardHeader stats={props.stats} processStats={props.processStats} />
