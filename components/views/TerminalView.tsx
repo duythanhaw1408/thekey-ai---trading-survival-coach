@@ -56,7 +56,7 @@ export const TerminalView: React.FC<TerminalViewProps> = (props) => {
                     onCloseTrade={props.onCloseTrade}
                     analysis={props.tradeAnalysis}
                     onClearAnalysis={props.onClearAnalysis}
-                    mode="LIST_ONLY"
+                    mode="FULL"
                 />
             </div>
         </div>
