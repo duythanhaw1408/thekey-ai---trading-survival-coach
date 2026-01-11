@@ -75,8 +75,22 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
 
                         {isLoadingGoals && <div className="p-12 text-center text-text-secondary animate-pulse uppercase text-xs font-bold tracking-widest">Generating personalized objectives...</div>}
                         {!weeklyGoals && !isLoadingGoals && (
-                            <div className="p-12 text-center border border-dashed border-white/5 rounded-2xl">
-                                <p className="text-white/20 text-xs font-bold uppercase tracking-widest">No active goals. Generate them to track your progress.</p>
+                            <div className="p-6 text-center border border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
+                                <CalendarIcon className="w-8 h-8 text-accent-primary/30 mx-auto mb-3" />
+                                <p className="text-white font-bold text-sm mb-2">Mục tiêu Tuần</p>
+                                <p className="text-text-secondary text-xs mb-4">
+                                    AI sẽ tạo mục tiêu cá nhân hóa dựa trên dữ liệu trading của bạn.
+                                </p>
+                                <div className="text-[10px] text-gray-500 bg-white/5 rounded-lg p-3 text-left">
+                                    <p className="font-semibold text-accent-yellow mb-2">📋 Yêu cầu mở khóa:</p>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] ${tradeHistory.length >= 3 ? 'bg-accent-green text-black' : 'bg-white/10'}`}>
+                                            {tradeHistory.length >= 3 ? '✓' : tradeHistory.length}
+                                        </span>
+                                        <span>Hoàn thành 3 trades với Dojo</span>
+                                    </div>
+                                    <p className="mt-2 text-accent-primary">👉 Còn cần {Math.max(0, 3 - tradeHistory.length)} trade nữa</p>
+                                </div>
                             </div>
                         )}
                         {weeklyGoals && <WeeklyGoalsCard goals={weeklyGoals} />}
@@ -101,8 +115,22 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
 
                         {isLoadingReport && <div className="p-12 text-center text-text-secondary animate-pulse uppercase text-xs font-bold tracking-widest">Compiling weekly metrics...</div>}
                         {!weeklyReport && !isLoadingReport && (
-                            <div className="p-12 text-center border border-dashed border-white/5 rounded-2xl">
-                                <p className="text-white/20 text-xs font-bold uppercase tracking-widest text-center">Cần ít nhất 5 trades để tạo báo cáo hiệu suất chi tiết.</p>
+                            <div className="p-6 text-center border border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
+                                <FileTextIcon className="w-8 h-8 text-accent-primary/30 mx-auto mb-3" />
+                                <p className="text-white font-bold text-sm mb-2">Báo cáo Hiệu suất</p>
+                                <p className="text-text-secondary text-xs mb-4">
+                                    AI phân tích chi tiết hiệu suất trading trong tuần và đề xuất cải thiện.
+                                </p>
+                                <div className="text-[10px] text-gray-500 bg-white/5 rounded-lg p-3 text-left">
+                                    <p className="font-semibold text-accent-yellow mb-2">📊 Yêu cầu mở khóa:</p>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] ${tradeHistory.length >= 5 ? 'bg-accent-green text-black' : 'bg-white/10'}`}>
+                                            {tradeHistory.length >= 5 ? '✓' : tradeHistory.length}
+                                        </span>
+                                        <span>Hoàn thành 5 trades với Dojo</span>
+                                    </div>
+                                    <p className="mt-2 text-accent-primary">👉 Còn cần {Math.max(0, 5 - tradeHistory.length)} trade nữa</p>
+                                </div>
                             </div>
                         )}
                         {weeklyReport && <WeeklyReportCard report={weeklyReport} />}
