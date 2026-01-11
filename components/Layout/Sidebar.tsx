@@ -9,6 +9,7 @@ import {
     SettingsIcon,
     KeyIcon
 } from '../icons';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export type AppTab = 'SURVIVAL' | 'EXECUTION' | 'MINDSET' | 'PROGRESS' | 'SETTINGS';
 
@@ -18,14 +19,18 @@ interface SidebarProps {
     isCollapsed?: boolean;
 }
 
-const navItems = [
-    { id: 'SURVIVAL', label: 'Survival', icon: <ShieldCheckIcon className="w-5 h-5" />, color: 'text-accent-green' },
-    { id: 'EXECUTION', label: 'Execution', icon: <TerminalIcon className="w-5 h-5" />, color: 'text-accent-primary' },
-    { id: 'MINDSET', label: 'Mindset', icon: <BrainCircuitIcon className="w-5 h-5" />, color: 'text-accent-yellow' },
-    { id: 'PROGRESS', label: 'Progress', icon: <TrendingUpIcon className="w-5 h-5" />, color: 'text-accent-primary-neon' },
-];
+
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isCollapsed = false }) => {
+    const { t } = useLanguage();
+
+    const navItems = [
+        { id: 'SURVIVAL', labelKey: 'nav.survival', icon: <ShieldCheckIcon className="w-5 h-5" />, color: 'text-accent-green' },
+        { id: 'EXECUTION', labelKey: 'nav.execution', icon: <TerminalIcon className="w-5 h-5" />, color: 'text-accent-primary' },
+        { id: 'MINDSET', labelKey: 'nav.mindset', icon: <BrainCircuitIcon className="w-5 h-5" />, color: 'text-accent-yellow' },
+        { id: 'PROGRESS', labelKey: 'nav.progress', icon: <TrendingUpIcon className="w-5 h-5" />, color: 'text-accent-primary-neon' },
+    ];
+
     return (
         <aside className={`fixed left-0 top-0 h-screen bg-black/40 backdrop-blur-xl border-r border-white/5 z-50 transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'}`}>
             <div className="flex flex-col h-full p-4">
@@ -48,8 +53,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isCol
                             key={item.id}
                             onClick={() => setActiveTab(item.id as AppTab)}
                             className={`w-full flex items-center gap-4 p-3 rounded-xl transition-all group relative ${activeTab === item.id
-                                    ? 'bg-white/10 text-white'
-                                    : 'text-text-secondary hover:bg-white/5 hover:text-white'
+                                ? 'bg-white/10 text-white'
+                                : 'text-text-secondary hover:bg-white/5 hover:text-white'
                                 }`}
                         >
                             <div className={`${activeTab === item.id ? item.color : 'text-inherit'} transition-colors`}>
@@ -57,7 +62,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isCol
                             </div>
                             {!isCollapsed && (
                                 <span className={`text-sm font-bold uppercase tracking-widest ${activeTab === item.id ? 'opacity-100' : 'opacity-60 group-hover:opacity-100'}`}>
-                                    {item.label}
+                                    {t(item.labelKey)}
                                 </span>
                             )}
 
@@ -77,14 +82,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isCol
                     <button
                         onClick={() => setActiveTab('SETTINGS')}
                         className={`w-full flex items-center gap-4 p-3 rounded-xl transition-all group ${activeTab === 'SETTINGS'
-                                ? 'bg-white/10 text-white'
-                                : 'text-text-secondary hover:bg-white/5 hover:text-white'
+                            ? 'bg-white/10 text-white'
+                            : 'text-text-secondary hover:bg-white/5 hover:text-white'
                             }`}
                     >
                         <SettingsIcon className={`w-5 h-5 ${activeTab === 'SETTINGS' ? 'text-white' : 'text-inherit'}`} />
                         {!isCollapsed && (
                             <span className="text-sm font-bold uppercase tracking-widest opacity-60 group-hover:opacity-100">
-                                Settings
+                                {t('nav.settings')}
                             </span>
                         )}
                     </button>

@@ -22,6 +22,37 @@ const translations: Record<Language, Translations> = {
             back: 'Quay lại',
             submit: 'Gửi',
             notEnoughData: 'Chưa đủ dữ liệu',
+            tipLabel: 'Mẹo',
+        },
+
+        // Navigation
+        nav: {
+            survival: 'SINH TỒN',
+            execution: 'THỰC HIỆN',
+            mindset: 'TƯ DUY',
+            progress: 'TIẾN TRÌNH',
+            settings: 'CÀI ĐẶT',
+        },
+
+        // Profile & Settings
+        profile: {
+            title: 'Hồ Sơ & Cài Đặt',
+            username: 'Tên hiển thị',
+            usernameLabel: 'Username (hiển thị công khai)',
+            usernamePlaceholder: 'VD: trader_001, shadow_master...',
+            usernameHint: '3-20 ký tự, chỉ chữ cái, số và underscore (_)',
+            anonymousDisplayName: 'Tên Hiển Thị Ẩn Danh',
+            traderArchetype: 'Trader Archetype',
+            discoverArchetype: 'Khám phá Archetype của tôi',
+            capitalManagement: 'Quản lý vốn',
+            accountBalance: 'Vốn đầu tư ($)',
+            maxSizeUSD: 'Max Size (USD)',
+            riskPerTrade: 'Risk per Trade (%)',
+            tradingRules: 'Trading Rules',
+            dailyTradeLimit: 'Daily Trade Limit',
+            sensitivityThreshold: 'Sensitivity Threshold (%)',
+            sensitivityHint: 'Mức độ nhạy bén của cảnh báo dựa trên volume dự kiến.',
+            saveProfile: 'Lưu Hồ Sơ',
         },
 
         // Dashboard
@@ -113,6 +144,37 @@ const translations: Record<Language, Translations> = {
             back: 'Back',
             submit: 'Submit',
             notEnoughData: 'Not enough data',
+            tipLabel: 'Tip',
+        },
+
+        // Navigation
+        nav: {
+            survival: 'SURVIVAL',
+            execution: 'EXECUTION',
+            mindset: 'MINDSET',
+            progress: 'PROGRESS',
+            settings: 'SETTINGS',
+        },
+
+        // Profile & Settings
+        profile: {
+            title: 'User Profile & Settings',
+            username: 'Display Name',
+            usernameLabel: 'Username (public display)',
+            usernamePlaceholder: 'e.g: trader_001, shadow_master...',
+            usernameHint: '3-20 characters, letters, numbers and underscore (_) only',
+            anonymousDisplayName: 'Anonymous Display Name',
+            traderArchetype: 'Trader Archetype',
+            discoverArchetype: 'Discover my Archetype',
+            capitalManagement: 'Capital Management',
+            accountBalance: 'Account Balance ($)',
+            maxSizeUSD: 'Max Size (USD)',
+            riskPerTrade: 'Risk per Trade (%)',
+            tradingRules: 'Trading Rules',
+            dailyTradeLimit: 'Daily Trade Limit',
+            sensitivityThreshold: 'Sensitivity Threshold (%)',
+            sensitivityHint: 'Alert sensitivity based on expected volume.',
+            saveProfile: 'Save Profile',
         },
 
         // Dashboard

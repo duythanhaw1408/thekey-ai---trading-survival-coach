@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import type { UserProfile, TraderArchetypeAnalysis } from '../types';
 import { UserCircleIcon, BrainCircuitIcon } from './icons';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface ProfileModalProps {
   userProfile: UserProfile;
@@ -52,6 +53,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ userProfile, onSave,
   const [profile, setProfile] = useState<UserProfile>(userProfile);
   const [archetypeRationale, setArchetypeRationale] = useState<string | null>(null);
   const [isDiscovering, setIsDiscovering] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     setProfile(userProfile);
@@ -74,7 +76,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ userProfile, onSave,
   };
 
   const handleDiscover = async () => {
-    setIsDiscovering(true);
+    setDiscovering(true);
     setArchetypeRationale(null);
     try {
       const result = await onDiscoverArchetype();
@@ -93,7 +95,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ userProfile, onSave,
         <header className="p-4 border-b border-divider flex-shrink-0 flex justify-between items-center">
           <div className="flex items-center">
             <UserCircleIcon className="w-6 h-6 mr-3 text-accent-primary" />
-            <h2 className="text-lg font-bold text-text-main">User Profile & Settings</h2>
+            <h2 className="text-lg font-bold text-text-main">{t('profile.title')}</h2>
           </div>
           <button onClick={onClose} className="text-2xl text-text-secondary hover:text-text-main">&times;</button>
         </header>
