@@ -215,6 +215,17 @@ const App: React.FC = () => {
           // We might need to manually set seed data for mastery engine or trust the backend
           console.log(`[App] Hydrated Gamification: LVL ${me.level}, XP ${me.xp}`);
         }
+
+        // Load Shadow Score from database
+        if (me.shadow_score) {
+          try {
+            const parsedShadowScore = JSON.parse(me.shadow_score);
+            setShadowScore(parsedShadowScore);
+            console.log('[App] Loaded Shadow Score from DB:', parsedShadowScore);
+          } catch (error) {
+            console.error('[App] Error parsing shadow score:', error);
+          }
+        }
       }
 
       // Check for checkin - only show once per day
@@ -495,6 +506,10 @@ const App: React.FC = () => {
         process_score: aiEvaluation.totalProcessScore
       });
       console.log('[App] Process evaluation saved to DB successfully');
+
+      // Persist shadow score to database
+      await api.updateShadowScore(newShadowScore);
+      console.log('[App] Shadow score saved to DB successfully');
     } catch (error) {
       console.error('[App] Error saving process evaluation to DB:', error);
     }

@@ -145,6 +145,11 @@ export const api = {
         body: JSON.stringify({ username }),
     }),
 
+    updateShadowScore: (shadowScore: any) => request('/api/users/shadow-score', {
+        method: 'PUT',
+        body: JSON.stringify({ shadow_score: JSON.stringify(shadowScore) }),
+    }),
+
     updateTradeEvaluation: (tradeId: string, data: {
         user_process_evaluation?: any;
         process_evaluation?: any;
