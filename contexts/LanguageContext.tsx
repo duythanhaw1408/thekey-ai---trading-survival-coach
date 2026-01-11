@@ -65,6 +65,11 @@ const translations: Record<Language, Translations> = {
             selectTradeDesc: 'Click vào lệnh có 🧠 (đã hoàn thành Dojo) trong tab EXECUTION để xem chi tiết đánh giá quy trình.',
             tipLabel: 'Tip:',
             tipBadge: 'Lệnh có badge xanh = đã có Dojo evaluation',
+            crisisTitle: 'BÌNH TĨNH. RỦI RO TRẢ THÙ ĐANG RẤT CAO.',
+            crisisDesc: 'Hệ thống bảo vệ khuyến nghị bạn nên nghỉ ngơi.',
+            biometricStatus: 'Trạng Thái Sinh Học',
+            survivalStreak: 'Chuỗi Sinh Tồn',
+            daysStanding: 'Ngày Đứng Vững',
         },
 
         // Mindset View
@@ -101,6 +106,20 @@ const translations: Record<Language, Translations> = {
             stillNeed: 'Còn cần {count} trade nữa',
             performanceReport: 'Báo cáo Hiệu suất',
             performanceReportDesc: 'AI phân tích chi tiết hiệu suất trading trong tuần và đề xuất cải thiện.',
+            title: 'Tiến Trình & Phân Tích',
+            selfAwarenessEngine: 'Self-Awareness Engine',
+            trustLevel: 'Mức độ Tín nhiệm',
+            analyzePatterns: 'Phân Tích Khuôn Mẫu',
+            fingerprintReport: 'Báo Cáo Fingerprint',
+            setObjectives: 'Thiết Lập Mục Tiêu',
+            survivalReport: 'Báo Cáo Sinh Tồn',
+            requirementNote: 'Cần ít nhất {count} trades đã đánh giá để sử dụng các tính năng phân tích nâng cao.',
+            parsing: 'Đang xử lý...',
+            calibrating: 'Đang hiệu chỉnh...',
+            syncing: 'Đang đồng bộ...',
+            analyzingPatterns: 'Đang phân tích các khuôn mẫu giao dịch của bạn...',
+            generatingGoals: 'Đang tạo mục tiêu tuần cá nhân hóa...',
+            compilingReport: 'Đang tổng hợp báo cáo hiệu suất hàng tuần...',
         },
 
         // Trade History
@@ -128,7 +147,39 @@ const translations: Record<Language, Translations> = {
             firstDojoDesc: 'Đánh giá quy trình sau khi đóng lệnh',
             firstDojoAction: 'Đóng lệnh → Làm 7 bước Dojo',
             unlockTip: 'Càng nhiều data, AI càng hiểu rõ hành vi trading của bạn và đưa ra insight chính xác hơn!',
+            done: 'Xong ✨',
         },
+
+        // Terminal & Trade Input
+        terminal: {
+            buy: 'MUA',
+            sell: 'BÁN',
+            sizeLabel: 'Vốn ($)',
+            riskLabel: 'Rủi ro (%)',
+            assetPlaceholder: 'Tài sản (VD: BTC/USDT)',
+            entry: 'Điểm vào',
+            tp: 'Chốt lời (không bắt buộc)',
+            sl: 'Dừng lỗ',
+            positionSize: 'Khối lượng (USD)',
+            estRisk: 'Rủi ro ước tính:',
+            reasoningPlaceholder: 'Thiết lập & Niềm tin của bạn...',
+            simulationActive: 'Chế độ Giả lập đang bật',
+            warningTitle: 'Cảnh Báo',
+            analyzing: 'ĐANG PHÂN TÍCH...',
+            proceed: 'TIẾP TỤC',
+            evaluate: 'ĐÁNH GIÁ',
+        },
+
+        // Process Dojo
+        dojo: {
+            title: 'Process Dojo',
+            step: 'Bước',
+            dominantEmotion: 'Cảm xúc chủ đạo',
+            reasoning: 'Lý do vào lệnh',
+            processScore: 'Điểm Quy Trình',
+            shadowScore: 'Shadow Score',
+            completeDojo: 'Hoàn thành Dojo',
+        }
     },
 
     en: {
@@ -187,6 +238,11 @@ const translations: Record<Language, Translations> = {
             selectTradeDesc: 'Click on a trade with 🧠 (completed Dojo) in EXECUTION tab to view detailed process evaluation.',
             tipLabel: 'Tip:',
             tipBadge: 'Trade with green badge = has Dojo evaluation',
+            crisisTitle: 'STAY CALM. REVENGE TRADING RISK IS VERY HIGH.',
+            crisisDesc: 'Protection system recommends you take a break.',
+            biometricStatus: 'Biometric Status',
+            survivalStreak: 'Survival Streak',
+            daysStanding: 'Days Standing',
         },
 
         // Mindset View
@@ -223,6 +279,20 @@ const translations: Record<Language, Translations> = {
             stillNeed: 'Still need {count} more trades',
             performanceReport: 'Performance Report',
             performanceReportDesc: 'AI analyzes weekly trading performance in detail and suggests improvements.',
+            title: 'Progress & Analytics',
+            selfAwarenessEngine: 'Self-Awareness Engine',
+            trustLevel: 'Trust Level',
+            analyzePatterns: 'Analyze Patterns',
+            fingerprintReport: 'Fingerprint Report',
+            setObjectives: 'Set Objectives',
+            survivalReport: 'Survival Report',
+            requirementNote: 'Need at least {count} evaluated trades for advanced analysis.',
+            parsing: 'Parsing...',
+            calibrating: 'Calibrating...',
+            syncing: 'Syncing...',
+            analyzingPatterns: 'Analyzing your trading patterns...',
+            generatingGoals: 'Generating personalized weekly goals...',
+            compilingReport: 'Compiling your weekly performance report...',
         },
 
         // Trade History
@@ -250,7 +320,39 @@ const translations: Record<Language, Translations> = {
             firstDojoDesc: 'Evaluate process after closing trade',
             firstDojoAction: 'Close trade → Complete 7 Dojo steps',
             unlockTip: 'More data helps AI understand your trading behavior better and provide more accurate insights!',
+            done: 'Done ✨',
         },
+
+        // Terminal & Trade Input
+        terminal: {
+            buy: 'BUY',
+            sell: 'SELL',
+            sizeLabel: 'Size ($)',
+            riskLabel: 'Risk (%)',
+            assetPlaceholder: 'Asset (e.g. BTC/USDT)',
+            entry: 'Entry',
+            tp: 'TP (Opt)',
+            sl: 'Stop Loss',
+            positionSize: 'Position (USD)',
+            estRisk: 'Est. Risk:',
+            reasoningPlaceholder: 'Setup & Conviction...',
+            simulationActive: 'Simulation Mode Active',
+            warningTitle: 'Warning',
+            analyzing: 'ANALYZING...',
+            proceed: 'PROCEED',
+            evaluate: 'EVALUATE',
+        },
+
+        // Process Dojo
+        dojo: {
+            title: 'Process Dojo',
+            step: 'Step',
+            dominantEmotion: 'Dominant Emotion',
+            reasoning: 'Reasoning',
+            processScore: 'Process Score',
+            shadowScore: 'Shadow Score',
+            completeDojo: 'Complete Dojo',
+        }
     },
 };
 

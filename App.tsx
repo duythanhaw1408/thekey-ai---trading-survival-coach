@@ -501,8 +501,12 @@ const App: React.FC = () => {
   const handleSaveUserEvaluation = async (userEvaluation: UserProcessEvaluation, interactionData: DojoInteractionData) => {
     if (!tradeToEvaluate) return;
     const aiEvaluation = processEvaluationEngine.evaluateTradeProcess(tradeToEvaluate, userEvaluation);
-    const newShadowScore = shadowScoreEngine.calculateShadowScore({ ...tradeToEvaluate, userProcessEvaluation: userEvaluation, processEvaluation: aiEvaluation }, userEvaluation, interactionData);
-    setShadowScore(newShadowScore);
+    const newInteractionScore = shadowScoreEngine.calculateShadowScore({ ...tradeToEvaluate, userProcessEvaluation: userEvaluation, processEvaluation: aiEvaluation }, userEvaluation, interactionData);
+
+    // Aggregate with existing score for professional reputation persistence
+    const aggregatedScore = shadowScoreEngine.aggregateShadowScore(shadowScore, newInteractionScore);
+    setShadowScore(aggregatedScore);
+
     const evaluatedTrade: Trade = { ...tradeToEvaluate, userProcessEvaluation: userEvaluation, processEvaluation: aiEvaluation };
     behavioralGraphEngine.addTradeToGraph(evaluatedTrade);
 
@@ -515,8 +519,8 @@ const App: React.FC = () => {
       });
       console.log('[App] Process evaluation saved to DB successfully');
 
-      // Persist shadow score to database
-      await api.updateShadowScore(newShadowScore);
+      // Persist aggregated shadow score to database
+      await api.updateShadowScore(aggregatedScore);
       console.log('[App] Shadow score saved to DB successfully');
     } catch (error) {
       console.error('[App] Error saving process evaluation to DB:', error);

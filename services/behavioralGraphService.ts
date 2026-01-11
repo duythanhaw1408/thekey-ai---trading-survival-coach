@@ -79,11 +79,10 @@ export class BehavioralGraphEngine {
         const actionLabel = `${trade.direction} ${trade.asset}`;
         const actionNode = this.addOrUpdateNode(`action_${actionLabel.replace('/', '_')}`, 'ACTION', actionLabel, { size: trade.positionSize });
 
-        const pnl = trade.pnl ?? 0;
-        const outcomeCategory = pnl > 0 ? 'Win' : 'Loss';
+        const outcomeCategory = trade.status === 'OPEN' ? 'OPEN' : (trade.pnl && trade.pnl > 0 ? 'Win' : 'Loss');
         const processScoreCategory = trade.processEvaluation.totalProcessScore > 70 ? 'Good Process' : 'Bad Process';
         const outcomeLabel = `${outcomeCategory} / ${processScoreCategory}`;
-        const outcomeNode = this.addOrUpdateNode(`outcome_${outcomeLabel.replace(' / ', '_').replace(' ', '_')}`, 'OUTCOME', outcomeLabel, { pnl });
+        const outcomeNode = this.addOrUpdateNode(`outcome_${outcomeLabel.replace(/\s?\/\s?/g, '_').replace(/\s+/g, '_')}`, 'OUTCOME', outcomeLabel, { pnl: trade.pnl });
 
         this.addOrUpdateEdge(contextNode.id, emotionNode.id, 'TRIGGERS');
         this.addOrUpdateEdge(emotionNode.id, intentNode.id, 'LEADS_TO');

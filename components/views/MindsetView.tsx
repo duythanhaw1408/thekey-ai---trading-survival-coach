@@ -56,11 +56,11 @@ export const MindsetView: React.FC<MindsetViewProps> = ({
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="text-xs font-black text-accent-primary uppercase tracking-[0.2em] flex items-center">
                             <BrainCircuitIcon className="w-5 h-5 mr-3" />
-                            Behavioral Fingerprint
+                            {t('mindset.behavioralFingerprint')}
                         </h3>
                         {behavioralReport && (
                             <div className="text-[10px] font-bold px-3 py-1 rounded-full bg-accent-primary/20 text-accent-primary uppercase tracking-widest border border-accent-primary/30">
-                                AI Deep Analysis
+                                {t('mindset.aiDeepAnalysis')}
                             </div>
                         )}
                     </div>
@@ -150,20 +150,20 @@ export const MindsetView: React.FC<MindsetViewProps> = ({
                         {!shadowScore ? (
                             <div className="p-6 text-center border border-white/10 rounded-2xl bg-white/[0.02]">
                                 <ShieldCheckIcon className="w-8 h-8 text-accent-primary/30 mx-auto mb-3" />
-                                <p className="text-white font-bold text-sm mb-2">Shadow Score</p>
+                                <p className="text-white font-bold text-sm mb-2">{t('mindset.shadowScore')}</p>
                                 <p className="text-text-secondary text-xs mb-3">
-                                    Điểm tín nhiệm dựa trên độ trung thực tự đánh giá so với AI.
+                                    {t('mindset.shadowScoreDesc')}
                                 </p>
-                                <div className="text-[10px] text-gray-500 bg-white/5 rounded-lg p-3">
-                                    <p className="mb-1">📊 <strong className="text-accent-yellow">Yêu cầu:</strong> Hoàn thành ít nhất 1 trade với Dojo</p>
-                                    <p>💡 Đóng lệnh → Hoàn thành 7 bước Dojo để bắt đầu tích lũy Shadow Score</p>
+                                <div className="text-[10px] text-gray-500 bg-white/5 rounded-lg p-3 text-left">
+                                    <p className="mb-1">📊 <strong className="text-accent-yellow">{t('mindset.requirement')}</strong> {t('mindset.completeOneDojo')}</p>
+                                    <p>💡 {t('mindset.closeAndDojo')}</p>
                                 </div>
                             </div>
                         ) : (
                             <div className="flex items-center justify-between p-6 bg-white/[0.03] rounded-2xl border border-white/10 relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-accent-primary/5 blur-[40px] rounded-full group-hover:bg-accent-primary/10 transition-all"></div>
                                 <div className="relative z-10">
-                                    <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">Shadow Score</p>
+                                    <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2">{t('mindset.shadowScore')}</p>
                                     <p className="text-sm text-text-secondary">Trust Level: <span className={`font-black uppercase ${shadowScore.trustLevel === 'HIGH_TRUST' ? 'text-accent-green' : shadowScore.trustLevel === 'MEDIUM_TRUST' ? 'text-accent-yellow' : 'text-accent-red'}`}>{shadowScore.trustLevel.replace('_', ' ')}</span></p>
                                 </div>
                                 <div className="text-4xl font-black font-mono text-white relative z-10 px-4 py-2 bg-black/40 rounded-xl border border-white/5">

@@ -2,17 +2,17 @@
 import type { Trade, UserProcessEvaluation, DojoInteractionData, ShadowScore, TrustLevel } from '../types';
 
 class ShadowScoreEngine {
-    
+
     public calculateShadowScore(trade: Trade, userEval: UserProcessEvaluation, interactionData: DojoInteractionData): ShadowScore {
         const responseAuthenticity = this.calculateResponseAuthenticity(interactionData);
         const behaviorGap = this.calculateBehaviorGap(trade, userEval);
 
         const rawScore = Math.round((responseAuthenticity * 0.4) + (behaviorGap * 0.6));
-        
+
         const trustLevel = this.getTrustLevel(rawScore);
-        
+
         const adjustmentFactors = this.getAdjustmentFactors(trustLevel);
-        
+
         return {
             rawScore,
             trustLevel,
@@ -24,13 +24,39 @@ class ShadowScoreEngine {
         };
     }
 
+    /**
+     * Aggregates a new shadow score with the existing one using a weighted average.
+     * This provides a more stable reputation metric over time.
+     */
+    public aggregateShadowScore(current: ShadowScore | null, newScore: ShadowScore): ShadowScore {
+        if (!current) return newScore;
+
+        // Cumulative weighted average (80% weight on historical reputation, 20% on new interaction)
+        const aggregatedRaw = Math.round((current.rawScore * 0.8) + (newScore.rawScore * 0.2));
+        const aggregatedAuthenticity = Math.round((current.breakdown.responseAuthenticity * 0.8) + (newScore.breakdown.responseAuthenticity * 0.2));
+        const aggregatedGap = Math.round((current.breakdown.behaviorGap * 0.8) + (newScore.breakdown.behaviorGap * 0.2));
+
+        const trustLevel = this.getTrustLevel(aggregatedRaw);
+        const adjustmentFactors = this.getAdjustmentFactors(trustLevel);
+
+        return {
+            rawScore: aggregatedRaw,
+            trustLevel,
+            breakdown: {
+                responseAuthenticity: aggregatedAuthenticity,
+                behaviorGap: aggregatedGap,
+            },
+            adjustmentFactors,
+        };
+    }
+
     private calculateResponseAuthenticity(interactionData: DojoInteractionData): number {
         const timeTakenMs = interactionData.endTime - interactionData.startTime;
         const timeTakenSeconds = timeTakenMs / 1000;
 
         if (timeTakenSeconds < 10) return 20; // Likely rushed, low authenticity
         if (timeTakenSeconds > 120) return 95; // Very thoughtful
-        
+
         const score = 20 + (timeTakenSeconds - 10) * (75 / 110); // Scale score between 10s and 120s
         return Math.min(100, Math.round(score));
     }

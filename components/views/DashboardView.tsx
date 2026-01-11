@@ -50,8 +50,8 @@ const DashboardHeader: React.FC<{ stats: TraderStats, processStats: ProcessStats
         return (
             <div className="bg-accent-red/10 border border-accent-red/20 rounded-xl p-6 flex flex-col items-center justify-center text-center shadow-lg animate-pulse col-span-full">
                 <AlertTriangleIcon className="w-12 h-12 text-accent-red mb-3" />
-                <h3 className="text-xl font-bold text-white">{language === 'vi' ? 'BÌNH TĨNH. RỦI RO TRẢ THÙ ĐANG RẤT CAO.' : 'STAY CALM. REVENGE TRADING RISK IS VERY HIGH.'}</h3>
-                <p className="text-text-secondary mt-2">{language === 'vi' ? 'Hệ thống bảo vệ khuyến nghị bạn nên nghỉ ngơi.' : 'Protection system recommends you take a break.'}</p>
+                <h3 className="text-xl font-bold text-white">{t('dashboard.crisisTitle')}</h3>
+                <p className="text-text-secondary mt-2">{t('dashboard.crisisDesc')}</p>
             </div>
         )
     }
@@ -86,6 +86,7 @@ const DashboardHeader: React.FC<{ stats: TraderStats, processStats: ProcessStats
 };
 
 export const DashboardView: React.FC<DashboardViewProps> = (props) => {
+    const { t } = useLanguage();
     const tradeCount = props.tradeHistory?.length || 0;
     const dojoCount = props.dojoCount ?? (props.tradeHistory?.filter(t => t.processEvaluation).length || 0);
     const hasCheckin = props.hasCheckin ?? props.checkinHistory?.length > 0;
@@ -122,12 +123,12 @@ export const DashboardView: React.FC<DashboardViewProps> = (props) => {
                         ) : (
                             <div className="flex-1 flex flex-col items-center justify-center p-8">
                                 <BrainCircuitIcon className="w-12 h-12 text-accent-primary/30 mb-4" />
-                                <p className="text-white font-bold text-sm mb-2">Chọn lệnh để xem phân tích</p>
+                                <p className="text-white font-bold text-sm mb-2">{t('dashboard.selectTradeHint')}</p>
                                 <p className="text-text-secondary text-xs mb-4 text-center max-w-xs">
-                                    Click vào lệnh có 🧠 (đã hoàn thành Dojo) trong tab EXECUTION để xem chi tiết đánh giá quy trình.
+                                    {t('dashboard.selectTradeDesc')}
                                 </p>
                                 <div className="text-[10px] text-gray-500 bg-white/5 rounded-lg p-3 max-w-xs">
-                                    <p>💡 <span className="text-accent-yellow font-semibold">Tip:</span> Lệnh có badge xanh = đã có Dojo evaluation</p>
+                                    <p>💡 <span className="text-accent-yellow font-semibold">{t('dashboard.tipLabel')}</span> {t('dashboard.tipBadge')}</p>
                                 </div>
                             </div>
                         )}
@@ -139,7 +140,7 @@ export const DashboardView: React.FC<DashboardViewProps> = (props) => {
                     <div className="bento-card p-6 flex-1 bg-gradient-to-br from-accent-primary/5 to-transparent border-white/5">
                         <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] mb-6 flex items-center">
                             <ActivityIcon className="w-4 h-4 mr-2 text-accent-primary" />
-                            Biometric Status
+                            {t('dashboard.biometricStatus')}
                         </h3>
                         <BioStatusWidget />
                     </div>
@@ -151,11 +152,11 @@ export const DashboardView: React.FC<DashboardViewProps> = (props) => {
 
                     <div className="bento-card p-6 bg-black/40 border-white/5">
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em]">Survival Streak</h3>
+                            <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em]">{t('dashboard.survivalStreak')}</h3>
                             <div className="w-2 h-2 rounded-full bg-accent-green animate-pulse"></div>
                         </div>
                         <div className="text-3xl font-black italic tracking-tighter text-white">
-                            {props.stats.survivalDays} <span className="text-xs font-bold uppercase not-italic text-text-secondary">Days Standing</span>
+                            {props.stats.survivalDays} <span className="text-xs font-bold uppercase not-italic text-text-secondary">{t('dashboard.daysStanding')}</span>
                         </div>
                     </div>
                 </div>
