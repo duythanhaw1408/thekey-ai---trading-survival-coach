@@ -15,7 +15,8 @@ interface MindsetViewProps {
     shadowScore: ShadowScore | null;
     processStats: ProcessStats | null;
     onGenerateReport: () => void;
-    tradeCount: number;
+    tradeCount: number; // Total trades
+    dojoTradesCount: number; // Trades with Process Dojo completed
     profile: UserProfile;
     onUpdateProfile: (updates: Partial<UserProfile>) => void;
     onSaveProfile: () => Promise<void>;
@@ -34,6 +35,7 @@ export const MindsetView: React.FC<MindsetViewProps> = ({
     processStats,
     onGenerateReport,
     tradeCount,
+    dojoTradesCount,
     profile,
     onUpdateProfile,
     onSaveProfile,
@@ -75,25 +77,25 @@ export const MindsetView: React.FC<MindsetViewProps> = ({
                             <div className="w-full max-w-xs mb-4">
                                 <div className="flex justify-between text-[10px] text-gray-500 mb-1">
                                     <span>{t('mindset.unlockProgress')}</span>
-                                    <span>{Math.min(tradeCount, 5)}/5 trades</span>
+                                    <span>{Math.min(dojoTradesCount, 5)}/5 trades with Dojo</span>
                                 </div>
                                 <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                                     <div
                                         className="h-full bg-accent-primary transition-all duration-500"
-                                        style={{ width: `${Math.min(tradeCount / 5 * 100, 100)}%` }}
+                                        style={{ width: `${Math.min(dojoTradesCount / 5 * 100, 100)}%` }}
                                     />
                                 </div>
                             </div>
 
                             <button
                                 onClick={onGenerateReport}
-                                disabled={tradeCount < 5}
+                                disabled={dojoTradesCount < 5}
                                 className="px-6 py-3 bg-accent-primary text-black font-black uppercase text-xs tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(34,211,238,0.3)]"
                             >
-                                {tradeCount < 5 ? t('mindset.needMoreTrades', { count: 5 - tradeCount }) : t('mindset.generateReport')}
+                                {dojoTradesCount < 5 ? t('mindset.needMoreTrades', { count: 5 - dojoTradesCount }) : t('mindset.generateReport')}
                             </button>
 
-                            {tradeCount < 5 && (
+                            {dojoTradesCount < 5 && (
                                 <p className="text-[10px] text-gray-500 mt-3 max-w-xs">
                                     💡 <span className="text-accent-yellow">{t('common.tipLabel')}</span> {t('mindset.tipGoToDojo')}
                                 </p>

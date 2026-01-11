@@ -787,6 +787,7 @@ const App: React.FC = () => {
                     processStats={processStats}
                     onGenerateReport={handleGenerateMindsetReport}
                     tradeCount={tradeHistory.length}
+                    dojoTradesCount={tradeHistory.filter(t => t.userProcessEvaluation).length}
                     profile={userProfile}
                     onUpdateProfile={handleUpdateProfile}
                     onSaveProfile={handleSaveProfileSettings}
