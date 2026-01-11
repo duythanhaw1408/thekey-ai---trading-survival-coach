@@ -84,9 +84,9 @@ export const DashboardView: React.FC<DashboardViewProps> = (props) => {
                             />
                         ) : (
                             <div className="flex-1 flex flex-col items-center justify-center opacity-30">
-                                <KeyIcon className="w-12 h-12 text-accent-primary mx-auto mb-4 opacity-50" />
+                                <BrainCircuitIcon className="w-12 h-12 text-accent-primary mx-auto mb-4 opacity-50" />
                                 <p className="text-sm font-mono uppercase tracking-[0.2em]">Protection Protocol Active</p>
-                                <p className="text-[10px] mt-2 opacity-60">SELECT A CLOSED TRADE TO ANALYZE BEHAVIOR</p>
+                                <p className="text-[10px] mt-2 opacity-60">SELECT A TRADE WITH DOJO EVALUATION TO VIEW ANALYSIS</p>
                             </div>
                         )}
                     </div>
