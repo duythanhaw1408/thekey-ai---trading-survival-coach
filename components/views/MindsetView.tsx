@@ -6,9 +6,6 @@ import { ProcessMetricsDisplay } from '../ProcessMetricsDisplay';
 import { ProtectionSettings } from '../ProtectionSettings';
 import type { UserProfile } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { ShadowScoreCard } from '../ShadowScoreCard';
-import { WeeklyGoalsCard } from '../WeeklyGoalsCard';
-import { WeeklyReportCard } from '../WeeklyReportCard';
 
 
 
