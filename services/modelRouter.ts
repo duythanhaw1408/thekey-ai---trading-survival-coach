@@ -16,13 +16,13 @@ export interface ModelConfig {
 // Model configurations
 export const MODEL_CONFIGS: Record<ModelTier, ModelConfig> = {
     PRO: {
-        model: 'gemini-1.5-pro',
+        model: 'gemini-1.5-pro-latest',
         costPer1kTokens: 0.00125,
         maxTokens: 8192,
         temperature: 0.7,
     },
     FLASH: {
-        model: 'gemini-1.5-flash',
+        model: 'gemini-1.5-flash-latest',
         costPer1kTokens: 0.000075,
         maxTokens: 8192,
         temperature: 0.7,

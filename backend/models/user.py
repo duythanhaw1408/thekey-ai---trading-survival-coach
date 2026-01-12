@@ -40,6 +40,7 @@ class User(Base):
     # Gamification & Mastery
     xp = Column(Integer, default=0)
     level = Column(String, default="NOVICE")
+    archetype = Column(String, default="UNDEFINED")
     
     # Stats cache
     survival_score = Column(Integer, default=50)

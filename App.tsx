@@ -61,6 +61,9 @@ const DEFAULT_USER_PROFILE: UserProfile = {
     quietHours: { start: '22:00', end: '08:00' },
   },
   sleepSchedule: { start: '23:00', end: '07:00' },
+  max_position_size_usd: 500,
+  risk_per_trade_pct: 2,
+  daily_trade_limit: 5
 };
 
 // DEPRECATED: LeftPanelTab is replaced by AppTab in Sidebar
@@ -212,6 +215,9 @@ const App: React.FC = () => {
           protectionLevel: me.protection_level || 'SURVIVAL',
           cooldownMinutes: me.cooldown_minutes || 30,
           consecutiveLossLimit: me.consecutive_loss_limit || 2,
+          max_position_size_usd: me.max_position_size_usd || 500,
+          risk_per_trade_pct: me.risk_per_trade_pct || 2,
+          daily_trade_limit: me.daily_trade_limit || 5,
           tradingRules: {
             ...prev.tradingRules,
             dailyTradeLimit: me.daily_trade_limit || 5,
@@ -610,9 +616,10 @@ const App: React.FC = () => {
         cooldown_minutes: Number(userProfile.cooldownMinutes) || 30,
         consecutive_loss_limit: Number(userProfile.consecutiveLossLimit) || 2,
         account_balance: Number(userProfile.accountBalance) || 1000,
-        max_position_size_usd: Number(userProfile.tradingRules.maxPositionSizeUSD) || 500,
-        risk_per_trade_pct: Number(userProfile.tradingRules.riskPerTradePct) || 2,
-        daily_trade_limit: Number(userProfile.tradingRules.dailyTradeLimit) || 5
+        max_position_size_usd: Number(userProfile.max_position_size_usd) || 500,
+        risk_per_trade_pct: Number(userProfile.risk_per_trade_pct) || 2,
+        daily_trade_limit: Number(userProfile.daily_trade_limit) || 5,
+        archetype: userProfile.archetype
       });
       console.log("[Profile] Settings saved successfully");
       // Optional: show a small toast/notification
@@ -636,6 +643,9 @@ const App: React.FC = () => {
       // Update user profile archetype if it changed
       if (analysis && analysis.archetype !== userProfile.archetype) {
         setUserProfile(prev => ({ ...prev, archetype: analysis.archetype }));
+        // Persist immediately
+        await api.updateSettings({ archetype: analysis.archetype });
+        console.log("[Mindset] New Archetype persisted to DB");
       }
     } catch (error) {
       console.error("Failed to generate mindset report:", error);

@@ -98,6 +98,9 @@ export interface UserProfile {
         quietHours: { start: string, end: string };
     };
     sleepSchedule: { start: string, end: string };
+    max_position_size_usd?: number;
+    risk_per_trade_pct?: number;
+    daily_trade_limit?: number;
 }
 
 

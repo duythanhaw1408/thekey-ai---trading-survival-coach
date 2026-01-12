@@ -71,6 +71,7 @@ class UserResponse(BaseModel):
     daily_trade_limit: Optional[int] = 5
     xp: Optional[int] = 0
     level: Optional[str] = 'NOVICE'
+    archetype: Optional[str] = 'UNDEFINED'
 
 class SettingsUpdateRequest(BaseModel):
     protection_level: Optional[str] = None
@@ -83,6 +84,7 @@ class SettingsUpdateRequest(BaseModel):
     risk_per_trade_pct: Optional[float] = None
     xp: Optional[int] = None
     level: Optional[str] = None
+    archetype: Optional[str] = None
 
 # ============================================
 # Helper Functions
@@ -418,7 +420,10 @@ async def get_me(request: Request, db: Session = Depends(get_db)):
         "account_balance": user.account_balance,
         "max_position_size_usd": user.max_position_size_usd,
         "risk_per_trade_pct": user.risk_per_trade_pct,
-        "daily_trade_limit": user.daily_trade_limit
+        "daily_trade_limit": user.daily_trade_limit,
+        "xp": user.xp,
+        "level": user.level,
+        "archetype": user.archetype
     }
 
 @router.put("/settings")
@@ -455,6 +460,8 @@ async def update_settings(request: Request, db: Session = Depends(get_db)):
         user.xp = data.xp
     if data.level is not None:
         user.level = data.level
+    if data.archetype is not None:
+        user.archetype = data.archetype
         
     db.commit()
     db.refresh(user)
@@ -468,7 +475,8 @@ async def update_settings(request: Request, db: Session = Depends(get_db)):
         "risk_per_trade_pct": user.risk_per_trade_pct,
         "daily_trade_limit": user.daily_trade_limit,
         "xp": user.xp,
-        "level": user.level
+        "level": user.level,
+        "archetype": user.archetype
     }}
 
 @router.post("/refresh")

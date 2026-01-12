@@ -23,7 +23,7 @@ from middleware.security import limiter, logger, log_request_middleware
 
 # Import models and routes
 from models import get_db, Base
-from routes import protection, reflection, trades, progress, learning, auth, users
+from routes import protection, reflection, trades, progress, learning, auth, users, stream, kb, analytics
 
 # ============================================
 # App Configuration
@@ -137,6 +137,9 @@ api_v1.include_router(trades.router)
 api_v1.include_router(progress.router)
 api_v1.include_router(learning.router)
 api_v1.include_router(users.router)
+api_v1.include_router(stream.router)
+api_v1.include_router(kb.router)
+api_v1.include_router(analytics.router)
 
 app.include_router(api_v1)
 
