@@ -75,6 +75,35 @@ app.add_middleware(
 )
 
 # ============================================
+# Startup Event: Auto-create tables & Seed KB
+# ============================================
+@app.on_event("startup")
+async def startup_event():
+    """Auto-create tables and seed KB on startup (for Render Free tier without Shell)"""
+    try:
+        # Create all tables that don't exist
+        from models.base import Base, engine
+        Base.metadata.create_all(bind=engine)
+        print("✅ [Startup] Database tables verified/created")
+        
+        # Check if KB needs seeding
+        from models import get_db, KBDocument
+        db = next(get_db())
+        try:
+            kb_count = db.query(KBDocument).count()
+            if kb_count == 0:
+                print("📚 [Startup] KB empty, seeding...")
+                from scripts.seed_kb import seed_kb as seed_kb_func
+                seed_kb_func(db)
+                print(f"✅ [Startup] KB seeded successfully")
+            else:
+                print(f"✅ [Startup] KB already has {kb_count} documents")
+        finally:
+            db.close()
+    except Exception as e:
+        print(f"⚠️ [Startup] Auto-setup error (non-fatal): {e}")
+
+# ============================================
 # Health & Status Endpoints
 # ============================================
 
