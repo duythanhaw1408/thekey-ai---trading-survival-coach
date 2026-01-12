@@ -67,7 +67,7 @@ def upgrade():
         sa.Column('endpoint', sa.String(100)),
         sa.Column('request_summary', sa.Text),
         sa.Column('response_type', sa.String(50)),
-        sa.Column('metadata', postgresql.JSONB, server_default='{}'),
+        sa.Column('extra_data', postgresql.JSONB, server_default='{}'),
         sa.Column('created_at', sa.DateTime, server_default=sa.func.now()),
     )
     

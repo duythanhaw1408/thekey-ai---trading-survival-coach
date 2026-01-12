@@ -198,7 +198,7 @@ async def get_guardian_decisions(
         if decision in decision_counts:
             decision_counts[decision] += 1
         
-        rule = log.metadata.get("rule", "UNKNOWN") if log.metadata else "UNKNOWN"
+        rule = log.extra_data.get("rule", "UNKNOWN") if log.extra_data else "UNKNOWN"
         rule_counts[rule] = rule_counts.get(rule, 0) + 1
     
     return {

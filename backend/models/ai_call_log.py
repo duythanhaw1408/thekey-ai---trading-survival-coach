@@ -56,8 +56,8 @@ class AICallLog(Base):
     request_summary = Column(Text)  # Brief summary of request (no PII)
     response_type = Column(String(50))  # BLOCK, WARN, ALLOW, JSON, etc.
     
-    # Metadata
-    metadata = Column(JSONB, default={})
+    # Extra data (renamed from 'metadata' which is reserved in SQLAlchemy)
+    extra_data = Column(JSONB, default={})
     
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow)
