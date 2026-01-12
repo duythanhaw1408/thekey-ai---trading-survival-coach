@@ -104,9 +104,9 @@ async def update_trade_evaluation(trade_id: str, data: TradeEvaluationUpdate, us
 # POST-TRADE EVALUATE WITH ASYNC AI ANALYSIS
 # ============================================
 from fastapi import BackgroundTasks
-from routes.stream import create_job, update_job
-from services.ai.gemini_client import gemini_client
 import json
+
+# Note: routes.stream imports are done inside functions to avoid circular import
 
 
 class PostTradeEvaluateRequest(BaseModel):
@@ -150,12 +150,14 @@ async def evaluate_post_trade(
     db_trade.user_process_evaluation = body.user_process_evaluation
     db.commit()
     
-    # Step 3: Create job for SSE tracking
+    # Step 3: Create job for SSE tracking (local import to avoid circular import)
+    from routes.stream import create_job
     job_id = create_job(
         user_id=str(user.id),
         job_type="post_trade_analysis",
         metadata={"trade_id": str(trade_id)}
     )
+
     
     # Step 4: Enqueue background task for AI analysis
     if body.run_async:
@@ -194,6 +196,10 @@ async def run_post_trade_ai_analysis(
     Background task to run post-trade AI analysis.
     Updates job progress via SSE.
     """
+    # Local imports to avoid circular import
+    from routes.stream import update_job
+    from services.ai.gemini_client import gemini_client
+    
     try:
         # Progress: 10% - Started
         update_job(job_id, progress=10, status="running",
