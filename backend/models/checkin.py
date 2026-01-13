@@ -1,5 +1,6 @@
 # backend/models/checkin.py
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, JSON
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from .base import Base
@@ -9,7 +10,7 @@ class Checkin(Base):
     __tablename__ = "checkins"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True)
     
     # Answers to the 3 daily questions (stored as JSON array)
     answers = Column(JSON, nullable=False)

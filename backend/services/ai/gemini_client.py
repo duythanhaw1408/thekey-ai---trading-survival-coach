@@ -11,13 +11,13 @@ class GeminiClient:
     Backend client for Google Gemini API.
     Handles central AI logic for THEKEY.
     """
-    # List of models - prioritize 1.5-flash for FREE TIER (highest quota)
-    # gemini-1.5-flash: 15 RPM, 1M TPM, 1500 RPD (FREE)
-    # gemini-1.5-flash-8b: 15 RPM, 4M TPM, 1500 RPD (FREE, lightweight)
+    # List of models - prioritize working models
+    # gemini-2.0-flash-exp: Latest experimental model
+    # gemini-pro: Stable production model
     MODELS = [
-        'gemini-1.5-flash',         # Primary: Best free tier quota
-        'gemini-1.5-flash-8b',      # Fallback: Lightweight, fast
-        'gemini-1.5-pro',           # Fallback: Smarter but lower quota
+        'gemini-2.0-flash-exp',     # Primary: Latest experimental
+        'gemini-pro',               # Fallback: Stable, widely available
+        'gemini-1.0-pro',           # Fallback: Older but reliable
     ]
 
     
