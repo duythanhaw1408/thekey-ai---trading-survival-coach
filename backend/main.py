@@ -81,12 +81,49 @@ app.add_middleware(
 async def startup_event():
     """Auto-create tables and seed KB on startup (for Render Free tier without Shell)"""
     try:
-        # Create all tables that don't exist
         from models.base import Base, engine
+        from sqlalchemy import text, inspect
+        
+        # Step 1: Create all new tables that don't exist
         Base.metadata.create_all(bind=engine)
         print("✅ [Startup] Database tables verified/created")
         
-        # Check if KB needs seeding
+        # Step 2: Add missing columns to existing tables (ALTER TABLE)
+        # This is needed because create_all() doesn't add new columns to existing tables
+        with engine.connect() as conn:
+            inspector = inspect(engine)
+            
+            # Check and add missing columns to 'users' table
+            if 'users' in inspector.get_table_names():
+                existing_columns = [col['name'] for col in inspector.get_columns('users')]
+                
+                # Add archetype column if missing
+                if 'archetype' not in existing_columns:
+                    print("📝 [Startup] Adding 'archetype' column to users table...")
+                    conn.execute(text("ALTER TABLE users ADD COLUMN archetype VARCHAR(50) DEFAULT 'UNDEFINED'"))
+                    conn.commit()
+                    print("✅ [Startup] Added 'archetype' column")
+                
+                # Add other potentially missing columns
+                columns_to_add = [
+                    ("shadow_score", "FLOAT DEFAULT 50.0"),
+                    ("survival_score", "INTEGER DEFAULT 0"),
+                    ("current_streak", "INTEGER DEFAULT 0"),
+                    ("total_trades", "INTEGER DEFAULT 0"),
+                    ("xp", "INTEGER DEFAULT 0"),
+                    ("level", "INTEGER DEFAULT 1"),
+                ]
+                
+                for col_name, col_def in columns_to_add:
+                    if col_name not in existing_columns:
+                        print(f"📝 [Startup] Adding '{col_name}' column to users table...")
+                        conn.execute(text(f"ALTER TABLE users ADD COLUMN {col_name} {col_def}"))
+                        conn.commit()
+                        print(f"✅ [Startup] Added '{col_name}' column")
+        
+        print("✅ [Startup] Database schema migration complete")
+        
+        # Step 3: Check if KB needs seeding
         from models import get_db, KBDocument
         db = next(get_db())
         try:
@@ -102,6 +139,9 @@ async def startup_event():
             db.close()
     except Exception as e:
         print(f"⚠️ [Startup] Auto-setup error (non-fatal): {e}")
+        import traceback
+        traceback.print_exc()
+
 
 # ============================================
 # Health & Status Endpoints
