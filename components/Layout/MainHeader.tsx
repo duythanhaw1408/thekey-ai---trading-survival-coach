@@ -31,7 +31,7 @@ export const MainHeader: React.FC<MainHeaderProps> = ({
     streak = 0,
 }) => {
     return (
-        <header className="sticky top-0 z-50 px-6 py-4 flex items-center justify-between glass-panel rounded-none border-t-0 border-x-0">
+        <header className="sticky top-0 z-50 px-6 py-4 hidden md:flex items-center justify-between glass-panel rounded-none border-t-0 border-x-0">
             <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl shadow-lg shadow-cyan-500/20">
                     <KeyIcon className="w-6 h-6 text-white" />

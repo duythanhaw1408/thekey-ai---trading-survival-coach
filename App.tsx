@@ -760,7 +760,7 @@ const App: React.FC = () => {
         <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col ml-64 min-h-screen relative overflow-hidden">
+        <div className="flex-1 flex flex-col ml-0 md:ml-64 min-h-screen relative overflow-hidden pt-14 pb-20 md:pt-0 md:pb-0">
           <MainHeader
             onProfileClick={() => setShowProfile(true)}
             onLogout={handleLogout}
