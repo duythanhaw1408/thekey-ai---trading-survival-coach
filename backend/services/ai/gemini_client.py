@@ -11,13 +11,15 @@ class GeminiClient:
     Backend client for Google Gemini API.
     Handles central AI logic for THEKEY.
     """
-    # List of models confirmed by ListModels
+    # List of models - prioritize 1.5-flash for FREE TIER (highest quota)
+    # gemini-1.5-flash: 15 RPM, 1M TPM, 1500 RPD (FREE)
+    # gemini-1.5-flash-8b: 15 RPM, 4M TPM, 1500 RPD (FREE, lightweight)
     MODELS = [
-        'models/gemini-flash-latest',
-        'models/gemini-2.0-flash', 
-        'models/gemini-2.0-flash-lite',
-        'models/gemini-pro-latest'
+        'models/gemini-1.5-flash',         # Primary: Best free tier quota
+        'models/gemini-1.5-flash-8b',      # Fallback: Lightweight, fast
+        'models/gemini-1.5-pro',           # Fallback: Smarter but lower quota
     ]
+
     
     def __init__(self):
         api_key = os.getenv('GEMINI_API_KEY')
