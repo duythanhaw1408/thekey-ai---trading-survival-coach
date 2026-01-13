@@ -125,19 +125,29 @@ async def startup_event():
             if 'checkins' in inspector.get_table_names():
                 existing_columns = [col['name'] for col in inspector.get_columns('checkins')]
                 
+                # ALL columns that should exist in checkins table
                 checkin_columns_to_add = [
-                    ("encouragement", "TEXT"),
+                    ("user_id", "VARCHAR(100)"),
+                    ("answers", "JSONB"),
+                    ("insights", "TEXT"),
                     ("action_items", "JSONB"),
+                    ("encouragement", "TEXT"),
                     ("emotional_state", "VARCHAR(50)"),
                     ("risk_level", "VARCHAR(50)"),
+                    ("created_at", "TIMESTAMP WITH TIME ZONE DEFAULT NOW()"),
+                    ("date", "VARCHAR(20)"),
                 ]
                 
                 for col_name, col_def in checkin_columns_to_add:
                     if col_name not in existing_columns:
                         print(f"📝 [Startup] Adding '{col_name}' column to checkins table...")
-                        conn.execute(text(f"ALTER TABLE checkins ADD COLUMN {col_name} {col_def}"))
-                        conn.commit()
-                        print(f"✅ [Startup] Added '{col_name}' column to checkins")
+                        try:
+                            conn.execute(text(f"ALTER TABLE checkins ADD COLUMN {col_name} {col_def}"))
+                            conn.commit()
+                            print(f"✅ [Startup] Added '{col_name}' column to checkins")
+                        except Exception as col_e:
+                            print(f"⚠️ [Startup] Could not add '{col_name}': {col_e}")
+
         
         print("✅ [Startup] Database schema migration complete")
 
