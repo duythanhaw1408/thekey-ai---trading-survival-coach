@@ -15,9 +15,9 @@ class GeminiClient:
     # gemini-1.5-flash: 15 RPM, 1M TPM, 1500 RPD (FREE)
     # gemini-1.5-flash-8b: 15 RPM, 4M TPM, 1500 RPD (FREE, lightweight)
     MODELS = [
-        'models/gemini-1.5-flash',         # Primary: Best free tier quota
-        'models/gemini-1.5-flash-8b',      # Fallback: Lightweight, fast
-        'models/gemini-1.5-pro',           # Fallback: Smarter but lower quota
+        'gemini-1.5-flash',         # Primary: Best free tier quota
+        'gemini-1.5-flash-8b',      # Fallback: Lightweight, fast
+        'gemini-1.5-pro',           # Fallback: Smarter but lower quota
     ]
 
     

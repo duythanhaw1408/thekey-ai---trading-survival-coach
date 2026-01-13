@@ -28,6 +28,7 @@ async def get_questions(user: User = Depends(get_current_user), db: Session = De
 async def submit_checkin(data: CheckinAnswers, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Submit answers and save to database with AI analysis."""
     today_str = date.today().isoformat()
+    user_id_obj = user.id # This is the UUID object
     user_id_str = str(user.id)
     
     try:
@@ -47,7 +48,7 @@ async def submit_checkin(data: CheckinAnswers, user: User = Depends(get_current_
         
         # Create new checkin record
         checkin = Checkin(
-            user_id=user_id_str,
+            user_id=user_id_obj, # Use UUID object directly for INSERT
             answers=data.answers,
             date=today_str,
             insights="Tốt lắm! Bạn đang thể hiện kỷ luật tốt hôm nay.",
@@ -71,6 +72,7 @@ async def submit_checkin(data: CheckinAnswers, user: User = Depends(get_current_
         }
     except Exception as e:
         print(f"⚠️ [Checkin] Submit error: {e}")
+        db.rollback()
         # Return success-like response so frontend doesn't break
         return {
             "insights": "Tốt lắm! Hãy duy trì kỷ luật hôm nay.",
@@ -79,6 +81,7 @@ async def submit_checkin(data: CheckinAnswers, user: User = Depends(get_current_
             "already_done": False,
             "error": True
         }
+
 
 @router.get("/checkin/history")
 async def get_checkin_history(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
