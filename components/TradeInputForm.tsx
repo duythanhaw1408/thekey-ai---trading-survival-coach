@@ -18,17 +18,30 @@ interface TradeInputFormProps {
   decision: TradeDecision | null;
   onProceed: () => void;
   simulationMode?: boolean;
+  // Profile settings - used instead of local inputs
+  profileAccountSize: number;
+  profileRiskPercent: number;
+  profileMaxPositionSize: number;
 }
 
-export const TradeInputForm: React.FC<TradeInputFormProps> = ({ onSubmit, isLoading, decision, onProceed, simulationMode = true }) => {
+export const TradeInputForm: React.FC<TradeInputFormProps> = ({
+  onSubmit,
+  isLoading,
+  decision,
+  onProceed,
+  simulationMode = true,
+  profileAccountSize = 1000,
+  profileRiskPercent = 2,
+  profileMaxPositionSize = 500
+}) => {
   const { t } = useLanguage();
   const [asset, setAsset] = useState('BTC/USDT');
   const [reasoning, setReasoning] = useState('');
   const [direction, setDirection] = useState<'BUY' | 'SELL'>('BUY');
 
-  // Smart Calculator State
-  const [accountSize, setAccountSize] = useState<number | ''>(10000);
-  const [riskPercent, setRiskPercent] = useState<number | ''>(1);
+  // Use Profile settings (no longer editable in Terminal)
+  const accountSize = profileAccountSize;
+  const riskPercent = profileRiskPercent;
   const [entryPrice, setEntryPrice] = useState<number | ''>('');
   const [stopLoss, setStopLoss] = useState<number | ''>('');
   const [takeProfit, setTakeProfit] = useState<number | ''>('');
@@ -106,15 +119,20 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({ onSubmit, isLoad
           </button>
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
-          <div className="flex items-center space-x-2 bg-white/5 border border-white/10 rounded-lg px-3 py-1">
-            <label className="text-[10px] text-text-secondary uppercase font-bold whitespace-nowrap">{t('terminal.sizeLabel')}</label>
-            <input type="number" value={accountSize} onChange={handleNumberInputChange(setAccountSize)} className="w-full bg-transparent text-sm focus:outline-none" />
+        {/* Profile Settings Info (read-only, configured in Settings) */}
+        <div className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-4">
+            <span className="text-text-secondary">
+              Vốn: <span className="font-mono text-accent-primary">${accountSize.toLocaleString()}</span>
+            </span>
+            <span className="text-text-secondary">
+              Risk: <span className="font-mono text-accent-red">{riskPercent}%</span>
+            </span>
+            <span className="text-text-secondary">
+              Max: <span className="font-mono text-accent-yellow">${profileMaxPositionSize}</span>
+            </span>
           </div>
-          <div className="flex items-center space-x-2 bg-white/5 border border-white/10 rounded-lg px-3 py-1">
-            <label className="text-[10px] text-text-secondary uppercase font-bold whitespace-nowrap">{t('terminal.riskLabel')}</label>
-            <input type="number" value={riskPercent} onChange={handleNumberInputChange(setRiskPercent)} className="w-full bg-transparent text-sm focus:outline-none" />
-          </div>
+          <span className="text-[10px] text-text-secondary opacity-50">từ Cài đặt</span>
         </div>
 
         <div className="space-y-2">

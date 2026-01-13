@@ -22,6 +22,10 @@ interface ExecutionViewProps {
     onSendMessage: (message: ChatMessage) => void;
     isLoadingChat: boolean;
     isCrisisMode: boolean;
+    // Profile settings for Terminal
+    profileAccountSize: number;
+    profileRiskPercent: number;
+    profileMaxPositionSize: number;
 }
 
 export const ExecutionView: React.FC<ExecutionViewProps> = ({
@@ -39,7 +43,10 @@ export const ExecutionView: React.FC<ExecutionViewProps> = ({
     messages,
     onSendMessage,
     isLoadingChat,
-    isCrisisMode
+    isCrisisMode,
+    profileAccountSize = 1000,
+    profileRiskPercent = 2,
+    profileMaxPositionSize = 500
 }) => {
     const [subTab, setSubTab] = useState<'terminal' | 'coach'>('terminal');
 
@@ -51,8 +58,8 @@ export const ExecutionView: React.FC<ExecutionViewProps> = ({
                     <button
                         onClick={() => setSubTab('terminal')}
                         className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-xl text-xs font-black uppercase tracking-[0.2em] transition-all ${subTab === 'terminal'
-                                ? 'bg-white/10 text-accent-primary shadow-[0_0_15px_rgba(34,211,238,0.1)]'
-                                : 'text-text-secondary hover:bg-white/5 hover:text-white'
+                            ? 'bg-white/10 text-accent-primary shadow-[0_0_15px_rgba(34,211,238,0.1)]'
+                            : 'text-text-secondary hover:bg-white/5 hover:text-white'
                             }`}
                     >
                         <TerminalIcon className="w-4 h-4" />
@@ -61,8 +68,8 @@ export const ExecutionView: React.FC<ExecutionViewProps> = ({
                     <button
                         onClick={() => setSubTab('coach')}
                         className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-xl text-xs font-black uppercase tracking-[0.2em] transition-all ${subTab === 'coach'
-                                ? 'bg-white/10 text-accent-primary shadow-[0_0_15px_rgba(34,211,238,0.1)]'
-                                : 'text-text-secondary hover:bg-white/5 hover:text-white'
+                            ? 'bg-white/10 text-accent-primary shadow-[0_0_15px_rgba(34,211,238,0.1)]'
+                            : 'text-text-secondary hover:bg-white/5 hover:text-white'
                             }`}
                     >
                         <AcademicCapIcon className="w-4 h-4" />
@@ -94,6 +101,9 @@ export const ExecutionView: React.FC<ExecutionViewProps> = ({
                                     onCloseTrade={onCloseTrade}
                                     tradeAnalysis={tradeAnalysis}
                                     onClearAnalysis={onClearAnalysis}
+                                    profileAccountSize={profileAccountSize}
+                                    profileRiskPercent={profileRiskPercent}
+                                    profileMaxPositionSize={profileMaxPositionSize}
                                 />
                             ) : (
                                 <CoachView

@@ -25,6 +25,10 @@ interface TerminalViewProps {
     onCloseTrade: (trade: Trade) => void;
     tradeAnalysis: TradeAnalysis | null;
     onClearAnalysis: () => void;
+    // Profile settings for Terminal
+    profileAccountSize: number;
+    profileRiskPercent: number;
+    profileMaxPositionSize: number;
 }
 
 export const TerminalView: React.FC<TerminalViewProps> = (props) => {
@@ -44,6 +48,9 @@ export const TerminalView: React.FC<TerminalViewProps> = (props) => {
                     isLoading={props.isLoading}
                     decision={props.decision}
                     onProceed={props.onProceed}
+                    profileAccountSize={props.profileAccountSize}
+                    profileRiskPercent={props.profileRiskPercent}
+                    profileMaxPositionSize={props.profileMaxPositionSize}
                 />
             </div>
 

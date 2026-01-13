@@ -40,6 +40,7 @@ import { crowdWisdomService } from './services/crowdWisdomService';
 import { useAuth } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { RiskSettingsOnboarding } from './components/RiskSettingsOnboarding';
 
 const DEFAULT_USER_PROFILE: UserProfile = {
   id: '', // Will be set from auth context
@@ -93,7 +94,9 @@ const App: React.FC = () => {
   const [isChatting, setIsChatting] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [showProfile, setShowProfile] = useState(false);
+  const [showRiskOnboarding, setShowRiskOnboarding] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile>(DEFAULT_USER_PROFILE);
+
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(
     typeof Notification !== 'undefined' ? Notification.permission : 'default'
   );
@@ -225,6 +228,13 @@ const App: React.FC = () => {
             riskPerTradePct: me.risk_per_trade_pct || 2
           }
         }));
+
+        // Trigger Risk Settings Onboarding for first-time users
+        // Show if user hasn't customized their risk settings (still using default $500)
+        if (me.max_position_size_usd === null || me.max_position_size_usd === undefined) {
+          setShowRiskOnboarding(true);
+          console.log('[App] First-time user detected - showing Risk Settings Onboarding');
+        }
 
         // Mastery hydration
         if (me.xp !== undefined || me.level !== undefined) {
@@ -748,7 +758,34 @@ const App: React.FC = () => {
           {inAppNotification && <InAppNotification notification={inAppNotification} onClose={() => setInAppNotification(null)} />}
           {showCheckin && dailyQuestions && <DailyCheckinModal questions={dailyQuestions} onSubmit={handleCheckinSubmit} />}
           {showProfile && <ProfileModal userProfile={userProfile} onSave={handleSaveProfile} onClose={() => setShowProfile(false)} onDiscoverArchetype={handleDiscoverArchetype} />}
+          {showRiskOnboarding && (
+            <RiskSettingsOnboarding
+              isOpen={showRiskOnboarding}
+              initialAccountBalance={userProfile.accountBalance}
+              onComplete={async (settings) => {
+                // Update userProfile with new settings
+                const newProfile = {
+                  ...userProfile,
+                  accountBalance: settings.accountBalance,
+                  max_position_size_usd: settings.maxPositionSizeUSD,
+                  risk_per_trade_pct: settings.riskPerTradePct,
+                  daily_trade_limit: settings.dailyTradeLimit,
+                  tradingRules: {
+                    ...userProfile.tradingRules,
+                    maxPositionSizeUSD: settings.maxPositionSizeUSD,
+                    riskPerTradePct: settings.riskPerTradePct,
+                    dailyTradeLimit: settings.dailyTradeLimit
+                  }
+                };
+                handleSaveProfile(newProfile);
+                setShowRiskOnboarding(false);
+                console.log('[App] Risk Settings Onboarding completed:', settings);
+              }}
+              onSkip={() => setShowRiskOnboarding(false)}
+            />
+          )}
           {tradeToClose && <UpdatePnlModal trade={tradeToClose} onClose={() => setTradeToClose(null)} onSave={handleSavePnlAndEvaluate} />}
+
           {tradeToEvaluate && <ProcessDojoModal trade={tradeToEvaluate} onClose={() => setTradeToEvaluate(null)} onSave={handleSaveUserEvaluation} />}
           {decision?.decision === 'BLOCK' && !crisisIntervention && <BlockedScreen reason={decision.reason} cooldown={decision.cooldown || 0} onClose={() => setDecision(null)} />}
           {crisisIntervention && <CrisisInterventionModal data={crisisIntervention} onClose={() => { setCrisisIntervention(null); setStats(prev => ({ ...prev, consecutiveLosses: 0 })); }} onActionComplete={handleCrisisActionComplete} />}
@@ -832,8 +869,12 @@ const App: React.FC = () => {
                     onSendMessage={handleNewMessage}
                     isLoadingChat={isChatting}
                     isCrisisMode={!!crisisIntervention}
+                    profileAccountSize={userProfile.accountBalance}
+                    profileRiskPercent={userProfile.risk_per_trade_pct || 2}
+                    profileMaxPositionSize={userProfile.max_position_size_usd || 500}
                   />
                 )}
+
 
                 {activeTab === 'MINDSET' && (
                   <MindsetView
