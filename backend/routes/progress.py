@@ -31,8 +31,19 @@ async def get_progress_summary(user: User = Depends(get_current_user), db: Sessi
     ).count()
     consistency_score = (checkin_count / 7) * 100
     
-    # 3. Overall Survival Score (Weighted average)
-    survival_score = int((discipline_score * 0.7) + (consistency_score * 0.3))
+    # 3. Behavioral Integrity (Shadow Score)
+    # Get trust score from JSON field (default to 100)
+    shadow_data = user.shadow_score if isinstance(user.shadow_score, dict) else {}
+    trust_score = shadow_data.get("trust_score", 100)
+    
+    # 4. Overall Survival Score (Weighted average with Shadow Score Influence)
+    # Shadow Score acts as both a component and a multiplier dampener
+    base_score = (discipline_score * 0.55) + (consistency_score * 0.25) + (trust_score * 0.20)
+    
+    # Dampening factor: If trust is low, it heavily penalizes the final result
+    # trust_factor ranges from 0.5 (very suspicious) to 1.0 (fully trusted)
+    trust_factor = 0.5 + (trust_score / 200) 
+    survival_score = int(base_score * trust_factor)
     
     # Update user's survival score in DB
     user.survival_score = survival_score
@@ -47,7 +58,8 @@ async def get_progress_summary(user: User = Depends(get_current_user), db: Sessi
         "win_rate": round(win_rate, 2),
         "status": "SURVIVAL" if survival_score < 40 else ("DISCIPLINE" if survival_score < 80 else "MASTER"),
         "discipline_score": discipline_score,
-        "consistency_score": int(consistency_score)
+        "consistency_score": int(consistency_score),
+        "trust_score": trust_score
     }
 
 @router.post("/weekly-goals")

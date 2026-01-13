@@ -10,7 +10,7 @@ from typing import Dict, AsyncGenerator
 import asyncio
 import json
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from services.auth.dependencies import get_current_user
 from models import User
 
@@ -21,8 +21,25 @@ _jobs: Dict[str, dict] = {}
 
 
 def create_job(user_id: str, job_type: str, metadata: dict = None) -> str:
-    """Create a new job and return its ID."""
+    """
+    Create a new job and return its ID.
+    Includes simple deduplication: if an active job of same type/metadata exists, 
+    returns that instead of creating a new one.
+    """
+    # 1. Deduplication Check
+    if metadata and "trade_id" in metadata:
+        trade_id = metadata["trade_id"]
+        for existing_id, existing_job in _jobs.items():
+            if (existing_job["user_id"] == user_id and 
+                existing_job["type"] == job_type and 
+                existing_job["metadata"].get("trade_id") == trade_id and
+                existing_job["status"] in ["pending", "running"]):
+                print(f"ℹ️ Returning existing job {existing_id} for trade {trade_id}")
+                return existing_id
+
+    # 2. Create New Job
     job_id = str(uuid.uuid4())
+    now = datetime.utcnow()
     _jobs[job_id] = {
         "id": job_id,
         "user_id": user_id,
@@ -32,8 +49,9 @@ def create_job(user_id: str, job_type: str, metadata: dict = None) -> str:
         "message": "Đang khởi tạo...",
         "result": None,
         "error": None,
-        "created_at": datetime.utcnow().isoformat(),
-        "updated_at": datetime.utcnow().isoformat(),
+        "created_at": now.isoformat(),
+        "updated_at": now.isoformat(),
+        "timeout_at": (now + timedelta(seconds=120)).isoformat(), # 2 min max
         "metadata": metadata or {}
     }
     return job_id
@@ -137,6 +155,16 @@ async def stream_job_progress(job_id: str, user: User = Depends(get_current_user
             if not current_job:
                 yield _format_sse({"error": "Job not found"}, event="error")
                 break
+            
+            # Check for timeout in DB (not just loop time)
+            if current_job.get("timeout_at"):
+                timeout_at = datetime.fromisoformat(current_job["timeout_at"])
+                if datetime.utcnow() > timeout_at:
+                    yield _format_sse({
+                        "status": "timeout",
+                        "message": "Phân tích quá lâu. Vui lòng kiểm tra lại sau."
+                    }, event="timeout")
+                    break
             
             # Send progress update
             yield _format_sse({

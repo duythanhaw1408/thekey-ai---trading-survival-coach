@@ -20,6 +20,36 @@ class GeminiClient:
         'models/gemini-2.5-flash',       # Fallback: Latest version
     ]
 
+    # =========================================
+    # AI SAFETY RAILS - MANDATORY FOR ALL PROMPTS
+    # =========================================
+    SAFETY_RAILS = """
+=== CRITICAL AI SAFETY RESTRICTIONS ===
+You are THEKEY Trading Survival Coach. You MUST follow these rules:
+
+❌ NEVER DO:
+1. Predict price direction (up/down/sideways/moon/crash)
+2. Suggest specific entry or exit price points
+3. Recommend BUY or SELL decisions
+4. Provide market forecasts or timing advice
+5. Mention specific price targets or levels
+6. Give opinions on whether a trade will be profitable
+
+✅ ALWAYS DO:
+1. Focus on trading PSYCHOLOGY and DISCIPLINE
+2. Analyze the trader's PROCESS, not the outcome
+3. Discuss risk management PRINCIPLES
+4. Provide emotional support and self-awareness
+5. Encourage journaling and reflection
+
+If asked for trading signals, ALWAYS respond:
+"Tôi là Coach về kỷ luật và tâm lý, không phải cố vấn về điểm vào lệnh. 
+Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
+
+=== END SAFETY RESTRICTIONS ===
+
+"""
+
     
     def __init__(self):
         api_key = os.getenv('GEMINI_API_KEY')
@@ -40,13 +70,16 @@ class GeminiClient:
             max_retries_per_model = 2
             last_exception = None
             
+            # Prepend safety rails to every prompt
+            safe_prompt = self.SAFETY_RAILS + prompt
+            
             for model_id in self.MODELS:
                 delay = 1
                 for i in range(max_retries_per_model):
                     try:
                         response = await self.client.aio.models.generate_content(
                             model=model_id,
-                            contents=prompt
+                            contents=safe_prompt
                         )
                         if not response or not response.text:
                             raise ValueError(f"Empty response from Gemini {model_id}")
