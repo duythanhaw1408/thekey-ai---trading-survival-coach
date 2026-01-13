@@ -15,7 +15,7 @@ class CheckinAnswers(BaseModel):
 @router.get("/checkin/questions")
 async def get_questions(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Get personalized check-in questions."""
-    recent_trades_count = db.query(Trade).filter(Trade.user_id == str(user.id)).count()
+    recent_trades_count = db.query(Trade).filter(Trade.user_id == user.id).count()
     context = {"recent_trades_count": recent_trades_count}
     questions = await gemini_client.generate_checkin_questions(context)
     return {"questions": questions}
@@ -27,7 +27,7 @@ async def submit_checkin(data: CheckinAnswers, user: User = Depends(get_current_
     
     # Check if already checked in today
     existing = db.query(Checkin).filter(
-        Checkin.user_id == str(user.id),
+        Checkin.user_id == user.id,
         Checkin.date == today_str
     ).first()
     
@@ -41,7 +41,7 @@ async def submit_checkin(data: CheckinAnswers, user: User = Depends(get_current_
     
     # Create new checkin record
     checkin = Checkin(
-        user_id=str(user.id),
+        user_id=user.id,
         answers=data.answers,
         date=today_str,
         insights="Tốt lắm! Bạn đang thể hiện kỷ luật tốt hôm nay.",
@@ -68,7 +68,7 @@ async def submit_checkin(data: CheckinAnswers, user: User = Depends(get_current_
 async def get_checkin_history(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Get last 30 days of check-in history."""
     checkins = db.query(Checkin).filter(
-        Checkin.user_id == str(user.id)
+        Checkin.user_id == user.id
     ).order_by(Checkin.created_at.desc()).limit(30).all()
     
     return {
@@ -94,7 +94,7 @@ async def get_today_checkin(user: User = Depends(get_current_user), db: Session 
     today_str = date.today().isoformat()
     
     existing = db.query(Checkin).filter(
-        Checkin.user_id == str(user.id),
+        Checkin.user_id == user.id,
         Checkin.date == today_str
     ).first()
     
