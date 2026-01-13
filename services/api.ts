@@ -130,12 +130,14 @@ export const api = {
         method: 'POST',
         body: JSON.stringify(data)
     }),
-    // Reflection
+    // Reflection / Check-in
     getCheckinQuestions: () => request('/api/reflection/checkin/questions'),
     submitCheckin: (answers: any[]) => request('/api/reflection/checkin/submit', {
         method: 'POST',
         body: JSON.stringify({ answers }),
     }),
+    getCheckinHistory: () => request('/api/reflection/checkin/history'),
+    getTodayCheckin: () => request('/api/reflection/checkin/today'),
 
     // Trades
     recordTrade: (trade: any) => request('/api/trades/', {

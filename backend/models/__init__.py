@@ -6,3 +6,5 @@ from .session import Session
 from .ai_prediction import AIPrediction
 from .kb_document import KBDocument
 from .ai_call_log import AICallLog
+from .checkin import Checkin
+

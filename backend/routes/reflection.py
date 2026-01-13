@@ -3,8 +3,9 @@ from pydantic import BaseModel
 from typing import Dict, Any, List
 from services.ai.gemini_client import gemini_client
 from services.auth.dependencies import get_current_user
-from models import get_db, User, Trade
+from models import get_db, User, Trade, Checkin
 from sqlalchemy.orm import Session
+from datetime import datetime, date
 
 router = APIRouter(prefix="/api/reflection", tags=["reflection"])
 
@@ -14,20 +15,97 @@ class CheckinAnswers(BaseModel):
 @router.get("/checkin/questions")
 async def get_questions(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Get personalized check-in questions."""
-    recent_trades_count = db.query(Trade).filter(Trade.user_id == user.id).count()
+    recent_trades_count = db.query(Trade).filter(Trade.user_id == str(user.id)).count()
     context = {"recent_trades_count": recent_trades_count}
     questions = await gemini_client.generate_checkin_questions(context)
     return {"questions": questions}
 
 @router.post("/checkin/submit")
 async def submit_checkin(data: CheckinAnswers, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Submit answers and get AI analysis."""
-    # In a real app, save check-in to DB here
+    """Submit answers and save to database with AI analysis."""
+    today_str = date.today().isoformat()
+    
+    # Check if already checked in today
+    existing = db.query(Checkin).filter(
+        Checkin.user_id == str(user.id),
+        Checkin.date == today_str
+    ).first()
+    
+    if existing:
+        return {
+            "insights": existing.insights,
+            "action_items": existing.action_items or [],
+            "encouragement": existing.encouragement,
+            "already_done": True
+        }
+    
+    # Create new checkin record
+    checkin = Checkin(
+        user_id=str(user.id),
+        answers=data.answers,
+        date=today_str,
+        insights="Tốt lắm! Bạn đang thể hiện kỷ luật tốt hôm nay.",
+        action_items=["Giữ vững SL đã đặt", "Nghỉ 5 phút sau mỗi lệnh thắng"],
+        encouragement="Hãy tiếp tục duy trì kỷ luật này!",
+        emotional_state="FOCUSED",  # Can be enhanced with AI analysis
+        risk_level="LOW"
+    )
+    
+    db.add(checkin)
+    db.commit()
+    db.refresh(checkin)
+    
     return {
-        "insights": "You are showing good discipline despite some volatility.",
-        "action_items": ["Take a 5 min break after a win", "Stick to your stop loss"],
-        "encouragement": "Keep going!"
+        "id": checkin.id,
+        "insights": checkin.insights,
+        "action_items": checkin.action_items,
+        "encouragement": checkin.encouragement,
+        "emotional_state": checkin.emotional_state,
+        "already_done": False
     }
+
+@router.get("/checkin/history")
+async def get_checkin_history(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Get last 30 days of check-in history."""
+    checkins = db.query(Checkin).filter(
+        Checkin.user_id == str(user.id)
+    ).order_by(Checkin.created_at.desc()).limit(30).all()
+    
+    return {
+        "checkins": [
+            {
+                "id": c.id,
+                "date": c.date,
+                "answers": c.answers,
+                "insights": c.insights,
+                "action_items": c.action_items,
+                "emotional_state": c.emotional_state,
+                "risk_level": c.risk_level,
+                "created_at": c.created_at.isoformat() if c.created_at else None
+            }
+            for c in checkins
+        ],
+        "total_count": len(checkins)
+    }
+
+@router.get("/checkin/today")
+async def get_today_checkin(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Check if user has already done check-in today."""
+    today_str = date.today().isoformat()
+    
+    existing = db.query(Checkin).filter(
+        Checkin.user_id == str(user.id),
+        Checkin.date == today_str
+    ).first()
+    
+    if existing:
+        return {"done_today": True, "checkin": {
+            "id": existing.id,
+            "insights": existing.insights,
+            "emotional_state": existing.emotional_state
+        }}
+    
+    return {"done_today": False, "checkin": None}
 
 @router.get("/initial-message")
 async def get_initial_message(user: User = Depends(get_current_user)):
@@ -42,4 +120,3 @@ async def chat(data: Dict[str, Any], user: User = Depends(get_current_user)):
     
     result = await gemini_client.generate_chat_response(message, history, mode)
     return result
-

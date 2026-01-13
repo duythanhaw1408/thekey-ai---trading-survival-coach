@@ -254,17 +254,33 @@ const App: React.FC = () => {
         }
       }
 
-      // Check for checkin - only show once per day
-      const today = new Date().toDateString();
-      const lastCheckinDate = localStorage.getItem('thekey_last_checkin_date');
+      // Load check-in history from backend
+      try {
+        const { checkins } = await api.getCheckinHistory();
+        if (checkins && checkins.length > 0) {
+          setCheckinHistory(checkins.map((c: any) => ({
+            insights: c.insights,
+            action_items: c.action_items,
+            encouragement: c.encouragement || '',
+            emotional_state: c.emotional_state
+          })));
+        }
+      } catch (historyError) {
+        console.warn("[App] Could not load check-in history:", historyError);
+      }
 
-      if (lastCheckinDate !== today) {
+      // Check if user has already done check-in today (backend check)
+      const { done_today } = await api.getTodayCheckin();
+
+      if (!done_today) {
+        // Show check-in modal for first-time today
         const { questions } = await api.getCheckinQuestions();
         if (questions && questions.length > 0) {
           setDailyQuestions(questions);
           setShowCheckin(true);
         }
       }
+
 
       const initialMsg = await api.getInitialMessage();
       setMessages([{ id: Date.now() + Math.random(), sender: 'ai', type: 'text', text: initialMsg || "Chào bạn!" }]);
