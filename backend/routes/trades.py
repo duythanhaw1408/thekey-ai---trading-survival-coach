@@ -18,7 +18,10 @@ class TradeBase(BaseModel):
     status: Optional[str] = "OPEN"
 
 class TradeCreate(TradeBase):
-    pass
+    ai_decision: Optional[str] = None
+    ai_reason: Optional[str] = None
+    notes: Optional[str] = None
+    tags: Optional[List[str]] = None
 
 class TradeResponse(BaseModel):
     id: Any
@@ -46,7 +49,9 @@ class TradeResponse(BaseModel):
 
 @router.post("/")
 async def create_trade(trade: TradeCreate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    db_trade = Trade(user_id=user.id, **trade.dict())
+    # Extract tags and notes specifically
+    trade_data = trade.dict()
+    db_trade = Trade(user_id=user.id, **trade_data)
     db.add(db_trade)
     db.commit()
     db.refresh(db_trade)

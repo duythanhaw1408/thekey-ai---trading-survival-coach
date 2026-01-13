@@ -43,16 +43,30 @@ async def submit_checkin(data: CheckinAnswers, user: User = Depends(get_current_
                 "already_done": True
             }
         
-        # Create new checkin record with UUID object
+        # Get AI analysis of answers
+        try:
+            trade_count = db.query(Trade).filter(Trade.user_id == user.id).count()
+            analysis = await gemini_client.analyze_checkin(data.answers, {"trade_count": trade_count})
+        except Exception as ai_e:
+            print(f"⚠️ AI Analysis fail: {ai_e}")
+            analysis = {
+                "insights": "Tiếp tục duy trì kỷ luật hôm nay.",
+                "action_items": ["Tuân thủ Stop Loss", "Không gồng lỗ"],
+                "encouragement": "Cố gắng lên!",
+                "emotional_state": "CALM",
+                "risk_level": "LOW"
+            }
+
+        # Create new checkin record with AI results
         checkin = Checkin(
-            user_id=user.id,  # UUID object directly
+            user_id=user.id,
             answers=data.answers,
             date=today_str,
-            insights="Tốt lắm! Bạn đang thể hiện kỷ luật tốt hôm nay.",
-            action_items=["Giữ vững SL đã đặt", "Nghỉ 5 phút sau mỗi lệnh thắng"],
-            encouragement="Hãy tiếp tục duy trì kỷ luật này!",
-            emotional_state="FOCUSED",
-            risk_level="LOW"
+            insights=analysis.get("insights"),
+            action_items=analysis.get("action_items"),
+            encouragement=analysis.get("encouragement"),
+            emotional_state=analysis.get("emotional_state"),
+            risk_level=analysis.get("risk_level")
         )
         
         db.add(checkin)
@@ -71,9 +85,9 @@ async def submit_checkin(data: CheckinAnswers, user: User = Depends(get_current_
         print(f"⚠️ [Checkin] Submit error: {e}")
         db.rollback()
         return {
-            "insights": "Tốt lắm! Hãy duy trì kỷ luật hôm nay.",
-            "action_items": ["Tuân thủ Stop Loss", "Không gồng lỗ"],
-            "encouragement": "Tiếp tục cố gắng!",
+            "insights": "Lỗi hệ thống khi lưu dữ liệu.",
+            "action_items": [],
+            "encouragement": "Hãy thử lại sau.",
             "already_done": False,
             "error": True
         }

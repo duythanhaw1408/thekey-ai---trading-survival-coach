@@ -1,5 +1,5 @@
 # backend/models/user.py
-from sqlalchemy import Column, String, DateTime, Boolean, Integer, Numeric
+from sqlalchemy import Column, String, DateTime, Boolean, Integer, Numeric, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from .base import Base
@@ -49,7 +49,7 @@ class User(Base):
     total_trades = Column(Integer, default=0)
     
     # Shadow Score (JSON field for behavioral trust metrics)
-    shadow_score = Column(String)  # Stored as JSON string
+    shadow_score = Column(JSON)  # Behavioral trust metrics
     
     # Relationships
     checkins = relationship("Checkin", back_populates="user", lazy="dynamic")

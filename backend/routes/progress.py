@@ -7,22 +7,47 @@ from services.ai.gemini_client import gemini_client
 from services.ai.ai_tracking import AITracker
 from services.auth.dependencies import get_current_user
 from typing import Dict
+from datetime import datetime, timedelta
 
 router = APIRouter(prefix="/api/progress", tags=["progress"])
 
 @router.get("/summary")
 async def get_progress_summary(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Get survival score and trade statistics for the current user."""
+    """Get dynamic survival score and trade statistics."""
+    # 1. Trade Discipline Score (Base: 50)
+    # Penalize for taking trades with ai_decision == "BLOCK"
     total_trades = db.query(Trade).filter(Trade.user_id == user.id).count()
-    winning_trades = db.query(Trade).filter(Trade.user_id == user.id, Trade.pnl > 0).count()
+    blocked_trades_taken = db.query(Trade).filter(
+        Trade.user_id == user.id, 
+        Trade.ai_decision == "BLOCK"
+    ).count()
     
+    discipline_score = max(0, 100 - (blocked_trades_taken * 15)) if total_trades > 0 else 100
+    
+    # 2. Consistency Score (Check-ins in last 7 days)
+    checkin_count = db.query(Checkin).filter(
+        Checkin.user_id == user.id,
+        Checkin.created_at >= datetime.utcnow() - timedelta(days=7)
+    ).count()
+    consistency_score = (checkin_count / 7) * 100
+    
+    # 3. Overall Survival Score (Weighted average)
+    survival_score = int((discipline_score * 0.7) + (consistency_score * 0.3))
+    
+    # Update user's survival score in DB
+    user.survival_score = survival_score
+    db.commit()
+    
+    winning_trades = db.query(Trade).filter(Trade.user_id == user.id, Trade.pnl > 0).count()
     win_rate = (winning_trades / total_trades * 100) if total_trades > 0 else 0
     
     return {
-        "survival_score": user.survival_score,
+        "survival_score": survival_score,
         "total_trades": total_trades,
         "win_rate": round(win_rate, 2),
-        "status": "STABILIZING" if user.survival_score < 70 else "PRO"
+        "status": "SURVIVAL" if survival_score < 40 else ("DISCIPLINE" if survival_score < 80 else "MASTER"),
+        "discipline_score": discipline_score,
+        "consistency_score": int(consistency_score)
     }
 
 @router.post("/weekly-goals")

@@ -107,6 +107,45 @@ class GeminiClient:
         cache_key = f"q_{context.get('recent_trades_count', 0)}"
         if cache_key in self._checkin_cache and (now - self._checkin_cache_time < 3600):
             return self._checkin_cache[cache_key]
+    async def generate_json_response(self, prompt: str, system_prompt: str) -> Dict[str, Any]:
+        """Generic helper to get JSON from Gemini."""
+        full_prompt = f"{system_prompt}\n\nInput Context:\n{prompt}\n\nReturn ONLY valid JSON."
+        try:
+            response_text = await self._generate(full_prompt)
+            return self._clean_and_parse_json(response_text)
+        except Exception as e:
+            print(f"❌ Gemini JSON Error: {e}")
+            raise e
+
+    async def analyze_checkin(self, answers: List[Any], context: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze user check-in answers to provide psychological insights."""
+        system_prompt = """Bạn là THEKEY AI Coach. Phân tích câu trả lời check-in của trader.
+        
+Trả về JSON:
+{
+  "insights": "Nhận xét chuyên sâu về trạng thái hiện tại (tiếng Việt)",
+  "action_items": ["3 hành động cụ thể để duy trì kỷ luật"],
+  "encouragement": "Lời động viên truyền cảm hứng",
+  "emotional_state": "FOCUSED/TILTED/CALM/ANXIOUS/OVERCONFIDENT",
+  "risk_level": "LOW/MEDIUM/HIGH"
+}"""
+        
+        input_data = {
+            "answers": answers,
+            "context": context
+        }
+        
+        try:
+            return await self.generate_json_response(json.dumps(input_data, ensure_ascii=False), system_prompt)
+        except Exception:
+            # Fallback if AI fails
+            return {
+                "insights": "Bạn đang thể hiện sự cam kết tốt với kế hoạch giao dịch.",
+                "action_items": ["Tuân thủ stop-loss", "Ghi chép nhật ký đầy đủ", "Nghỉ ngơi sau mỗi 2 lệnh"],
+                "encouragement": "Tiếp tục duy trì kỷ luật này!",
+                "emotional_state": "CALM",
+                "risk_level": "LOW"
+            }
 
         prompt = f"""You are THEKEY's Reflection Coach. Generate 3 personalized multiple-choice questions in Vietnamese for a crypto trader.
         

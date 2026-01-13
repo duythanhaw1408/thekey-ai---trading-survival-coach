@@ -494,7 +494,9 @@ const App: React.FC = () => {
             entry_price: trade.entryPrice,
             quantity: trade.positionSize / trade.entryPrice,
             entry_time: new Date().toISOString(),
-            status: 'OPEN'
+            status: 'OPEN',
+            ai_decision: feedback.decision,
+            ai_reason: feedback.reason
           });
           console.log('[App] Trade saved to DB successfully:', savedTrade);
           // Use the DB's ID for the trade
