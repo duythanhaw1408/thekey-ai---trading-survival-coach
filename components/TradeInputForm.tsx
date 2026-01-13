@@ -146,18 +146,52 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({
 
         <div>
           <div className="flex items-center justify-between px-1 mb-1">
-            <span className="text-[10px] text-text-secondary uppercase font-bold">{t('terminal.positionSize')}</span>
-            <button type="button" onClick={() => setIsAutoSize(!isAutoSize)} className="text-text-secondary hover:text-text-main">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-text-secondary uppercase font-bold">{t('terminal.positionSize')}</span>
+              {isAutoSize && calculatedRisk !== null && (
+                <span className="text-[9px] text-text-secondary opacity-60">
+                  (gợi ý: ${Math.min(Math.round(Number(positionSize) || 0), profileMaxPositionSize)})
+                </span>
+              )}
+            </div>
+            <button type="button" onClick={() => setIsAutoSize(!isAutoSize)} className="text-text-secondary hover:text-text-main flex items-center gap-1">
               {isAutoSize ? <LockClosedIcon className="w-3 h-3 text-accent-primary" /> : <LockOpenIcon className="w-3 h-3" />}
+              <span className="text-[9px]">{isAutoSize ? 'Auto' : 'Thủ công'}</span>
             </button>
           </div>
-          <input type="number" min="0" value={positionSize} onChange={(e) => setPositionSize(Number(e.target.value))} readOnly={isAutoSize} className={inputClasses} required />
-          {calculatedRisk !== null && isAutoSize && (
-            <p className="text-[10px] text-center text-text-secondary mt-1 tracking-tight">
-              {t('terminal.estRisk')} <span className="font-mono text-accent-red">${calculatedRisk.toFixed(2)}</span>
-            </p>
+          <input
+            type="number"
+            min="0"
+            max={profileMaxPositionSize * 2}
+            value={positionSize}
+            onChange={(e) => { setIsAutoSize(false); setPositionSize(Number(e.target.value)); }}
+            className={`${inputClasses} ${Number(positionSize) > profileMaxPositionSize ? 'border-accent-red/50 bg-accent-red/5' : ''}`}
+            required
+          />
+
+          {/* Risk estimate or Max warning */}
+          {Number(positionSize) > profileMaxPositionSize ? (
+            <div className="flex items-center justify-between mt-1 px-1">
+              <p className="text-[10px] text-accent-red flex items-center gap-1">
+                <AlertTriangleIcon className="w-3 h-3" />
+                Vượt giới hạn ${profileMaxPositionSize}!
+              </p>
+              <span className="text-[9px] text-accent-red opacity-70">
+                Sẽ bị cảnh báo/block
+              </span>
+            </div>
+          ) : calculatedRisk !== null && (
+            <div className="flex items-center justify-between mt-1 px-1">
+              <p className="text-[10px] text-text-secondary tracking-tight">
+                {t('terminal.estRisk')} <span className="font-mono text-accent-red">${calculatedRisk.toFixed(2)}</span>
+              </p>
+              <span className="text-[9px] text-accent-green opacity-70">
+                ✓ Trong giới hạn
+              </span>
+            </div>
           )}
         </div>
+
 
         <div>
           <textarea id="reasoning" rows={2} value={reasoning} onChange={(e) => setReasoning(e.target.value)}
