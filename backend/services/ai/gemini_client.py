@@ -11,13 +11,13 @@ class GeminiClient:
     Backend client for Google Gemini API.
     Handles central AI logic for THEKEY.
     """
-    # List of models - prioritize working models
-    # gemini-2.0-flash-exp: Latest experimental model
-    # gemini-pro: Stable production model
+    # Available models for this API key (verified via list_models)
+    # Note: gemini-1.5-flash is NOT available for this API key
+    # Using 2.0-flash-lite for best free tier performance
     MODELS = [
-        'gemini-2.0-flash-exp',     # Primary: Latest experimental
-        'gemini-pro',               # Fallback: Stable, widely available
-        'gemini-1.0-pro',           # Fallback: Older but reliable
+        'models/gemini-2.0-flash-lite',  # Primary: Fast, lightweight, free tier friendly
+        'models/gemini-2.0-flash',       # Fallback: More capable
+        'models/gemini-2.5-flash',       # Fallback: Latest version
     ]
 
     
