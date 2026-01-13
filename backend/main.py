@@ -120,8 +120,27 @@ async def startup_event():
                         conn.execute(text(f"ALTER TABLE users ADD COLUMN {col_name} {col_def}"))
                         conn.commit()
                         print(f"✅ [Startup] Added '{col_name}' column")
+            
+            # Check and add missing columns to 'checkins' table
+            if 'checkins' in inspector.get_table_names():
+                existing_columns = [col['name'] for col in inspector.get_columns('checkins')]
+                
+                checkin_columns_to_add = [
+                    ("encouragement", "TEXT"),
+                    ("action_items", "JSONB"),
+                    ("emotional_state", "VARCHAR(50)"),
+                    ("risk_level", "VARCHAR(50)"),
+                ]
+                
+                for col_name, col_def in checkin_columns_to_add:
+                    if col_name not in existing_columns:
+                        print(f"📝 [Startup] Adding '{col_name}' column to checkins table...")
+                        conn.execute(text(f"ALTER TABLE checkins ADD COLUMN {col_name} {col_def}"))
+                        conn.commit()
+                        print(f"✅ [Startup] Added '{col_name}' column to checkins")
         
         print("✅ [Startup] Database schema migration complete")
+
         
         # Step 3: Check if KB needs seeding
         from models import get_db, KBDocument
