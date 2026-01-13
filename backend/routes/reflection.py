@@ -34,7 +34,7 @@ async def submit_checkin(data: CheckinAnswers, user: User = Depends(get_current_
         # Check if already checked in today
         existing = db.query(Checkin).filter(
             cast(Checkin.user_id, String) == user_id_str,
-            Checkin.date == today_str
+            cast(Checkin.date, String) == today_str
         ).first()
         
         if existing:
@@ -119,7 +119,7 @@ async def get_today_checkin(user: User = Depends(get_current_user), db: Session 
     try:
         existing = db.query(Checkin).filter(
             cast(Checkin.user_id, String) == user_id_str,
-            Checkin.date == today_str
+            cast(Checkin.date, String) == today_str
         ).first()
         
         if existing:

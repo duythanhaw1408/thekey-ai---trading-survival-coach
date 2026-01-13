@@ -186,6 +186,7 @@ async def root():
     }
 
 @app.get("/health", tags=["Status"])
+@app.head("/health", tags=["Status"])
 async def health_check(db: Session = Depends(get_db)):
     """Production-ready health check with component status"""
     health_status = {
