@@ -60,7 +60,7 @@ export const MindsetView: React.FC<MindsetViewProps> = ({
     return (
         <div className="space-y-8 animate-entrance pb-12 selection:bg-accent-neon selection:text-black">
             {/* Elite Mirror: Archetype Hero Section */}
-            <div className="relative overflow-hidden bg-black border border-accent-neon/10 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+            <div className="bento-card !p-0 relative overflow-hidden">
                 {/* Decorative Grid Background */}
                 <div className="absolute inset-0 cyber-grid opacity-[0.05] pointer-events-none" />
                 <div className="absolute inset-0 bg-gradient-to-br from-accent-neon/[0.02] to-transparent pointer-events-none" />
@@ -185,9 +185,9 @@ export const MindsetView: React.FC<MindsetViewProps> = ({
                 </AnimatePresence>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="bento-grid !p-0">
                 {/* Shadow Score HUD Section */}
-                <div className="lg:col-span-1 bg-black/40 backdrop-blur-md border border-accent-neon/10 rounded-3xl overflow-hidden shadow-2xl">
+                <div className="span-4 bento-card !p-0 overflow-hidden shadow-2xl">
                     <div className="p-8 border-b border-accent-neon/5 flex justify-between items-center bg-black/20">
                         <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] flex items-center gap-3">
                             <ShieldCheckIcon className="w-4 h-4 text-accent-neon" />
@@ -245,7 +245,7 @@ export const MindsetView: React.FC<MindsetViewProps> = ({
                 </div>
 
                 {/* System Wisdom HUD Section */}
-                <div className="lg:col-span-2 bg-black border border-accent-neon/10 rounded-3xl p-12 flex flex-col justify-center relative group overflow-hidden shadow-2xl">
+                <div className="span-8 bento-card !p-12 flex flex-col justify-center relative group overflow-hidden shadow-2xl">
                     <div className="absolute inset-0 cyber-grid opacity-[0.03] pointer-events-none" />
                     <SparklesIcon className="absolute top-8 right-8 w-12 h-12 text-accent-neon/5 group-hover:text-accent-neon/20 transition-all duration-1000" />
 

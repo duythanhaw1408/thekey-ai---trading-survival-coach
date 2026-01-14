@@ -7,7 +7,7 @@ interface DashboardGridProps {
 
 export const DashboardGrid: React.FC<DashboardGridProps> = ({ children }) => {
     return (
-        <main className="flex-1 overflow-y-auto custom-scrollbar bento-grid pb-20">
+        <main className="flex-1 overflow-y-auto custom-scrollbar bento-grid pb-24">
             {children}
         </main>
     );

@@ -45,9 +45,9 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
 
     return (
         <div className="space-y-8 pb-12 animate-entrance selection:bg-accent-neon selection:text-black">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="bento-grid !p-0">
                 {/* Real-time Progress Card */}
-                <div className="lg:col-span-12">
+                <div className="span-full">
                     <GoalProgressCard
                         goals={weeklyGoals}
                         trades={tradeHistory}
@@ -56,8 +56,8 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
                 </div>
 
                 {/* Mastery & Quests */}
-                <div className="lg:col-span-12">
-                    <div className="bg-black/40 backdrop-blur-md border border-accent-neon/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
+                <div className="span-full">
+                    <div className="bento-card !p-8 relative overflow-hidden group">
                         <div className="absolute inset-0 cyber-grid opacity-5" />
                         <div className="flex items-center gap-3 mb-8 relative z-10">
                             <div className="w-1.5 h-6 bg-accent-neon" />
@@ -75,8 +75,8 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
                 </div>
 
                 {/* Analytical Reports Section */}
-                <div className="lg:col-span-6">
-                    <div className="bg-black/40 backdrop-blur-md border border-accent-neon/10 rounded-3xl p-8 shadow-2xl h-full flex flex-col group">
+                <div className="span-6">
+                    <div className="bento-card !p-8 h-full flex flex-col group">
                         <div className="flex justify-between items-center mb-8">
                             <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em] flex items-center">
                                 <CalendarIcon className="w-5 h-5 mr-4 text-accent-neon" />
@@ -138,8 +138,8 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
                     </div>
                 </div>
 
-                <div className="lg:col-span-6">
-                    <div className="bg-black/40 backdrop-blur-md border border-accent-neon/10 rounded-3xl p-8 shadow-2xl h-full flex flex-col group">
+                <div className="span-6">
+                    <div className="bento-card !p-8 h-full flex flex-col group">
                         <div className="flex justify-between items-center mb-8">
                             <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em] flex items-center">
                                 <FileTextIcon className="w-5 h-5 mr-4 text-accent-neon" />
@@ -202,13 +202,13 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
                 </div>
 
                 {/* AI Accuracy Dashboard Section */}
-                <div className="lg:col-span-12">
+                <div className="span-full">
                     <AIAccuracyDashboard />
                 </div>
 
                 {/* AI Self-Learning Section */}
-                <div className="lg:col-span-12">
-                    <div className="bg-black/40 backdrop-blur-md border border-accent-neon/10 rounded-3xl p-10 shadow-2xl overflow-hidden relative">
+                <div className="span-full">
+                    <div className="bento-card !p-10 overflow-hidden relative">
                         <div className="absolute top-0 right-0 p-8 opacity-5">
                             <ChartBarIcon className="w-32 h-32 text-accent-neon" />
                         </div>

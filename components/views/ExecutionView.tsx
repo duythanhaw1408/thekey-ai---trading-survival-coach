@@ -54,7 +54,7 @@ export const ExecutionView: React.FC<ExecutionViewProps> = ({
 
     return (
         <div className="flex flex-col h-full animate-entrance">
-            <div className="flex-1 p-0 overflow-hidden flex flex-col bg-black/40 backdrop-blur-xl border border-accent-neon/10 rounded-3xl shadow-2xl relative">
+            <div className="flex-1 p-0 overflow-hidden flex flex-col bento-card relative">
                 {/* Corner HUD Markers */}
                 <div className="absolute top-0 left-0 w-6 h-6 border-t border-l border-accent-neon/20 rounded-tl-3xl pointer-events-none" />
                 <div className="absolute top-0 right-0 w-6 h-6 border-t border-r border-accent-neon/20 rounded-tr-3xl pointer-events-none" />

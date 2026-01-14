@@ -824,7 +824,7 @@ const App: React.FC = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-black text-white font-sans selection:bg-cyan-500/30 flex">
+      <div className="min-h-screen bg-black text-white font-sans selection:bg-cyan-500/30 flex flex-row w-full overflow-x-hidden">
         {/* Background Decorative Blur */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none transition-all duration-1000">
           <div className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] transition-colors duration-1000 ${crisisIntervention ? 'bg-accent-red/20 animate-pulse' : 'bg-accent-primary/10'} rounded-full blur-[120px]`}></div>
@@ -909,7 +909,7 @@ const App: React.FC = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.02 }}
                 transition={{ duration: 0.3, ease: [0.19, 1, 0.22, 1] }}
-                className="max-w-[1600px] mx-auto w-full"
+                className="w-full"
               >
                 {activeTab === 'SURVIVAL' && (
                   <DashboardView
