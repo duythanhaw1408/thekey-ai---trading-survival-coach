@@ -59,11 +59,11 @@
   }
 
   .neon-glow {
-    @apply shadow-[0_0_10px_rgba(0, 255, 157, 0.1), inset_0_0_5px_rgba(0, 255, 157, 0.05)] border border-accent-neon/20 transition-all duration-300;
+    @apply shadow-[0_0_10px_rgba(0,255,157,0.1),inset_0_0_5px_rgba(0,255,157,0.05)] border border-accent-neon/20 transition-all duration-300;
   }
 
   .neon-text {
-    @apply text-accent-neon shadow-[0_0_10px_rgba(0, 255, 157, 0.5)];
+    @apply text-accent-neon shadow-[0_0_10px_rgba(0,255,157,0.5)];
   }
 
   /* Glassmorphism Utility */
@@ -72,7 +72,7 @@
   }
 
   .glass-panel:hover {
-    @apply border-white/20 shadow-[0_8px_32px_0_rgba(0, 0, 0, 0.8)];
+    @apply border-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.8)];
   }
 
   /* Bento Grid Layout */
@@ -111,7 +111,7 @@
   }
 
   .panel-glow {
-    @apply relative after:absolute after:inset-0 after:rounded-[inherit] after:shadow-[inset_0_0_20px_rgba(0, 163, 255, 0.05)] after:pointer-events-none;
+    @apply relative after:absolute after:inset-0 after:rounded-[inherit] after:shadow-[inset_0_0_20px_rgba(0,163,255,0.05)] after:pointer-events-none;
   }
 }
 
