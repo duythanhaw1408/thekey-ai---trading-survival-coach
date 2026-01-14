@@ -293,6 +293,8 @@ class AchievementService {
             if (totalXP >= levels[i].xp) {
                 currentLevel = levels[i];
                 nextLevel = levels[i + 1] || { ...levels[i], xp: levels[i].xp + 10000 };
+            } else {
+                break;
             }
         }
 

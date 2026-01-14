@@ -436,10 +436,20 @@ const App: React.FC = () => {
         setUnlockedAchievement(first);
         console.log('[Achievements] Unlocked:', first.title);
 
-        // Sync new XP to backend
-        api.updateSettings({ xp: (userProfile.xp || 0) + first.xpReward })
-          .then(() => setUserProfile(prev => ({ ...prev, xp: (prev.xp || 0) + first.xpReward })))
-          .catch(err => console.error('[Achievements] XP sync failed:', err));
+        // Sync new XP and level to backend
+        const { level, title } = achievementService.getLevel();
+        const newTotalXP = (userProfile.xp || 0) + first.xpReward;
+
+        api.updateSettings({
+          xp: newTotalXP,
+          level: title
+        })
+          .then(() => setUserProfile(prev => ({
+            ...prev,
+            xp: newTotalXP,
+            level: title
+          })))
+          .catch(err => console.error('[Achievements] Sync failed:', err));
       }
     }
   }, [tradeHistory, stats, checkinHistory]);

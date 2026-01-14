@@ -19,6 +19,8 @@ interface CacheStats {
 
 class CacheService {
     private cache: Map<string, CacheEntry<unknown>> = new Map();
+    private accessOrder: string[] = [];
+    private readonly MAX_SIZE = 500;
     private stats: CacheStats = {
         totalHits: 0,
         totalMisses: 0,
@@ -68,9 +70,14 @@ class CacheService {
 
         if (isExpired) {
             this.cache.delete(key);
+            this.accessOrder = this.accessOrder.filter(k => k !== key);
             this.stats.totalMisses++;
             return null;
         }
+
+        // Move to end of access order (most recently used)
+        this.accessOrder = this.accessOrder.filter(k => k !== key);
+        this.accessOrder.push(key);
 
         entry.hits++;
         this.stats.totalHits++;
@@ -81,15 +88,28 @@ class CacheService {
     }
 
     /**
-     * Set cache with TTL
+     * Set cache with TTL and LRU eviction
      */
     set<T>(key: string, data: T, ttl: number): void {
+        // Evict if at capacity
+        if (this.cache.size >= this.MAX_SIZE && !this.cache.has(key)) {
+            const oldestKey = this.accessOrder.shift();
+            if (oldestKey) {
+                this.cache.delete(oldestKey);
+                console.log(`[Cache] LRU Evicted: ${oldestKey}`);
+            }
+        }
+
         this.cache.set(key, {
             data,
             timestamp: Date.now(),
             ttl,
             hits: 0
         });
+
+        // Update access order
+        this.accessOrder = this.accessOrder.filter(k => k !== key);
+        this.accessOrder.push(key);
     }
 
     /**

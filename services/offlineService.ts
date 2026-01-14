@@ -11,6 +11,7 @@
  */
 
 import type { Trade, TraderStats, TradeDecision, CheckinAnalysisResult } from '../types';
+import { api } from './api';
 
 // ============================================
 // IndexedDB Setup
@@ -156,7 +157,7 @@ class OfflineService {
                     request.retryCount++;
                     if (request.retryCount >= 3) {
                         await this.deleteFromStore('pendingRequests', request.id);
-                        console.error(`[Offline] Failed after 3 retries: ${request.type}`);
+                        console.error(`[Offline] Failed after 3 retries: ${request.type}`, error);
                     } else {
                         await this.saveToStore('pendingRequests', request);
                     }
@@ -168,13 +169,33 @@ class OfflineService {
     }
 
     private async executeRequest(request: PendingRequest): Promise<void> {
-        // For offline sync, we queue the raw request and replay it when online
-        // The actual API calls should be made by the calling component
-        // This is a placeholder that logs the sync attempt
-        console.log(`[Offline] Would sync request type: ${request.type}`, request.data);
+        console.log(`[Offline] Replaying request: ${request.type}`, request.data);
 
-        // In a full implementation, you would call the appropriate API endpoint here
-        // For now, we just mark it as synced by not throwing
+        try {
+            switch (request.type) {
+                case 'RECORD_TRADE':
+                    await api.recordTrade(request.data);
+                    break;
+                case 'SUBMIT_CHECKIN':
+                    await api.submitCheckin(request.data as any[]);
+                    break;
+                case 'UPDATE_SETTINGS':
+                    await api.updateSettings(request.data);
+                    break;
+                case 'UPDATE_EVALUATION':
+                    const evaluationData = request.data as { tradeId: string; data: any };
+                    await api.updateTradeEvaluation(evaluationData.tradeId, evaluationData.data);
+                    break;
+                case 'UPDATE_SHADOW_SCORE':
+                    await api.updateShadowScore(request.data);
+                    break;
+                default:
+                    console.warn(`[Offline] No replay handler for type: ${request.type}`);
+            }
+        } catch (error) {
+            console.error(`[Offline] Replay failed for ${request.type}:`, error);
+            throw error; // Propagate to trigger retry logic
+        }
     }
 
     // ============================================
