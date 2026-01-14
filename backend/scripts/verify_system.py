@@ -94,7 +94,7 @@ def check_imports():
         errors.append(("models_export", str(e)))
     
     try:
-        from services.ai.ai_tracking import AITracker
+        from services.ai.ai_tracking import AICallTracker
         print("  ✅ services.ai.ai_tracking")
     except Exception as e:
         print(f"  ❌ ai_tracking: {e}")
