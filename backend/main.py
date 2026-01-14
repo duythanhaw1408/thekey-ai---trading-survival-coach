@@ -122,6 +122,10 @@ async def startup_event():
                     ("transformation_stage", "VARCHAR(20) DEFAULT 'AWARENESS'"),
                     ("current_kata", "JSONB"),
                     ("growth_garden", "JSONB"),
+                    # AI Usage & Cost Control columns (Phase 4)
+                    ("daily_ai_calls", "INTEGER DEFAULT 0"),
+                    ("last_ai_reset", "TIMESTAMP WITH TIME ZONE DEFAULT NOW()"),
+                    ("monthly_ai_budget_usd", "NUMERIC DEFAULT 5.0"),
                 ]
                 
                 for col_name, col_def in columns_to_add:
