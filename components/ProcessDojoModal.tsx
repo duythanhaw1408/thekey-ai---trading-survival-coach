@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Trade, UserProcessEvaluation, DojoInteractionData } from '../types';
 import { BrainCircuitIcon, ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon } from './icons';
@@ -83,6 +83,9 @@ export const ProcessDojoModal: React.FC<ProcessDojoModalProps> = ({ trade, onClo
     const startTimeRef = useRef<number>(Date.now());
     const [step, setStep] = useState(0);
     const [direction, setDirection] = useState(0);
+    const [showRestorePrompt, setShowRestorePrompt] = useState(false);
+    const draftKey = `dojo_draft_${trade.id}`;
+
     const [evaluation, setEvaluation] = useState<UserProcessEvaluation>({
         setupClarity: 5,
         hadPredefinedEntry: false,
@@ -96,17 +99,69 @@ export const ProcessDojoModal: React.FC<ProcessDojoModalProps> = ({ trade, onClo
         reflection: '',
     });
 
-    const handleNext = () => (step < steps.length - 1) && (setDirection(1), setStep(s => s + 1));
-    const handlePrev = () => (step > 0) && (setDirection(-1), setStep(s => s - 1));
+    // Check for saved draft on mount
+    useEffect(() => {
+        try {
+            const savedDraft = localStorage.getItem(draftKey);
+            if (savedDraft) {
+                const { evaluation: savedEval, step: savedStep, timestamp } = JSON.parse(savedDraft);
+                // Only restore if draft is less than 24 hours old
+                if (Date.now() - timestamp < 24 * 60 * 60 * 1000) {
+                    setShowRestorePrompt(true);
+                }
+            }
+        } catch (e) {
+            console.error('[ProcessDojo] Failed to check draft:', e);
+        }
+    }, [draftKey]);
 
+    // Auto-save draft on every change
+    useEffect(() => {
+        if (step > 0) { // Only save after user starts
+            try {
+                localStorage.setItem(draftKey, JSON.stringify({
+                    evaluation,
+                    step,
+                    timestamp: Date.now()
+                }));
+            } catch (e) {
+                console.error('[ProcessDojo] Failed to save draft:', e);
+            }
+        }
+    }, [evaluation, step, draftKey]);
+
+    const handleRestoreDraft = () => {
+        try {
+            const savedDraft = localStorage.getItem(draftKey);
+            if (savedDraft) {
+                const { evaluation: savedEval, step: savedStep } = JSON.parse(savedDraft);
+                setEvaluation(savedEval);
+                setStep(savedStep);
+            }
+        } catch (e) {
+            console.error('[ProcessDojo] Failed to restore draft:', e);
+        }
+        setShowRestorePrompt(false);
+    };
+
+    const handleDiscardDraft = () => {
+        localStorage.removeItem(draftKey);
+        setShowRestorePrompt(false);
+    };
+
+    // Clear draft on successful save
     const handleSave = (e: React.FormEvent) => {
         e.preventDefault();
+        localStorage.removeItem(draftKey);
         const interactionData: DojoInteractionData = {
             startTime: startTimeRef.current,
             endTime: Date.now(),
         };
         onSave(evaluation, interactionData);
     };
+
+    const handleNext = () => (step < steps.length - 1) && (setDirection(1), setStep(s => s + 1));
+    const handlePrev = () => (step > 0) && (setDirection(-1), setStep(s => s - 1));
 
     const handleChange = (field: keyof UserProcessEvaluation, value: any) => setEvaluation(prev => ({ ...prev, [field]: value }));
 

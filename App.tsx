@@ -37,10 +37,14 @@ import { learningEngine } from './services/learningEngine';
 import { marketDataService, type MarketDataContext } from './services/marketDataService';
 import { cacheService } from './services/cacheService';
 import { crowdWisdomService } from './services/crowdWisdomService';
+import { achievementService, type Achievement } from './services/achievementService';
 import { useAuth } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { RiskSettingsOnboarding } from './components/RiskSettingsOnboarding';
+import { OfflineBanner } from './components/OfflineBanner';
+import { AchievementPopup } from './components/AchievementPopup';
+import { GoalProgressCard } from './components/GoalProgressCard';
 
 const DEFAULT_USER_PROFILE: UserProfile = {
   id: '', // Will be set from auth context
@@ -93,6 +97,7 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isChatting, setIsChatting] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [streamingText, setStreamingText] = useState('');
   const [showProfile, setShowProfile] = useState(false);
   const [showRiskOnboarding, setShowRiskOnboarding] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile>(DEFAULT_USER_PROFILE);
@@ -131,6 +136,8 @@ const App: React.FC = () => {
   const [lastXpGain, setLastXpGain] = useState(0);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [newLevelTitle, setNewLevelTitle] = useState('');
+  const [unlockedAchievement, setUnlockedAchievement] = useState<Achievement | null>(null);
+  const [dojoCount, setDojoCount] = useState(0);
 
   // Sync userProfile.id with authenticated user
   useEffect(() => {
@@ -410,6 +417,33 @@ const App: React.FC = () => {
     }
   }, [selectedTradeForAnalysis, tradeAnalysis, tradeHistory]);
 
+  // Check for new achievements whenever relevant data changes
+  useEffect(() => {
+    if (tradeHistory.length > 0 || checkinHistory.length > 0) {
+      const currentDojoCount = tradeHistory.filter(t => t.userProcessEvaluation).length;
+      setDojoCount(currentDojoCount);
+
+      const newAchievements = achievementService.checkAndUnlock(
+        tradeHistory,
+        stats,
+        checkinHistory.length,
+        currentDojoCount
+      );
+
+      // Show popup for first unlocked achievement
+      if (newAchievements.length > 0 && !unlockedAchievement) {
+        const first = newAchievements[0];
+        setUnlockedAchievement(first);
+        console.log('[Achievements] Unlocked:', first.title);
+
+        // Sync new XP to backend
+        api.updateSettings({ xp: (userProfile.xp || 0) + first.xpReward })
+          .then(() => setUserProfile(prev => ({ ...prev, xp: (prev.xp || 0) + first.xpReward })))
+          .catch(err => console.error('[Achievements] XP sync failed:', err));
+      }
+    }
+  }, [tradeHistory, stats, checkinHistory]);
+
   const handleRequestNotificationPermission = async () => {
     if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
       const permission = await Notification.requestPermission();
@@ -607,17 +641,33 @@ const App: React.FC = () => {
     setMessages(updatedMessages);
     const aiResponseId = Date.now() + Math.random();
     setMessages(prev => [...prev, { id: aiResponseId, sender: 'ai', type: 'text', text: '...' }]);
+
     try {
       setIsChatting(true);
+      setStreamingText('');
       const mode = crisisIntervention ? 'PROTECTOR' : 'COACH';
       const response = await api.getChatResponse(newMessage.text, updatedMessages, mode);
       const displayText = response.display_text || response.text || "Tôi không hiểu ý bạn lắm.";
+
+      // Simulate streaming for better UX
+      let currentText = '';
+      const words = displayText.split(' ');
+      for (let i = 0; i < words.length; i++) {
+        currentText += (i === 0 ? '' : ' ') + words[i];
+        setStreamingText(currentText);
+        await new Promise(resolve => setTimeout(resolve, 30 + Math.random() * 40));
+      }
+
       const aiMessage: ChatMessage = { id: aiResponseId, sender: 'ai', type: 'text', text: displayText };
       setMessages(prev => prev.map(m => m.id === aiResponseId ? aiMessage : m));
+      setStreamingText('');
     } catch (error) {
       console.error("Error getting chat response:", error);
       setMessages(prev => prev.map(m => (m.id === aiResponseId && m.type === 'text') ? { ...m, text: "Xin lỗi, tôi đang gặp sự cố." } : m));
-    } finally { setIsChatting(false); }
+    } finally {
+      setIsChatting(false);
+      setStreamingText('');
+    }
   };
 
   const handleSendPodMessage = (text: string) => {
@@ -809,7 +859,14 @@ const App: React.FC = () => {
           {crisisIntervention && <CrisisInterventionModal data={crisisIntervention} onClose={() => { setCrisisIntervention(null); setStats(prev => ({ ...prev, consecutiveLosses: 0 })); }} onActionComplete={handleCrisisActionComplete} />}
           <XpPopup xpGain={lastXpGain} trigger={xpGainTrigger} />
           <LevelUpCelebration show={showLevelUp} newLevel={newLevelTitle} onComplete={() => setShowLevelUp(false)} />
+          <AchievementPopup
+            achievement={unlockedAchievement}
+            onClose={() => setUnlockedAchievement(null)}
+          />
         </div>
+
+        {/* Offline Status Banner */}
+        <OfflineBanner />
 
         {/* Navigation Sidebar */}
         <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -886,6 +943,7 @@ const App: React.FC = () => {
                     messages={messages}
                     onSendMessage={handleNewMessage}
                     isLoadingChat={isChatting}
+                    streamingText={streamingText}
                     isCrisisMode={!!crisisIntervention}
                     profileAccountSize={userProfile.accountBalance}
                     profileRiskPercent={userProfile.risk_per_trade_pct || 2}
@@ -924,6 +982,7 @@ const App: React.FC = () => {
                     onGetWeeklyReport={handleGetWeeklyReport}
                     tradeHistory={currentTradeHistory}
                     stats={stats}
+                    checkinCount={checkinHistory.length}
                   />
                 )}
 

@@ -270,6 +270,7 @@ app.include_router(auth.router)
 
 # API v1 - All functional endpoints
 from fastapi import APIRouter
+from routes import metrics  # New: Observability routes
 
 api_v1 = APIRouter(prefix="/api/v1")
 api_v1.include_router(protection.router)
@@ -281,6 +282,7 @@ api_v1.include_router(users.router)
 api_v1.include_router(stream.router)
 api_v1.include_router(kb.router)
 api_v1.include_router(analytics.router)
+api_v1.include_router(metrics.router)  # New: Metrics & Health
 
 app.include_router(api_v1)
 

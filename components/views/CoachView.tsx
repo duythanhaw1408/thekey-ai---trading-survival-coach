@@ -1,13 +1,14 @@
 
 import React from 'react';
 import type { ChatMessage, Trade, TradeAnalysis } from '../../types';
-import { ChatWindow } from '../ChatWindow';
+import { ChatWindowEnhanced } from '../ChatWindowEnhanced';
 import { TradeHistoryList } from '../TradeHistoryList';
 
 interface CoachViewProps {
     messages: ChatMessage[];
-    onSendMessage: (message: ChatMessage) => void;
+    onSendMessage: (message: ChatMessage) => Promise<void>;
     isLoading: boolean;
+    streamingText?: string;
     isCrisisMode: boolean;
     tradeHistory: Trade[];
     onAnalyzeTrade: (trade: Trade) => void;
@@ -29,7 +30,12 @@ export const CoachView: React.FC<CoachViewProps> = (props) => {
                     </div>
                 )}
                 <div className="flex-1 overflow-hidden">
-                    <ChatWindow messages={props.messages} onSendMessage={props.onSendMessage} isLoading={props.isLoading} />
+                    <ChatWindowEnhanced
+                        messages={props.messages}
+                        onSendMessage={props.onSendMessage}
+                        isLoading={props.isLoading}
+                        streamingText={props.streamingText}
+                    />
                 </div>
             </div>
 

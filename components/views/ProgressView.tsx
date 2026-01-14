@@ -7,6 +7,7 @@ import { CalendarIcon, FileTextIcon, TrophyIcon, ChartBarIcon } from '../icons';
 import { LearningInsights } from '../LearningInsights';
 import AIAccuracyDashboard from '../AIAccuracyDashboard';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { GoalProgressCard } from '../GoalProgressCard';
 
 interface ProgressViewProps {
     masteryData: MasteryData | null;
@@ -21,6 +22,7 @@ interface ProgressViewProps {
     onGetWeeklyReport: () => void;
     tradeHistory: Trade[];
     stats: TraderStats;
+    checkinCount?: number;
 }
 
 export const ProgressView: React.FC<ProgressViewProps> = ({
@@ -35,13 +37,23 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
     isLoadingReport,
     onGetWeeklyReport,
     tradeHistory,
-    stats
+    stats,
+    checkinCount = 0
 }) => {
     const { t, language } = useLanguage();
 
     return (
         <div className="space-y-6 animate-entrance">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {/* Real-time Progress Card */}
+                <div className="lg:col-span-12">
+                    <GoalProgressCard
+                        goals={weeklyGoals}
+                        trades={tradeHistory}
+                        checkinCount={checkinCount}
+                    />
+                </div>
+
                 {/* Mastery & Quests - Taking more space */}
                 <div className="lg:col-span-12">
                     <div className="bento-card p-6 bg-black/40 border-white/5">

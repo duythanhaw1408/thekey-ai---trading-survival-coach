@@ -48,6 +48,7 @@ export const TerminalView: React.FC<TerminalViewProps> = (props) => {
                     isLoading={props.isLoading}
                     decision={props.decision}
                     onProceed={props.onProceed}
+                    tradeHistory={props.tradeHistory}
                     profileAccountSize={props.profileAccountSize}
                     profileRiskPercent={props.profileRiskPercent}
                     profileMaxPositionSize={props.profileMaxPositionSize}

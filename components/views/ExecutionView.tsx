@@ -19,8 +19,9 @@ interface ExecutionViewProps {
     tradeAnalysis: TradeAnalysis | null;
     onClearAnalysis: () => void;
     messages: ChatMessage[];
-    onSendMessage: (message: ChatMessage) => void;
+    onSendMessage: (message: ChatMessage) => Promise<void>;
     isLoadingChat: boolean;
+    streamingText?: string;
     isCrisisMode: boolean;
     // Profile settings for Terminal
     profileAccountSize: number;
@@ -43,6 +44,7 @@ export const ExecutionView: React.FC<ExecutionViewProps> = ({
     messages,
     onSendMessage,
     isLoadingChat,
+    streamingText,
     isCrisisMode,
     profileAccountSize = 1000,
     profileRiskPercent = 2,
@@ -110,6 +112,7 @@ export const ExecutionView: React.FC<ExecutionViewProps> = ({
                                     messages={messages}
                                     onSendMessage={onSendMessage}
                                     isLoading={isLoadingChat}
+                                    streamingText={streamingText}
                                     isCrisisMode={isCrisisMode}
                                     tradeHistory={tradeHistory}
                                     onAnalyzeTrade={onAnalyzeTrade}

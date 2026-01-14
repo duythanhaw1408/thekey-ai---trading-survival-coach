@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import type { TradeDecision } from '../types';
+import type { TradeDecision, Trade } from '../types';
 import { AlertTriangleIcon, CheckCircleIcon, LockClosedIcon, LockOpenIcon } from './icons';
 import { useLanguage } from '../contexts/LanguageContext';
+import { AssetAutocomplete } from './AssetAutocomplete';
 
 interface TradeInputFormProps {
   onSubmit: (trade: {
@@ -18,6 +19,7 @@ interface TradeInputFormProps {
   decision: TradeDecision | null;
   onProceed: () => void;
   simulationMode?: boolean;
+  tradeHistory: Trade[];
   // Profile settings - used instead of local inputs
   profileAccountSize: number;
   profileRiskPercent: number;
@@ -30,6 +32,7 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({
   decision,
   onProceed,
   simulationMode = true,
+  tradeHistory = [],
   profileAccountSize = 1000,
   profileRiskPercent = 2,
   profileMaxPositionSize = 500
