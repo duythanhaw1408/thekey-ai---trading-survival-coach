@@ -109,6 +109,7 @@ const translations: Record<Language, Translations> = {
             chaosMaster: 'Bậc Thầy Hỗn Loạn',
             wisdomTitle: 'Trí Tuệ Hệ Thống',
             scanningBehavior: 'Đang giải mã bản sắc giao dịch của bạn...',
+            protectionSettings: 'Thiết Lập Bảo Vệ',
         },
 
         // Progress View
@@ -282,6 +283,7 @@ const translations: Record<Language, Translations> = {
             requirement: 'Requirement:',
             completeOneDojo: 'Complete at least 1 trade with Dojo',
             closeAndDojo: 'Close trade → Complete 7 Dojo steps to start building Shadow Score',
+            protectionSettings: 'Protection Settings',
         },
 
         // Progress View
