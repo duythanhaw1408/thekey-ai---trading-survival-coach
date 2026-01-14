@@ -32,7 +32,7 @@ export const MainHeader: React.FC<MainHeaderProps> = ({
     streak = 0,
 }) => {
     return (
-        <header className="sticky top-0 z-50 px-10 py-5 hidden md:flex items-center justify-between bg-black border-b border-accent-neon/20 shadow-[0_0_30px_rgba(0,255,157,0.05)] backdrop-blur-xl">
+        <header className="sticky top-0 z-50 px-10 py-5 hidden md:flex items-center justify-between bg-black/40 backdrop-blur-3xl border-b border-white/5 shadow-2xl">
             <div className="flex items-center gap-6">
                 <div className="p-3 bg-black border border-accent-neon/40 rounded-2xl shadow-[0_0_15px_rgba(0,255,157,0.1)] group hover:border-accent-neon transition-colors duration-500">
                     <KeyIcon className="w-7 h-7 text-accent-neon drop-shadow-[0_0_8px_rgba(0,255,157,0.6)]" />
@@ -58,7 +58,7 @@ export const MainHeader: React.FC<MainHeaderProps> = ({
                                 </div>
                             ))}
                         </div>
-                        <span className="text-[9px] text-accent-neon/40 uppercase tracking-[0.4em] font-black italic">Neural_Protocol_Active</span>
+                        <span className="text-[9px] text-accent-neon/60 uppercase tracking-[0.4em] font-black italic">Neural_Protocol_Active</span>
                     </div>
                 </div>
             </div>
@@ -91,7 +91,7 @@ export const MainHeader: React.FC<MainHeaderProps> = ({
                             {isPro ? (
                                 <span className="text-[8px] font-black text-accent-neon uppercase tracking-[0.3em] mt-1.5 px-1.5 py-0.5 bg-accent-neon/5 border border-accent-neon/20 rounded leading-none">PRO_LICENSE</span>
                             ) : (
-                                <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.3em] mt-1.5">BASIC_INTEL</span>
+                                <span className="text-[8px] font-black text-white/40 uppercase tracking-[0.3em] mt-1.5">BASIC_INTEL</span>
                             )}
                         </div>
                     </button>

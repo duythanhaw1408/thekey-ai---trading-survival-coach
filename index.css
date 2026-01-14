@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #000000;
-  --color-panel: #0A0A0A;
+  --color-background: #0a0b0e;
+  --color-panel: #111218;
 
   /* Neon Cyberpunk Palette */
   --color-accent-neon: #00ff9d;
@@ -24,11 +24,11 @@
 
 @layer base {
   :root {
-    --bg-black: #000000;
-    --panel-glass: rgba(5, 5, 5, 0.85);
-    --panel-border: rgba(0, 255, 157, 0.15);
+    --bg-black: #0a0b0e;
+    --panel-glass: rgba(16, 18, 24, 0.45);
+    --panel-border: rgba(0, 255, 157, 0.1);
     --accent-neon: #00ff9d;
-    --accent-neon-glow: 0 0 20px rgba(0, 255, 157, 0.3);
+    --accent-neon-glow: 0 0 15px rgba(0, 255, 157, 0.15);
     --accent-red: #ff0055;
     --accent-yellow: #ffee00;
     --accent-green: #00ff9d;
@@ -59,11 +59,11 @@
   }
 
   .neon-glow {
-    @apply shadow-[0_0_15px_rgba(0,255,157,0.2),inset_0_0_10px_rgba(0,255,157,0.1)] border border-accent-neon/30;
+    @apply shadow-[0_0_10px_rgba(0, 255, 157, 0.1), inset_0_0_5px_rgba(0, 255, 157, 0.05)] border border-accent-neon/20 transition-all duration-300;
   }
 
   .neon-text {
-    @apply text-accent-neon shadow-[0_0_10px_rgba(0,255,157,0.5)];
+    @apply text-accent-neon shadow-[0_0_10px_rgba(0, 255, 157, 0.5)];
   }
 
   /* Glassmorphism Utility */
@@ -72,7 +72,7 @@
   }
 
   .glass-panel:hover {
-    @apply border-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.8)];
+    @apply border-white/20 shadow-[0_8px_32px_0_rgba(0, 0, 0, 0.8)];
   }
 
   /* Bento Grid Layout */
@@ -81,7 +81,7 @@
   }
 
   .bento-card {
-    @apply bg-black/85 backdrop-blur-[20px] border border-accent-neon/15 rounded-3xl p-6 overflow-x-auto overflow-y-hidden flex flex-col transition-all duration-300;
+    @apply bg-white/[0.02] backdrop-blur-[40px] border border-white/5 rounded-3xl p-6 overflow-x-auto overflow-y-hidden flex flex-col transition-all duration-500 hover:bg-white/[0.04] hover:border-accent-neon/20;
   }
 
   /* Grid Spans */
@@ -111,7 +111,7 @@
   }
 
   .panel-glow {
-    @apply relative after:absolute after:inset-0 after:rounded-[inherit] after:shadow-[inset_0_0_20px_rgba(0,163,255,0.05)] after:pointer-events-none;
+    @apply relative after:absolute after:inset-0 after:rounded-[inherit] after:shadow-[inset_0_0_20px_rgba(0, 163, 255, 0.05)] after:pointer-events-none;
   }
 }
 

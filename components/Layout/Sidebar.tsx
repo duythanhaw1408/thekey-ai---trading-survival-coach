@@ -160,7 +160,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isCol
             </nav>
 
             {/* Desktop Sidebar - Futuristic HUD style */}
-            <aside className={`hidden md:block fixed left-0 top-0 h-screen bg-black/40 backdrop-blur-3xl border-r border-accent-neon/10 z-50 transition-all duration-500 ease-in-out group/sidebar ${isCollapsed ? 'w-24' : 'w-72'}`}>
+            <aside className={`hidden md:block sticky left-0 top-0 h-screen bg-black/20 backdrop-blur-3xl border-r border-white/5 z-50 transition-all duration-500 ease-in-out group/sidebar ${isCollapsed ? 'w-24' : 'w-72'}`}>
                 <div className="flex flex-col h-full p-6">
                     {/* Logo Section */}
                     <div className="flex items-center gap-4 px-2 mb-16 mt-6">
@@ -184,15 +184,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isCol
                                 key={item.id}
                                 onClick={() => setActiveTab(item.id as AppTab)}
                                 className={`w-full flex items-center gap-5 p-4 rounded-2xl transition-all relative overflow-hidden group/item ${activeTab === item.id
-                                    ? 'bg-accent-neon/5 border border-accent-neon/20 text-accent-neon shadow-[0_0_15px_rgba(0,255,157,0.05)]'
-                                    : 'text-white/30 hover:bg-white/5 hover:text-white border border-transparent'
+                                    ? 'bg-accent-neon/10 border border-accent-neon/30 text-white shadow-[0_0_15px_rgba(0,255,157,0.1)]'
+                                    : 'text-white/50 hover:bg-white/5 hover:text-white border border-transparent'
                                     }`}
                             >
                                 <div className={`transition-all duration-300 ${activeTab === item.id ? 'scale-110 drop-shadow-[0_0_10px_rgba(0,255,157,0.4)]' : 'group-hover/item:scale-110'}`}>
                                     {item.icon}
                                 </div>
                                 {!isCollapsed && (
-                                    <span className={`text-xs font-black uppercase tracking-[0.2em] transition-all duration-300 ${activeTab === item.id ? 'opacity-100' : 'opacity-60 group-hover/item:opacity-100'}`}>
+                                    <span className={`text-xs font-black uppercase tracking-[0.2em] transition-all duration-300 ${activeTab === item.id ? 'opacity-100' : 'opacity-80 group-hover/item:opacity-100'}`}>
                                         {t(item.labelKey)}
                                     </span>
                                 )}

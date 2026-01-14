@@ -47,7 +47,7 @@ export const LearningInsights: React.FC = () => {
 
     return (
         <div className="space-y-8">
-            <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em] flex items-center">
+            <h3 className="text-[10px] font-black text-white/60 uppercase tracking-[0.4em] flex items-center">
                 <BeakerIcon className="w-5 h-5 mr-4 text-accent-neon drop-shadow-[0_0_8px_rgba(0,255,157,0.5)]" />
                 AI_SELF_LEARNING_ANALYTICS
             </h3>
@@ -57,7 +57,7 @@ export const LearningInsights: React.FC = () => {
                     <div className="absolute inset-0 cyber-grid opacity-[0.05] pointer-events-none" />
                     <p className="text-[10px] font-black text-accent-neon/40 uppercase tracking-widest leading-relaxed relative z-10 max-w-[300px] mx-auto">
                         SYSTEM_IDLE: AWAITING_NEURAL_DENSITY_THRESHOLD. <br />
-                        <span className="text-white/20 mt-4 block italic font-medium">Capture 5+ sessions to initiate pattern recognition.</span>
+                        <span className="text-white/40 mt-4 block italic font-medium">Capture 5+ sessions to initiate pattern recognition.</span>
                     </p>
                 </div>
             ) : (
@@ -78,9 +78,9 @@ export const LearningInsights: React.FC = () => {
                                     </div>
                                     <div className="flex-grow min-w-0">
                                         <div className="flex justify-between items-center mb-2">
-                                            <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em]">{insight.insight_type}_PROTOCOL</span>
+                                            <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em]">{insight.insight_type}_PROTOCOL</span>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">CONFIDENCE</span>
+                                                <span className="text-[8px] font-black text-white/40 uppercase tracking-widest">CONFIDENCE</span>
                                                 <span className="text-[10px] text-accent-neon font-black italic tracking-tighter">
                                                     {Math.round(insight.confidence * 100)}%
                                                 </span>

@@ -824,7 +824,7 @@ const App: React.FC = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-black text-white font-sans selection:bg-cyan-500/30 flex flex-row w-full overflow-x-hidden">
+      <div className="min-h-screen bg-background text-white font-sans selection:bg-accent-neon/30 flex flex-row w-full overflow-x-hidden">
         {/* Background Decorative Blur */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none transition-all duration-1000">
           <div className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] transition-colors duration-1000 ${crisisIntervention ? 'bg-accent-red/20 animate-pulse' : 'bg-accent-primary/10'} rounded-full blur-[120px]`}></div>
@@ -901,7 +901,7 @@ const App: React.FC = () => {
             lastActiveDate={lastActiveDate}
           />
 
-          <main className="flex-1 p-6 relative overflow-y-auto custom-scrollbar">
+          <main className="flex-1 p-6 pb-28 md:pb-6 relative overflow-y-auto custom-scrollbar">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
