@@ -80,9 +80,14 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     """Auto-create tables and seed KB on startup (for Render Free tier without Shell)"""
+    print(f"🚀 [Startup] Environment: {ENV}")
     try:
-        from models.base import Base, engine
+        from models.base import Base, engine, DATABASE_URL
         from sqlalchemy import text, inspect
+        
+        # Mask password in URL for logging
+        masked_url = DATABASE_URL.split("@")[-1] if "@" in DATABASE_URL else "local/hidden"
+        print(f"📡 [Startup] Connecting to database... (Endpoint: {masked_url})")
         
         # Step 1: Create all new tables that don't exist
         Base.metadata.create_all(bind=engine)
@@ -196,6 +201,9 @@ async def startup_event():
                 print(f"✅ [Startup] KB already has {kb_count} documents")
         finally:
             db.close()
+    except ImportError as e:
+        print(f"❌ [Startup] Critical Import Error: {e}")
+        # Don't re-raise if you want the server to at least start (though it might fail on requests)
     except Exception as e:
         print(f"⚠️ [Startup] Auto-setup error (non-fatal): {e}")
         import traceback

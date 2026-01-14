@@ -8,6 +8,13 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     # Fallback to local for development only if no env provided
     DATABASE_URL = "postgresql+psycopg://postgres:postgres@localhost:5432/thekey"
+elif DATABASE_URL.startswith("postgres://"):
+    # Render and some other providers use 'postgres://' which SQLAlchemy 2.0 doesn't support.
+    # We also ensure it uses the 'psycopg' (v3) driver explicitly.
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg://", 1)
+elif "postgresql://" in DATABASE_URL and "+psycopg" not in DATABASE_URL:
+    # Force use of psycopg v3 driver if not specified
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
 
 import psycopg
 from psycopg.rows import dict_row
