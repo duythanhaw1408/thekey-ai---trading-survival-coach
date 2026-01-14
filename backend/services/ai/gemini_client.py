@@ -151,252 +151,212 @@ Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
             raise e
 
     async def analyze_checkin(self, answers: List[Any], context: Dict[str, Any]) -> Dict[str, Any]:
-        """Analyze user check-in answers to provide psychological insights."""
-        system_prompt = """Bạn là THEKEY AI Coach. Phân tích câu trả lời check-in của trader.
+        """Phân tích check-in và tạo 'Daily Growth Insight' với phong cách Kaito."""
+        system_prompt = """Bạn là Kaito. Phân tích câu trả lời check-in và tạo "Daily Growth Insight":
         
-Trả về JSON:
-{
-  "insights": "Nhận xét chuyên sâu về trạng thái hiện tại (tiếng Việt)",
-  "action_items": ["3 hành động cụ thể để duy trì kỷ luật"],
-  "encouragement": "Lời động viên truyền cảm hứng",
-  "emotional_state": "FOCUSED/TILTED/CALM/ANXIOUS/OVERCONFIDENT",
-  "risk_level": "LOW/MEDIUM/HIGH"
-}"""
-        
-        input_data = {
-            "answers": answers,
-            "context": context
+        Trả về JSON:
+        {
+          "emotional_state": "FOCUSED" | "ANXIOUS" | "CALM" | "TILTED" | "CONFIDENT",
+          "state_intensity": 1-5,
+          "insights": [
+            {
+              "type": "PATTERN_RECOGNITION" | "OPPORTUNITY" | "WARNING",
+              "title": "Tiêu đề",
+              "description": "Mô tả chi tiết",
+              "evidence": "Dẫn chứng từ lịch sử hành vi"
+            }
+          ],
+          "daily_prescription": {
+            "mindset_shift": "1 tư duy cần tập trung hôm nay",
+            "behavioral_rule": "1 quy tắc hành vi cụ thể",
+            "success_metric": "Cách đo lường thành công hôm nay"
+          },
+          "encouragement": "1 câu động viên cá nhân hoá",
+          "progress_marker": {
+            "milestone": "Mốc tiến bộ hôm nay (nếu có)",
+            "visual_metaphor": "Ẩn dụ trực quan, ví dụ: 'Cây kỷ luật ra lá mới'"
+          }
         }
         
+        NGUYÊN TẮC: Luôn tìm kiếm TIẾN BỘ, dùng ngôn ngữ tích cực, hướng về tương lai."""
+        
         try:
-            return await self.generate_json_response(json.dumps(input_data, ensure_ascii=False), system_prompt)
+            return await self.generate_json_response(json.dumps({"answers": answers, "context": context}, ensure_ascii=False), system_prompt)
         except Exception:
-            # Fallback if AI fails
             return {
-                "insights": "Bạn đang thể hiện sự cam kết tốt với kế hoạch giao dịch.",
-                "action_items": ["Tuân thủ stop-loss", "Ghi chép nhật ký đầy đủ", "Nghỉ ngơi sau mỗi 2 lệnh"],
-                "encouragement": "Tiếp tục duy trì kỷ luật này!",
                 "emotional_state": "CALM",
-                "risk_level": "LOW"
+                "state_intensity": 1,
+                "insights": [{"type": "OPPORTUNITY", "title": "Sự khởi đầu kỷ luật", "description": "Bạn đang bắt đầu ngày mới với sự hiện diện tuyệt vời.", "evidence": "Hoàn thành check-in"}],
+                "daily_prescription": {"mindset_shift": "Hãy kiên nhẫn", "behavioral_rule": "Chỉ giao dịch khi có setup", "success_metric": "Sự bình an khi đóng máy"},
+                "encouragement": "Chúc bạn một ngày giao dịch tỉnh táo!",
+                "progress_marker": {"milestone": "Duy trì kỷ luật", "visual_metaphor": "Hạt mầm kỷ luật đang nảy mầm"}
             }
+    async def generate_checkin_questions(self, context: Dict) -> List[Dict]:
+        """Generate personalized check-in questions with 'Mind Scan' themes."""
+        import time
+        now = time.time()
+        
+        # Cache key based on recent trades count
+        cache_key = f"q_{context.get('recent_trades_count', 0)}"
+        if cache_key in self._checkin_cache and (now - self._checkin_cache_time < 3600):
+            return self._checkin_cache[cache_key]
 
-        prompt = f"""You are THEKEY's Reflection Coach. Generate 3 personalized multiple-choice questions in Vietnamese for a crypto trader.
+        system_prompt = """
+        Bạn là Kaito - Huấn luyện viên kỷ luật trading. 
+        Sinh 3 câu hỏi trắc nghiệm cho check-in sáng nay (Mind Scan), TUÂN THỦ:
+        1. CÂU HỎI 1: Đánh giá năng lượng & tâm trạng (ENERGY)
+        2. CÂU HỎI 2: Nhận thức về rủi ro & thị trường (RISK_AWARENESS)
+        3. CÂU HỎI 3: Mục tiêu & kế hoạch hành vi hôm nay (BEHAVIORAL_INTENT)
         
-        Context:
-        - Recent Trades: {context.get('recent_trades_count', 0)}
-        - Recent PnL: {context.get('recent_pnl', 0)}
-        - Emotional Tilt: {context.get('tilt_detected', False)}
+        Xoay vòng qua các chủ đề, không lặp lại tẻ nhạt. 
+        Sử dụng tiếng Việt thân thiện, đôi khi dùng emoji.
         
-        Provide exactly 3 questions.
-        Rules:
-        1. Exact structure for EVERY question: {{"id": "q1", "text": "...", "type": "multiple-choice", "multiple_choice": {{"options": ["Option A", "Option B", "Option C"]}} }}
-        2. First question: About emotional state (calm, frustrated, excited).
-        3. Second question: About behavioral traps (FOMO, revenge trading, overconfidence) relevant to the recent trades count ({context.get('recent_trades_count', 0)} trades).
-        4. Third question: About the tactical plan or focus area for the NEXT trading session.
-        5. LANGUAGE: Vietnamese.
+        Format JSON:
+        {
+          "questions": [
+            {
+              "id": 1,
+              "text": "...",
+              "options": [
+                {"value": 0, "text": "Option A"},
+                {"value": 1, "text": "Option B"},
+                {"value": 2, "text": "Option C"}
+              ],
+              "theme": "ENERGY" | "RISK_AWARENESS" | "BEHAVIORAL_INTENT"
+            }
+          ],
+          "daily_theme": "Nhận diện cảm xúc"
+        }
+        """
         
-        Return JSON structure exactly: {{"questions": [...]}}
-        Return ONLY valid JSON."""
+        prompt = f"Context: {json.dumps(context, ensure_ascii=False)}"
         
         try:
-            response_text = await self._generate(prompt)
-            result = self._clean_and_parse_json(response_text)
+            result = await self.generate_json_response(prompt, system_prompt)
             questions = result.get("questions", [])
-            
-            # Ensure type consistency if AI misses
             for q in questions:
+                # Ensure structure for frontend
                 q['type'] = 'multiple-choice'
-
+                q['multiple_choice'] = {"options": [opt['text'] for opt in q.get('options', [])]}
+            
             if questions:
-                self._checkin_cache = {cache_key: questions} # Clear old, set new
+                self._checkin_cache = {cache_key: questions}
                 self._checkin_cache_time = now
             return questions
         except Exception as e:
             print(f"❌ Gemini Error (generate_checkin_questions): {e}")
-            # Fallback questions (all multiple-choice)
             return [
-                {
-                    "id": "q1", 
-                    "text": "Bạn cảm thấy thế nào về tâm lý giao dịch hiện tại?", 
-                    "type": "multiple-choice",
-                    "multiple_choice": {"options": ["Rất bình tĩnh & kỷ luật", "Hơi nóng vội", "Đang khá ức chế", "Rất mệt mỏi"]}
-                },
-                {
-                    "id": "q2", 
-                    "text": "Cạm bẫy nào bạn cần đề phòng nhất lúc này?", 
-                    "type": "multiple-choice",
-                    "multiple_choice": {"options": ["Giao dịch quá mức (Overtrading)", "Trả thù thị trường (Revenge)", "Gồng lỗ vô điều kiện", "Fomo theo đám đông"]}
-                },
-                {
-                    "id": "q3", 
-                    "text": "Ưu tiên số 1 của bạn cho phiên giao dịch tới là gì?", 
-                    "type": "multiple-choice",
-                    "multiple_choice": {"options": ["Bảo vệ vốn tuyệt đối", "Chỉ vào lệnh đúng setup", "Dừng lại nếu lỗ thêm", "Tăng dần volume"]}
-                }
+                {"id": 1, "text": "Năng lượng sáng nay của bạn thế nào?", "type": "multiple-choice", "multiple_choice": {"options": ["Rất tốt", "Hơi mệt", "Đang ức chế"]}},
+                {"id": 2, "text": "Bạn có thấy thị trường đang dụ dỗ mình không?", "type": "multiple-choice", "multiple_choice": {"options": ["Không, tôi có kế hoạch", "Hơi FOMO", "Đang rất muốn vào lệnh"]}},
+                {"id": 3, "text": "Mục tiêu quan trọng nhất hôm nay?", "type": "multiple-choice", "multiple_choice": {"options": ["Tuân thủ stoploss", "Chỉ vào đúng setup", "Dừng sớm nếu lỗ"]}}
             ]
 
     async def get_trade_evaluation(self, context: Dict) -> Dict:
-        """Evaluate a proposed trade for risk and protection rule violations."""
-        # Extract trade data for clarity
-        trade = context.get('trade', {})
-        position_size_usd = trade.get('positionSize', 0)  # This is ALWAYS in USD
-        entry_price = trade.get('entryPrice', 0)
-        stop_loss = trade.get('stopLoss', 0)
-        account_balance = context.get('account_balance', 1000)
+        """Đánh giá lệnh yêu cầu như một 'Nghi thức trước giao dịch' (Kaito)."""
+        system_prompt = """Bạn là Kaito - Coach kỷ luật. Đánh giá lệnh này như một "Nghi thức trước giao dịch".
         
-        # Pre-calculate risk for AI context
-        potential_loss = 0
-        if entry_price > 0 and stop_loss > 0:
-            price_diff_pct = abs(entry_price - stop_loss) / entry_price
-            potential_loss = position_size_usd * price_diff_pct
+        Trả về JSON:
+        {
+          "decision": "ALLOW" | "WARN" | "BLOCK",
+          "reason": "Giải thích ngắn gọn (dưới 10 từ)",
+          "behavioral_insight": "Phân tích tâm lý đằng sau lệnh này",
+          "alternatives": [
+            {
+              "type": "SCALE_IN" | "WAIT_FOR_CONFIRMATION" | "PAPER_TRADE" | "REDUCE_SIZE",
+              "description": "Mô tả chi tiết",
+              "rationale": "Tại sao phương án này tốt hơn?"
+            }
+          ],
+          "coaching_question": "Câu hỏi giúp user tự nhận thức",
+          "immediate_action": "Hành động cụ thể user nên làm NGAY",
+          "tone": "SUPPORTIVE" | "CAUTIOUS" | "EMPOWERING"
+        }
         
-        prompt = f"""
-        You are THEKEY's Protection Guardian. Evaluate this trade request.
+        GIỌNG ĐIỆU: Đồng cảm nhưng kiên định. Nếu user đang hưng phấn, hãy nhắc về risk. Nếu tilted, hãy đồng cảm và khuyên dừng."""
         
-        Context:
-        - Account Balance: ${account_balance:,.2f}
-        - User Stats: {json.dumps(context.get('stats', {}))}
-        - Recent Patterns: {context.get('active_pattern', 'None')}
-        - Market Danger: {context.get('market_danger', 'Unknown')}
-        - Settings: {json.dumps(context.get('settings', {}))}
-        
-        Trade Details:
-        - Position Size: ${position_size_usd:,.2f} USD (This is the TOTAL VOLUME in USD, NOT coin quantity)
-        - Entry Price: ${entry_price:,.2f}
-        - Stop Loss: ${stop_loss:,.2f}
-        - Potential Loss: ${potential_loss:,.2f} (pre-calculated)
-        - Direction: {trade.get('direction', 'BUY')}
-        - Reasoning: {trade.get('reasoning', 'None')}
-        
-        IMPORTANT RULES:
-        1. Decision: ALLOW, WARN, or BLOCK.
-        2. Position Size is ALREADY in USD (e.g., $900 means trader wants to open a $900 position, NOT 900 coins)
-        3. DO NOT multiply positionSize by entryPrice - it's already the total USD value!
-        4. Compare Position Size (${position_size_usd:,.2f}) directly against Account Balance (${account_balance:,.2f}):
-           - If Position Size > 20% of Balance → WARN
-           - If Position Size > 50% of Balance → BLOCK (excessive risk)
-        5. Check Potential Loss (${potential_loss:,.2f}) against Risk Per Trade limit:
-           - If Potential Loss > {context.get('settings', {}).get('riskPerTradePct', 2)}% of Balance → WARN/BLOCK
-        6. Provide clear 'reason' in Vietnamese.
-        
-        Return JSON structure exactly:
-        {{
-            "decision": "ALLOW" | "WARN" | "BLOCK",
-            "reason": "Giải thích chi tiết bằng tiếng Việt",
-            "cooldown": number (seconds),
-            "recommended_size": number (USD)
-        }}
-        
-        LANGUAGE: Vietnamese.
-        Return ONLY valid JSON.
-        """
         try:
-            response_text = await self._generate(prompt)
-            return self._clean_and_parse_json(response_text)
-        except Exception as e:
-            print(f"❌ Gemini Error (get_trade_evaluation): {e}")
+            return await self.generate_json_response(json.dumps(context, ensure_ascii=False), system_prompt)
+        except Exception:
             return {
                 "decision": "WARN",
-                "reason": "AI services đang bảo trì nhẹ. Hãy tự kiểm tra kỷ luật trước khi vào lệnh.",
-                "cooldown": 0,
-                "recommended_size": position_size_usd
+                "reason": "Hãy chậm lại và kiểm tra quy trình.",
+                "behavioral_insight": "Bạn đang trong trạng thái cần sự tỉnh táo.",
+                "alternatives": [{"type": "REDUCE_SIZE", "description": "Giảm 50% khối lượng", "rationale": "Giảm áp lực tâm lý"}],
+                "coaching_question": "Lệnh này có thực sự nằm trong kế hoạch ban đầu?",
+                "immediate_action": "Uống một ngụm nước và hít thở sâu 3 lần.",
+                "tone": "CAUTIOUS"
             }
 
     async def analyze_trade(self, trade_data: Dict, user_stats: Dict) -> Dict:
-        """Analyze a trade for behavioral patterns and process quality."""
-        prompt = f"""
-        You are THEKEY's Learning Journal Analyst. Analyze this crypto trade. 
-        Focus STRICTLY on PROCESS quality, not the PnL outcome.
+        """Tạo 'Behavioral Insight Card' cho lệnh vừa đóng (Kaito)."""
+        system_prompt = """Bạn là Kaito. Tạo "Behavioral Insight Card" cho lệnh vừa đóng:
         
-        Trade Data: {json.dumps(trade_data)}
-        User Stats: {json.dumps(user_stats)}
+        Trả về JSON:
+        {
+          "trade_summary": "1 câu mô tả ngắn",
+          "behavioral_pattern": {
+            "identified": true/false,
+            "pattern_name": "Tên pattern",
+            "description": "Mô tả pattern",
+            "frequency": "Đã xảy ra bao nhiêu lần?"
+          },
+          "growth_observation": {
+            "improvement": "Điểm tiến bộ so với trước",
+            "area_to_work": "Điểm cần cải thiện",
+            "suggestion": "Đề xuất cụ thể cho lần sau"
+          },
+          "coaching_question": "1 câu hỏi giúp reflection sâu hơn",
+          "wisdom_nugget": "1 bài học ngắn từ lệnh này"
+        }
         
-        Rules for Classification:
-        - GOOD_PROCESS: Followed plan, respected risk, no FOMO.
-        - BAD_PROCESS: Impulsive, broke rules, no setup.
-        - LUCKY: Bad process but profit.
-        - UNLUCKY: Good process but loss.
-
-        Provide a JSON object exactly matching this structure:
-        {{
-          "trade_classification": "GOOD_PROCESS" | "BAD_PROCESS" | "LUCKY" | "UNLUCKY",
-          "classification_reason": "Short explanation (Vietnamese)",
-          "pattern_match": {{
-            "pattern_detected": "Name of behavioral pattern (e.g., Revenge Trade)",
-            "confidence": 0-100,
-            "evidence": "Why we detected this"
-          }},
-          "lessons": [
-            {{"lesson_id": "L1", "category": "RISK|MINDSET|PROCESS", "lesson": "Vietnamese", "why_it_matters": "Vietnamese", "next_time_action": "Vietnamese", "guardrail_suggestion": "Vietnamese"}}
-          ],
-          "if_you_could_redo": "One sentence advice (Vietnamese)",
-          "positive_takeaways": ["List of good things done"],
-          "journal_entry_suggestion": "A concise journal summary in first person (Vietnamese)"
-        }}
-
-        LANGUAGE: Vietnamese. Return ONLY valid JSON. No conversational filler.
-        """
+        NGUYÊN TẮC: Luôn tìm kiếm ĐIỂM SÁNG (ví dụ: TUÂN THỦ STOPLOSS là thành công lớn)."""
+        
         try:
-            response_text = await self._generate(prompt)
-            print(f"DEBUG: Raw AI Response: {response_text}")
-            return self._clean_and_parse_json(response_text)
-        except Exception as e:
-            print(f"❌ Gemini Error (analyze_trade): {str(e)}")
-            import traceback
-            traceback.print_exc()
+            return await self.generate_json_response(json.dumps({"trade": trade_data, "stats": user_stats}, ensure_ascii=False), system_prompt)
+        except Exception:
             return {
-                "trade_classification": "GOOD_PROCESS",
-                "classification_reason": "Hệ thống phân tích đang gặp sự cố nhỏ, nhưng hãy luôn duy trì kỷ luật nhé!",
-                "pattern_match": {"pattern_detected": None, "confidence": 0, "evidence": ""},
-                "lessons": [{
-                    "lesson_id": "F1",
-                    "category": "RISK",
-                    "lesson": "Luôn ưu tiên bảo vệ vốn.",
-                    "why_it_matters": "Bảo vệ vốn là cách duy nhất để tồn tại.",
-                    "next_time_action": "Đặt Stop Loss ngay khi vào lệnh.",
-                    "guardrail_suggestion": "Không bao giờ bỏ qua Stop Loss."
-                }],
-                "if_you_could_redo": "Duy trì sự tập trung và tuân thủ kế hoạch.",
-                "positive_takeaways": ["Bạn đã thực hiện giao dịch này."],
-                "journal_entry_suggestion": "Tôi sẽ tiếp tục rèn luyện kỷ luật."
+                "trade_summary": "Lệnh giao dịch đã hoàn tất.",
+                "behavioral_pattern": {"identified": False, "pattern_name": None, "description": None, "frequency": None},
+                "growth_observation": {"improvement": "Sự hiện diện", "area_to_work": "Kỷ luật", "suggestion": "Hãy duy trì quy trình"},
+                "coaching_question": "Bạn học được gì từ lệnh này?",
+                "wisdom_nugget": "Mỗi lệnh là một bài học."
             }
 
-    async def get_trader_archetype(self, trade_history: List[Dict], checkin_history: List[Dict]) -> Dict:
-        """Analyze user history to determine their trader archetype."""
-        prompt = f"""
-        You are THEKEY's Archetype Discovery module. Analyze this trader's data.
+        """Đánh giá quy trình trading dưới dạng 'Kata Assessment' (Kaito)."""
+        system_prompt = """Bạn là Kaito. Đánh giá quy trình trading dưới dạng "Kata Assessment":
         
-        Recent Trades: {json.dumps(trade_history[-30:])}
-        Recent Check-ins: {json.dumps(checkin_history[-5:])}
+        Trả về JSON:
+        {
+          "kata_score": 0-100,
+          "strength_zones": [
+            {
+              "zone": "SETUP" | "EXECUTION" | "RISK_MANAGEMENT" | "PSYCHOLOGY",
+              "score": 0-100,
+              "feedback": "Đánh giá chi tiết"
+            }
+          ],
+          "personalized_kata": {
+            "name": "Tên Kata cá nhân hoá",
+            "core_principles": ["Nguyên tắc 1", "Nguyên tắc 2"],
+            "daily_practice": "Bài tập thực hành 5 phút mỗi ngày"
+          },
+          "transformation_story": {
+            "before": "Bạn tuần trước ở điểm này",
+            "after": "Bạn hiện tại đã tiến bộ thế nào",
+            "next_step": "Bước tiếp theo để master kata này"
+          }
+        }
         
-        Possible Archetypes:
-        - THE_SNIPER: Patient, disciplined, wait for setups.
-        - THE_GAMBLER: Impulsive, overtrades, high emotions.
-        - THE_ZOMBIE: Follows others, no personal plan.
-        - THE_AVENGER: Revenge trader, doubles down after loss.
-        - THE_CHASER: FOMO, buys the top, sells the bottom.
+        TIÊU CHÍ: Tập trung vào TIẾN BỘ, tạo cảm giác "đang trên hành trình master kỹ năng"."""
         
-        Provide:
-        1. archetype (string).
-        2. rationale (Vietnamese, explaining why with evidence from data).
-        
-        Return JSON structure exactly:
-        {{
-            "archetype": "THE_SNIPER" | "THE_GAMBLER" | "THE_ZOMBIE" | "THE_AVENGER" | "THE_CHASER" | "UNDEFINED",
-            "rationale": "Giải thích chi tiết bằng tiếng Việt dựa trên dữ liệu."
-        }}
-        
-        LANGUAGE: Vietnamese.
-        Return ONLY valid JSON.
-        """
         try:
-            response_text = await self._generate(prompt)
-            return self._clean_and_parse_json(response_text)
-        except Exception as e:
-            print(f"❌ Gemini Error (get_trader_archetype): {e}")
+            return await self.generate_json_response(json.dumps({"trades": trade_history, "checkins": checkin_history}, ensure_ascii=False), system_prompt)
+        except Exception:
             return {
-                "archetype": "UNDEFINED",
-                "rationale": "Không đủ dữ liệu hoặc AI gặp sự cố để phân tích archetype lúc này."
+                "kata_score": 70,
+                "strength_zones": [{"zone": "PSYCHOLOGY", "score": 75, "feedback": "Duy trì sự bình tĩnh tốt"}],
+                "personalized_kata": {"name": "The Calm Warrior", "core_principles": ["Hít thở", "Chờ đợi"], "daily_practice": "Thiền 5 phút"},
+                "transformation_story": {"before": "Dễ bị lôi cuốn", "after": "Đã biết quan sát", "next_step": "Tối ưu hóa Entry"}
             }
 
     async def generate_market_analysis(self) -> Dict:
@@ -457,28 +417,40 @@ Trả về JSON:
             }
 
     async def generate_chat_response(self, message: str, history: List[Dict], mode: str = "COACH") -> Dict:
-        """Generate a response for the AI Coach/Protector chat."""
-        system_prompt = "You are THEKEY's AI Survival Coach." if mode == "COACH" else "You are THEKEY's AI Protection Guardian. Be firm and direct."
+        """Generate a response for the AI Coach/Protector chat using Kaito persona."""
+        system_prompt = """
+        Bạn là Kaito - Huấn luyện viên trading chuyên về tâm lý và kỷ luật.
+        
+        VAI TRÒ:
+        1. Người đồng hành thấu hiểu, không phán xét.
+        2. Người đặt câu hỏi giúp tự nhận thức.
+        3. Người gợi ý bài tập thực hành nhỏ.
+        
+        GIỌNG ĐIỆU:
+        - Khi user thắng: Khám phá lý do thành công để lặp lại.
+        - Khi user thua: Tập trung vào bài học, không phải P&L.
+        - Khi user tilted: Đồng cảm, khuyên dừng lại hít thở.
+        - Khi user hỏi tín hiệu: Từ chối khéo léo, tập trung vào quy trình.
+        
+        TRÁNH: Lời khuyên tài chính, dự đoán thị trường, phán xét.
+        """
+        
         prompt = f"""
-        {system_prompt}
         User Message: {message}
         Chat History: {json.dumps(history[-10:])}
         
-        Provide:
-        1. display_text (Vietnamese).
-        2. internal_reasoning (English).
-        
-        Return ONLY valid JSON.
+        Return JSON ONLY:
+        {{
+           "display_text": "Phản hồi bằng tiếng Việt",
+           "internal_reasoning": "English reasoning"
+        }}
         """
         try:
-            response_text = await self._generate(prompt)
-            return self._clean_and_parse_json(response_text)
+            return await self.generate_json_response(prompt, system_prompt)
         except Exception as e:
             print(f"❌ Gemini Error (generate_chat_response): {e}")
-            return {"display_text": "Xin lỗi, tôi đang gặp sự cố kỹ thuật.", "internal_reasoning": str(e)}
+            return {"display_text": "Tôi luôn ở đây để lắng nghe bạn. Hãy cùng hít thở sâu một chút nhé.", "internal_reasoning": str(e)}
 
-    async def detect_emotional_tilt(self, stats: Dict, history: List[Dict]) -> Dict:
-        """Detect if the trader is on 'tilt' and needs intervention."""
     async def detect_emotional_tilt(self, stats: Dict, history: List[Dict]) -> Dict:
         """Detect if the trader is on 'tilt' and needs intervention."""
         prompt = f"""

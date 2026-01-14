@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from models import get_db, Trade, User
+from models import get_db, Trade, User, Checkin
 from sqlalchemy import func
 import uuid
 from services.ai.gemini_client import gemini_client
 from services.ai.ai_tracking import AITracker
 from services.auth.dependencies import get_current_user
 from typing import Dict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 router = APIRouter(prefix="/api/progress", tags=["progress"])
 
@@ -31,17 +31,31 @@ async def get_progress_summary(user: User = Depends(get_current_user), db: Sessi
     ).count()
     consistency_score = (checkin_count / 7) * 100
     
-    # 3. Behavioral Integrity (Shadow Score)
-    # Get trust score from JSON field (default to 100)
+    # 3. Behavioral Integrity (Shadow Score) with Trust Decay
     shadow_data = user.shadow_score if isinstance(user.shadow_score, dict) else {}
     trust_score = shadow_data.get("trust_score", 100)
     
+    # Trust Decay: Penalize for missed check-ins
+    last_checkin = db.query(Checkin).filter(Checkin.user_id == user.id).order_by(Checkin.created_at.desc()).first()
+    if last_checkin and last_checkin.created_at:
+        # Standardize to aware UTC for subtraction
+        now_utc = datetime.now(timezone.utc)
+        checkin_time = last_checkin.created_at
+        if checkin_time.tzinfo is None:
+            checkin_time = checkin_time.replace(tzinfo=timezone.utc)
+        
+        days_since_checkin = (now_utc - checkin_time).days
+        if days_since_checkin > 1:
+            decay_penalty = min(30, (days_since_checkin - 1) * 5) # 5 points per missed day after the first
+            trust_score = max(20, trust_score - decay_penalty)
+            # Update user.shadow_score object
+            shadow_data["trust_score"] = trust_score
+            user.shadow_score = shadow_data
+    
     # 4. Overall Survival Score (Weighted average with Shadow Score Influence)
-    # Shadow Score acts as both a component and a multiplier dampener
     base_score = (discipline_score * 0.55) + (consistency_score * 0.25) + (trust_score * 0.20)
     
     # Dampening factor: If trust is low, it heavily penalizes the final result
-    # trust_factor ranges from 0.5 (very suspicious) to 1.0 (fully trusted)
     trust_factor = 0.5 + (trust_score / 200) 
     survival_score = int(base_score * trust_factor)
     

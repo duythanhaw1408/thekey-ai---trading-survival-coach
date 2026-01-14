@@ -1,0 +1,36 @@
+
+> thekey-ai---trading-survival-coach@1.1.0 typecheck
+> tsc --noEmit
+
+components/AnalysisCard.tsx(39,17): error TS2339: Property 'reflection_question' does not exist on type 'CheckinAnalysisResult'.
+components/AnalysisCard.tsx(42,64): error TS2339: Property 'reflection_question' does not exist on type 'CheckinAnalysisResult'.
+components/MarketIntelWidget.tsx(3,55): error TS2305: Module '"@heroicons/react/24/outline"' has no exported member 'TrendingUpIcon'.
+components/MarketIntelWidget.tsx(3,71): error TS2724: '"@heroicons/react/24/outline"' has no exported member named 'TrendingDownIcon'. Did you mean 'ArrowTrendingDownIcon'?
+components/MarketIntelWidget.tsx(27,25): error TS2367: This comparison appears to be unintentional because the types '"SAFE" | "CAUTION" | "DANGEROUS" | "EXTREME"' and '"DANGER"' have no overlap.
+components/MarketIntelWidget.tsx(118,39): error TS2339: Property 'impact' does not exist on type '{ factor: string; severity: "HIGH" | "CRITICAL"; description: string; }'.
+components/MarketIntelWidget.tsx(119,103): error TS2339: Property 'impact' does not exist on type '{ factor: string; severity: "HIGH" | "CRITICAL"; description: string; }'.
+components/MarketIntelWidget.tsx(120,50): error TS2339: Property 'impact' does not exist on type '{ factor: string; severity: "HIGH" | "CRITICAL"; description: string; }'.
+components/MarketIntelWidget.tsx(123,47): error TS2339: Property 'impact' does not exist on type '{ factor: string; severity: "HIGH" | "CRITICAL"; description: string; }'.
+components/ProfileModal.tsx(79,5): error TS2552: Cannot find name 'setDiscovering'. Did you mean 'setIsDiscovering'?
+e2e/auth.spec.ts(6,30): error TS2307: Cannot find module '@playwright/test' or its corresponding type declarations.
+e2e/playwright.config.ts(6,39): error TS2307: Cannot find module '@playwright/test' or its corresponding type declarations.
+hooks/useAppLogic.ts(2,21): error TS2307: Cannot find module './services/api' or its corresponding type declarations.
+hooks/useAppLogic.ts(3,25): error TS2307: Cannot find module './contexts/AuthContext' or its corresponding type declarations.
+hooks/useAppLogic.ts(4,354): error TS2307: Cannot find module './types' or its corresponding type declarations.
+hooks/useAppLogic.ts(5,31): error TS2307: Cannot find module './services/masteryService' or its corresponding type declarations.
+hooks/useAppLogic.ts(6,39): error TS2307: Cannot find module './services/behavioralGraphService' or its corresponding type declarations.
+hooks/useAppLogic.ts(7,32): error TS2307: Cannot find module './services/geminiService' or its corresponding type declarations.
+services/notificationService.ts(8,3): error TS2739: Type '{ id: string; archetype: "EMOTIONAL_TRADER"; tradingRules: { dailyTradeLimit: number; positionSizeWarningThreshold: number; }; notificationPreferences: { pushEnabled: true; emailEnabled: false; smsEnabled: false; quietHours: { ...; }; }; sleepSchedule: { ...; }; }' is missing the following properties from type 'UserProfile': accountBalance, protectionLevel, cooldownMinutes, consecutiveLossLimit
+tests/components/ErrorBoundary.test.tsx(22,5): error TS2304: Cannot find name 'afterEach'.
+tests/components/ErrorBoundary.test.tsx(26,5): error TS2304: Cannot find name 'afterAll'.
+tests/hooks/useAppState.test.ts(91,43): error TS2339: Property 'text' does not exist on type 'ChatMessage'.
+  Property 'text' does not exist on type '{ id: number; sender: "user" | "ai"; } & { type: "analysis"; analysis: CheckinAnalysisResult; }'.
+tests/setup.ts(26,14): error TS2304: Cannot find name 'vi'.
+tests/setup.ts(27,14): error TS2304: Cannot find name 'vi'.
+tests/setup.ts(28,17): error TS2304: Cannot find name 'vi'.
+tests/setup.ts(29,12): error TS2304: Cannot find name 'vi'.
+tests/setup.ts(37,28): error TS2304: Cannot find name 'vi'.
+tests/setup.ts(42,1): error TS2304: Cannot find name 'vi'.
+vitest.config.ts(8,5): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'test' does not exist in type 'UserConfigExport'.

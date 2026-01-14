@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from models import get_db, Trade, User
 from services.auth.dependencies import get_current_user
 from pydantic import BaseModel
 from typing import List, Optional, Any
-from datetime import datetime
+from datetime import datetime, timezone
+from utils.idempotency import get_idempotency_key, check_idempotency, save_idempotency_response
 import uuid
 
 router = APIRouter(prefix="/api/trades", tags=["trades"])
@@ -43,30 +45,53 @@ class TradeResponse(BaseModel):
     user_process_evaluation: Optional[dict] = None
     process_evaluation: Optional[dict] = None
     process_score: Optional[float] = None
+    behavioral_insight_card: Optional[dict] = None
+    kata_evaluation: Optional[dict] = None
     
     class Config:
         from_attributes = True
+    
+@router.post("/", response_model=TradeResponse)
+async def create_trade(request: Request, trade: TradeCreate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    # 1. Idempotency Check
+    i_key = await get_idempotency_key(request)
+    if i_key:
+        cached = check_idempotency(db, user.id, i_key)
+        if cached:
+            # Return JSONResponse directly to bypass Response Model validation for cached hits
+            return JSONResponse(content=cached[0], status_code=int(cached[1] or 200))
 
-@router.post("/")
-async def create_trade(trade: TradeCreate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    # Extract tags and notes specifically
-    trade_data = trade.dict()
-    db_trade = Trade(user_id=user.id, **trade_data)
+    # Standardize to aware UTC
+    entry_time = trade.entry_time
+    if entry_time.tzinfo is None:
+        entry_time = entry_time.replace(tzinfo=timezone.utc)
+    else:
+        entry_time = entry_time.astimezone(timezone.utc)
+
+    db_trade = Trade(
+        **trade.dict(exclude={"entry_time"}),
+        user_id=user.id,
+        entry_time=entry_time
+    )
     db.add(db_trade)
     db.commit()
     db.refresh(db_trade)
+
+    # 2. Save Idempotency
+    if i_key:
+        save_idempotency_response(db, user.id, i_key, {"id": str(db_trade.id), "symbol": db_trade.symbol})
+
     return db_trade
 
 @router.get("/", response_model=List[TradeResponse])
-async def get_user_trades(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    print(f"[DEBUG] /api/trades/ called for user_id: {user.id}, email: {user.email}")
-    trades = db.query(Trade).filter(Trade.user_id == user.id).order_by(Trade.entry_time.desc()).all()
-    print(f"[DEBUG] Found {len(trades)} trades for user {user.email}")
-    if trades:
-        print(f"[DEBUG] First trade ID: {trades[0].id}, Entry: {trades[0].entry_time}")
+async def get_user_trades(limit: int = 50, offset: int = 0, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    print(f"[DEBUG] /api/trades/ called for user_id: {user.id}, email: {user.email} (Limit: {limit}, Offset: {offset})")
+    trades = db.query(Trade).filter(Trade.user_id == user.id)\
+        .order_by(Trade.entry_time.desc())\
+        .limit(limit).offset(offset).all()
     return trades
 
-@router.put("/{trade_id}/close")
+@router.put("/{trade_id}/close", response_model=TradeResponse)
 async def close_trade(trade_id: str, pnl: float, exit_price: float, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     db_trade = db.query(Trade).filter(Trade.id == trade_id, Trade.user_id == user.id).first()
     if not db_trade:
@@ -74,9 +99,12 @@ async def close_trade(trade_id: str, pnl: float, exit_price: float, user: User =
     
     db_trade.pnl = pnl
     db_trade.exit_price = exit_price
-    db_trade.exit_time = datetime.utcnow()
+    # Ensure exit_time is aware if entry_time is aware, or just use UTC now
+    from datetime import timezone
+    db_trade.exit_time = datetime.now(timezone.utc)
     db_trade.status = "CLOSED"
     db.commit()
+    db.refresh(db_trade)
     return db_trade
 
 

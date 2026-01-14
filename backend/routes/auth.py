@@ -16,8 +16,9 @@ import os
 import httpx
 import bcrypt
 
-from models import get_db, User, Session as UserSession
+from models import get_db, User, Session as UserSession, Trade, Checkin
 from models.base import get_db_connection
+from services.auth.dependencies import get_current_user
 from middleware.security import limiter, logger, sanitize_string
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -531,3 +532,46 @@ async def logout(request: Request):
             conn.close()
     
     return {"message": "Logged out successfully"}
+@router.get("/export-data")
+async def export_data(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Export all user data (GDPR Compliance)"""
+    # Fetch all data
+    trades = db.query(Trade).filter(Trade.user_id == user.id).all()
+    checkins = db.query(Checkin).filter(Checkin.user_id == user.id).all()
+    
+    export_payload = {
+        "user_profile": {
+            "id": str(user.id),
+            "email": user.email,
+            "created_at": user.created_at.isoformat() if user.created_at else None,
+            "settings": {
+                "protection_level": user.protection_level,
+                "daily_trade_limit": user.daily_trade_limit,
+                "timezone": user.timezone
+            }
+        },
+        "trades": [
+            {
+                "id": str(t.id),
+                "symbol": t.symbol,
+                "side": t.side,
+                "entry_price": float(t.entry_price) if t.entry_price else 0,
+                "exit_price": float(t.exit_price) if t.exit_price else 0,
+                "pnl": float(t.pnl) if t.pnl else 0,
+                "status": t.status,
+                "entry_time": t.entry_time.isoformat() if t.entry_time else None
+            } for t in trades
+        ],
+        "checkins": [
+            {
+                "id": str(c.id),
+                "date": str(c.date),
+                "emotional_state": c.emotional_state,
+                "insights": c.insights,
+                "created_at": c.created_at.isoformat() if c.created_at else None
+            } for c in checkins
+        ],
+        "exported_at": datetime.utcnow().isoformat()
+    }
+    
+    return export_payload

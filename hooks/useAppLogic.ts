@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { api } from './services/api';
-import { useAuth } from './contexts/AuthContext';
-import type { TraderStats, Trade, TradeDecision, ChatMessage, UserProfile, CheckinQuestion, TradeAnalysis, CrisisData, DetectedPattern, CheckinAnalysisResult, MarketAnalysis, Notification as NotificationType, MasteryData, Pod, ProcessStats, UserProcessEvaluation, ShadowScore, BehavioralReport, WeeklyGoals, WeeklyReport, TraderArchetypeAnalysis } from './types';
-import { masteryEngine } from './services/masteryService';
-import { behavioralGraphEngine } from './services/behavioralGraphService';
-import * as geminiService from './services/geminiService';
+import { api } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
+import type { TraderStats, Trade, TradeDecision, ChatMessage, UserProfile, CheckinQuestion, TradeAnalysis, CrisisData, DetectedPattern, CheckinAnalysisResult, MarketAnalysis, Notification as NotificationType, MasteryData, Pod, ProcessStats, UserProcessEvaluation, ShadowScore, BehavioralReport, WeeklyGoals, WeeklyReport, TraderArchetypeAnalysis } from '../types';
+import { masteryEngine } from '../services/masteryService';
+import { behavioralGraphEngine } from '../services/behavioralGraphService';
+import * as geminiService from '../services/geminiService';
 
 export const useAppLogic = () => {
     const { user, logout } = useAuth();

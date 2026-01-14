@@ -207,30 +207,69 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({
         )}
 
         {isWarn && (
-          <div className="bg-accent-yellow/10 border-l-4 border-accent-yellow text-yellow-200 p-2 rounded-r-md">
-            <div className="flex">
-              <div className="py-1"><AlertTriangleIcon className="h-4 w-4 text-accent-yellow mr-2" /></div>
+          <div className="space-y-4 pt-2">
+            {/* Behavioral Insight */}
+            <div className="bg-emerald-500/5 border border-emerald-500/10 p-4 rounded-2xl">
+              <h4 className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2">Nhận Định Từ Kaito</h4>
+              <p className="text-sm text-white italic">"{decision.behavioral_insight}"</p>
+            </div>
+
+            {/* Alternatives */}
+            {decision.alternatives && decision.alternatives.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">Phương Án Thay Thế</h4>
+                {decision.alternatives.map((alt, i) => (
+                  <div key={i} className="bg-white/[0.03] border border-white/5 p-3 rounded-xl">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded">{alt.type}</span>
+                    </div>
+                    <p className="text-xs text-white/80 mb-1">{alt.description}</p>
+                    <p className="text-[10px] text-slate-500 italic">Lý do: {alt.rationale}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Coaching Question */}
+            <div className="bg-amber-500/5 border border-amber-500/10 p-4 rounded-2xl">
+              <h4 className="text-[10px] font-black text-amber-400 uppercase tracking-widest mb-2 flex items-center">
+                <span className="mr-2">🤔</span> Reflection
+              </h4>
+              <p className="text-sm text-white font-medium">{decision.coaching_question}</p>
+            </div>
+
+            {/* Immediate Action */}
+            <div className="flex items-start gap-3 p-3 bg-black/40 rounded-xl border border-white/5">
+              <div className="mt-1 w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <div>
-                <p className="text-[10px] font-bold">⚠️ {t('terminal.warningTitle')}</p>
-                <p className="text-[11px] leading-tight">{decision.reason}</p>
+                <p className="text-[10px] font-bold text-white/40 uppercase">Hành động ngay:</p>
+                <p className="text-xs text-white uppercase font-black tracking-tight">{decision.immediate_action}</p>
               </div>
             </div>
           </div>
         )}
 
-        <button type="submit" disabled={isLoading}
-          className={`w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center shadow-lg text-xs
+        <div className="pt-4">
+          <button type="submit" disabled={isLoading || (decision?.decision === 'BLOCK' && !simulationMode)}
+            className={`w-full font-black py-4 px-4 rounded-xl transition-all duration-300 flex flex-col items-center justify-center shadow-2xl relative group overflow-hidden
             ${isLoading ? 'bg-white/10 cursor-not-allowed opacity-50' :
-              isWarn ? 'bg-accent-yellow text-black hover:scale-[1.01]' : 'bg-accent-primary text-white hover:scale-[1.01] shadow-accent-primary/20'
-            }`} >
-          {isLoading ? (
-            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          ) : isWarn ? <AlertTriangleIcon className="w-4 h-4 mr-2" /> : <CheckCircleIcon className="w-4 h-4 mr-2" />}
-          {isLoading ? t('terminal.analyzing') : isWarn ? t('terminal.proceed') : t('terminal.evaluate')}
-        </button>
+                isWarn ? 'bg-amber-500 text-black hover:brightness-110' :
+                  decision?.decision === 'BLOCK' ? 'bg-slate-800 text-slate-500 cursor-not-allowed' :
+                    'bg-emerald-500 text-black hover:brightness-110'
+              }`} >
+            <div className="flex items-center gap-2 relative z-10">
+              {isLoading ? (
+                <svg className="animate-spin h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : isWarn ? <AlertTriangleIcon className="w-4 h-4" /> : <CheckCircleIcon className="w-4 h-4" />}
+              <span className="uppercase tracking-[0.2em]">{isLoading ? 'Kaito đang tính toán...' : isWarn ? 'Tôi đã hiểu và muốn tiếp tục' : 'Kích Hoạt Nghi Thức'}</span>
+            </div>
+            {decision?.decision === 'BLOCK' && <p className="text-[8px] mt-1 relative z-10">Lệnh bị chặn để bảo vệ bạn</p>}
+            <div className="absolute inset-x-0 bottom-0 h-1 bg-black/20" />
+          </button>
+        </div>
       </form>
     </div>
   );

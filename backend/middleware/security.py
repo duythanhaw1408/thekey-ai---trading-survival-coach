@@ -130,17 +130,22 @@ async def log_request_middleware(request: Request, call_next):
     try:
         response = await call_next(request)
         
-        # Log request completion
+        # Log request completion with slow detection
         duration_ms = (time.time() - start_time) * 1000
-        logger.info(
+        is_slow = duration_ms > 500
+        
+        log_method = logger.warning if is_slow else logger.info
+        log_method(
             "request_completed",
             request_id=request_id,
             status_code=response.status_code,
-            duration_ms=round(duration_ms, 2)
+            duration_ms=round(duration_ms, 2),
+            slow_alert=is_slow
         )
         
-        # Add request ID to response headers for debugging
+        # Add request ID and timing to response headers
         response.headers["X-Request-ID"] = request_id
+        response.headers["X-Response-Time-Ms"] = str(round(duration_ms, 2))
         
         return response
     except Exception as e:

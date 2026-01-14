@@ -11,6 +11,8 @@ import { MarketIntelWidget } from '../MarketIntelWidget';
 import { OnboardingBanner } from '../OnboardingBanner';
 import { Tooltip, FeatureTooltips, InfoTooltip } from '../Tooltip';
 import { useLanguage } from '../../contexts/LanguageContext';
+import GrowthGarden from '../GrowthGarden';
+import TrustBattery from '../TrustBattery';
 
 interface DashboardViewProps {
     stats: TraderStats;
@@ -138,10 +140,17 @@ export const DashboardView: React.FC<DashboardViewProps> = (props) => {
                 {/* Right Column: Bio & Live Feed Proxy */}
                 <div className="lg:col-span-4 space-y-6 flex flex-col">
                     <div className="bento-card p-6 flex-1 bg-gradient-to-br from-accent-primary/5 to-transparent border-white/5">
-                        <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] mb-6 flex items-center">
-                            <ActivityIcon className="w-4 h-4 mr-2 text-accent-primary" />
-                            {t('dashboard.biometricStatus')}
-                        </h3>
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] flex items-center">
+                                <ActivityIcon className="w-4 h-4 mr-2 text-accent-primary" />
+                                {t('dashboard.biometricStatus')}
+                            </h3>
+                            <TrustBattery
+                                score={props.shadowScore?.score || 100}
+                                chargingFactors={props.shadowScore?.chargingFactors}
+                                drainingFactors={props.shadowScore?.drainingFactors}
+                            />
+                        </div>
                         <BioStatusWidget />
                     </div>
 
@@ -150,14 +159,12 @@ export const DashboardView: React.FC<DashboardViewProps> = (props) => {
                         <MarketIntelWidget analysis={props.marketAnalysis} />
                     </div>
 
-                    <div className="bento-card p-6 bg-black/40 border-white/5">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em]">{t('dashboard.survivalStreak')}</h3>
-                            <div className="w-2 h-2 rounded-full bg-accent-green animate-pulse"></div>
-                        </div>
-                        <div className="text-3xl font-black italic tracking-tighter text-white">
-                            {props.stats.survivalDays} <span className="text-xs font-bold uppercase not-italic text-text-secondary">{t('dashboard.daysStanding')}</span>
-                        </div>
+                    <div className="bento-card overflow-hidden p-0 border-white/5">
+                        <GrowthGarden
+                            score={props.stats.disciplineScore}
+                            blooms={props.stats.achievements || []} // Assuming achievements map to blooms
+                            needsWatering={!hasCheckin}
+                        />
                     </div>
                 </div>
             </div>

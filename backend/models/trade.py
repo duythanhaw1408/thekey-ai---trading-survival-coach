@@ -2,7 +2,7 @@
 from sqlalchemy import Column, String, DateTime, Numeric, ForeignKey, JSON
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.orm import relationship
-from .base import Base
+from .base import Base, EncryptedString
 import uuid
 from datetime import datetime
 
@@ -23,10 +23,12 @@ class Trade(Base):
     ai_decision = Column(String)
     ai_reason = Column(String)
     tags = Column(ARRAY(String))
-    notes = Column(String)
+    notes = Column(EncryptedString)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # Process Dojo evaluation data
     user_process_evaluation = Column(JSON)  # User's 7-step self-evaluation
     process_evaluation = Column(JSON)  # AI-generated process evaluation
     process_score = Column(Numeric)  # Total process score (0-100)
+    behavioral_insight_card = Column(JSON) # AI behavioral insight card
+    kata_evaluation = Column(JSON) # Detailed Kata assessment

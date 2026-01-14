@@ -106,12 +106,17 @@ async def startup_event():
                 
                 # Add other potentially missing columns
                 columns_to_add = [
-                    ("shadow_score", "FLOAT DEFAULT 50.0"),
+                    ("shadow_score", "JSONB"),
+                    ("timezone", "VARCHAR(50) DEFAULT 'UTC'"),
                     ("survival_score", "INTEGER DEFAULT 0"),
                     ("current_streak", "INTEGER DEFAULT 0"),
                     ("total_trades", "INTEGER DEFAULT 0"),
                     ("xp", "INTEGER DEFAULT 0"),
-                    ("level", "INTEGER DEFAULT 1"),
+                    ("level", "VARCHAR(20) DEFAULT 'NOVICE'"),
+                    ("trading_persona", "VARCHAR(50) DEFAULT 'THE_OBSERVER'"),
+                    ("transformation_stage", "VARCHAR(20) DEFAULT 'AWARENESS'"),
+                    ("current_kata", "JSONB"),
+                    ("growth_garden", "JSONB"),
                 ]
                 
                 for col_name, col_def in columns_to_add:
@@ -136,6 +141,8 @@ async def startup_event():
                     ("risk_level", "VARCHAR(50)"),
                     ("created_at", "TIMESTAMP WITH TIME ZONE DEFAULT NOW()"),
                     ("date", "VARCHAR(20)"),
+                    ("daily_prescription", "JSONB"),
+                    ("progress_marker", "JSONB"),
                 ]
                 
                 for col_name, col_def in checkin_columns_to_add:
@@ -148,7 +155,30 @@ async def startup_event():
                         except Exception as col_e:
                             print(f"⚠️ [Startup] Could not add '{col_name}': {col_e}")
 
-        
+            # Check and add missing columns to 'trades' table
+            if 'trades' in inspector.get_table_names():
+                existing_columns = [col['name'] for col in inspector.get_columns('trades')]
+                trade_columns_to_add = [
+                    ("ai_decision", "VARCHAR(20)"),
+                    ("ai_reason", "TEXT"),
+                    ("notes", "TEXT"),
+                    ("tags", "JSONB"),
+                    ("user_process_evaluation", "JSONB"),
+                    ("process_evaluation", "JSONB"),
+                    ("process_score", "NUMERIC"),
+                    ("behavioral_insight_card", "JSONB"),
+                    ("kata_evaluation", "JSONB"),
+                ]
+                for col_name, col_def in trade_columns_to_add:
+                    if col_name not in existing_columns:
+                        print(f"📝 [Startup] Adding '{col_name}' column to trades table...")
+                        try:
+                            conn.execute(text(f"ALTER TABLE trades ADD COLUMN {col_name} {col_def}"))
+                            conn.commit()
+                            print(f"✅ [Startup] Added '{col_name}' column to trades")
+                        except Exception as col_e:
+                            print(f"⚠️ [Startup] Could not add '{col_name}': {col_e}")
+
         print("✅ [Startup] Database schema migration complete")
 
         

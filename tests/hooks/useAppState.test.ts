@@ -88,7 +88,7 @@ describe('useAppState', () => {
         });
 
         expect(result.current.messages).toHaveLength(1);
-        expect(result.current.messages[0].text).toBe('Hello!');
+        expect((result.current.messages[0] as any).text).toBe('Hello!');
     });
 
     it('should update user profile', () => {

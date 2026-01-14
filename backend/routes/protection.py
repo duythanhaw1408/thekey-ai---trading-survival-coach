@@ -94,8 +94,36 @@ async def check_trade(data: Dict, user: User = Depends(get_current_user), db: Se
         }
 
     # =============================================
-    # PHASE 2: AI Evaluation (only for GRAY_ZONE cases)
+    # PHASE 2: AI Evaluation (Conditional on Budget)
     # =============================================
+    
+    # 1. Check AI Budget and Reset if new day
+    now = datetime.now(timezone.utc)
+    user_reset = user.last_ai_reset
+    if user_reset.tzinfo is None:
+        user_reset = user_reset.replace(tzinfo=timezone.utc)
+        
+    if (now - user_reset).days >= 1:
+        user.daily_ai_calls = 0
+        user.last_ai_reset = now
+        db.commit()
+    
+    # 2. Strict Rate Limiting / Budget Fallback
+    # Free tier users get max 20 AI evaluations per day
+    MAX_DAILY_AI = 20 if not user.is_pro else 100
+    
+    if user.daily_ai_calls >= MAX_DAILY_AI:
+        print(f"[Protection] AI Budget EXCEEDED ({user.daily_ai_calls}/{MAX_DAILY_AI}). Forcing Rule Engine fallback.")
+        return {
+            "decision": engine_result.decision if engine_result.decision != "GRAY_ZONE" else "WARN",
+            "reason": f"{engine_result.reason} (AI budget exceeded, using safety fallback)",
+            "cooldown": engine_result.cooldown,
+            "recommended_size": engine_result.recommended_size,
+            "rule": "BUDGET_FALLBACK",
+            "latency_ms": rule_latency,
+            "triggered_rules": engine_result.triggered_rules
+        }
+
     print(f"[Protection] Falling back to AI for gray zone case...")
     
     ai_context = {
@@ -111,10 +139,8 @@ async def check_trade(data: Dict, user: User = Depends(get_current_user), db: Se
     
     ai_feedback = await gemini_client.get_trade_evaluation(ai_context)
     
-    total_latency = (time.time() - start_time) * 1000
-    print(f"[Protection] AI evaluation completed in {total_latency:.0f}ms total")
-    
-    # Track AI decision
+    # 3. Track AI Usage and increment count
+    user.daily_ai_calls += 1
     tracker = AITracker(db)
     tracker.log_decision(
         user_id=user.id,
@@ -124,9 +150,12 @@ async def check_trade(data: Dict, user: User = Depends(get_current_user), db: Se
         trade_intent=trade,
         confidence=0.8
     )
+    db.commit()
     
+    total_latency = (time.time() - start_time) * 1000
     ai_feedback["latency_ms"] = total_latency
     ai_feedback["rule"] = "AI_EVALUATION"
+    ai_feedback["usage"] = f"{user.daily_ai_calls}/{MAX_DAILY_AI}"
     
     return ai_feedback
 

@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Dict, Any, List
 from services.ai.gemini_client import gemini_client
@@ -6,10 +7,13 @@ from services.auth.dependencies import get_current_user
 from models import get_db, User, Trade, Checkin
 from sqlalchemy.orm import Session
 from datetime import datetime, date
+import pytz
+from utils.idempotency import get_idempotency_key, check_idempotency, save_idempotency_response
 
 router = APIRouter(prefix="/api/reflection", tags=["reflection"])
 
 class CheckinAnswers(BaseModel):
+    questions: List[str] = []
     answers: List[Any]
 
 @router.get("/checkin/questions")
@@ -24,15 +28,24 @@ async def get_questions(user: User = Depends(get_current_user), db: Session = De
     return {"questions": questions}
 
 @router.post("/checkin/submit")
-async def submit_checkin(data: CheckinAnswers, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+async def submit_checkin(request: Request, data: CheckinAnswers, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Submit answers and save to database with AI analysis."""
-    today_str = date.today().isoformat()
+    # 1. Idempotency Check
+    i_key = await get_idempotency_key(request)
+    if i_key:
+        cached = check_idempotency(db, user.id, i_key)
+        if cached:
+            return JSONResponse(content=cached[0], status_code=int(cached[1] or 200))
+
+    # 2. Timezone-aware "today"
+    user_tz = pytz.timezone(user.timezone or "UTC")
+    today = datetime.now(user_tz).date()
     
     try:
-        # Check if already checked in today - use UUID directly
+        # Check if already checked in today - use date object for DATE column
         existing = db.query(Checkin).filter(
             Checkin.user_id == user.id,
-            Checkin.date == today_str
+            Checkin.date == today
         ).first()
         
         if existing:
@@ -60,23 +73,41 @@ async def submit_checkin(data: CheckinAnswers, user: User = Depends(get_current_
         # Create new checkin record with AI results
         checkin = Checkin(
             user_id=user.id,
+            questions=data.questions or ["Default question 1", "Default question 2", "Default question 3"],
             answers=data.answers,
-            date=today_str,
+            date=today,
             insights=analysis.get("insights"),
-            action_items=analysis.get("action_items"),
+            daily_prescription=analysis.get("daily_prescription"),
+            progress_marker=analysis.get("progress_marker"),
             encouragement=analysis.get("encouragement"),
             emotional_state=analysis.get("emotional_state"),
             risk_level=analysis.get("risk_level")
         )
         
         db.add(checkin)
+        db.flush()
         db.commit()
         db.refresh(checkin)
         
+        # Verify persistence (Double Truth Check)
+        verify = db.query(Checkin).filter(Checkin.id == checkin.id).first()
+        if not verify:
+            print(f"🚨 CRITICAL: Checkin ID {checkin.id} NOT FOUND in DB immediately after commit!")
+        else:
+            print(f"✅ [Checkin] Persistence Verified: ID {checkin.id} found in DB.")
+        
+        if i_key:
+            save_idempotency_response(db, user.id, i_key, {
+                "id": str(checkin.id),
+                "emotional_state": checkin.emotional_state,
+                "already_done": False
+            })
+
         return {
-            "id": checkin.id,
+            "id": str(checkin.id),
             "insights": checkin.insights,
-            "action_items": checkin.action_items,
+            "daily_prescription": checkin.daily_prescription,
+            "progress_marker": checkin.progress_marker,
             "encouragement": checkin.encouragement,
             "emotional_state": checkin.emotional_state,
             "already_done": False
@@ -84,13 +115,7 @@ async def submit_checkin(data: CheckinAnswers, user: User = Depends(get_current_
     except Exception as e:
         print(f"⚠️ [Checkin] Submit error: {e}")
         db.rollback()
-        return {
-            "insights": "Lỗi hệ thống khi lưu dữ liệu.",
-            "action_items": [],
-            "encouragement": "Hãy thử lại sau.",
-            "already_done": False,
-            "error": True
-        }
+        raise HTTPException(status_code=500, detail=f"Database persistence error: {str(e)}")
 
 @router.get("/checkin/history")
 async def get_checkin_history(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -122,13 +147,14 @@ async def get_checkin_history(user: User = Depends(get_current_user), db: Sessio
 
 @router.get("/checkin/today")
 async def get_today_checkin(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Check if user has already done check-in today."""
-    today_str = date.today().isoformat()
+    """Check if user has already done check-in today (timezone-aware)."""
+    user_tz = pytz.timezone(user.timezone or "UTC")
+    today = datetime.now(user_tz).date()
     
     try:
         existing = db.query(Checkin).filter(
             Checkin.user_id == user.id,
-            Checkin.date == today_str
+            Checkin.date == today
         ).first()
         
         if existing:

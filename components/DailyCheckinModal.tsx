@@ -1,24 +1,23 @@
-
 import React, { useState, useEffect } from 'react';
-import type { CheckinQuestion } from '../types';
+import { motion, AnimatePresence } from 'framer-motion';
+import type { CheckinQuestion, CheckinAnalysisResult } from '../types';
+import { BrainCircuitIcon, SparklesIcon, ShieldCheckIcon } from './icons';
 
 interface DailyCheckinModalProps {
   questions: CheckinQuestion[];
   onSubmit: (answers: { [key: string]: string }) => void;
+  insight?: CheckinAnalysisResult | null; // Passed back after submission
+  onClose?: () => void;
 }
 
-export const DailyCheckinModal: React.FC<DailyCheckinModalProps> = ({ questions, onSubmit }) => {
+export const DailyCheckinModal: React.FC<DailyCheckinModalProps> = ({ questions, onSubmit, insight, onClose }) => {
   const [answers, setAnswers] = useState<{ [key: string]: string }>({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
-    // Pre-fill default answers
     const defaultAnswers: { [key: string]: string } = {};
     questions.forEach(q => {
-      if (q.type === 'scale' && q.scale) {
-        defaultAnswers[q.id] = String(Math.floor((q.scale.min + q.scale.max) / 2));
-      } else {
-        defaultAnswers[q.id] = '';
-      }
+      defaultAnswers[q.id] = '';
     });
     setAnswers(defaultAnswers);
   }, [questions]);
@@ -29,19 +28,13 @@ export const DailyCheckinModal: React.FC<DailyCheckinModalProps> = ({ questions,
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitted(true);
     onSubmit(answers);
   };
 
   const isFormValid =
     Object.keys(answers).length === questions.length &&
-    questions.every(q => {
-      const answer = answers[q.id];
-      const type = (q.type as string);
-      if (type === 'multiple-choice' || type === 'choice' || type === 'text') {
-        return answer && answer.trim() !== '';
-      }
-      return !!answer; // For 'scale' which is always a number string
-    });
+    questions.every(q => answers[q.id] && answers[q.id].trim() !== '');
 
   const renderQuestionInput = (question: CheckinQuestion) => {
     const options = question.multiple_choice?.options || [];
@@ -52,11 +45,11 @@ export const DailyCheckinModal: React.FC<DailyCheckinModalProps> = ({ questions,
             key={option}
             className={`flex items-center space-x-4 p-4 rounded-xl cursor-pointer border transition-all duration-300 group
               ${answers[question.id] === option
-                ? 'bg-accent-primary-neon/10 border-accent-primary-neon/40 ring-1 ring-accent-primary-neon/20 shadow-[0_0_20px_rgba(0,242,255,0.05)]'
+                ? 'bg-emerald-500/10 border-emerald-500/40 ring-1 ring-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.05)]'
                 : 'bg-white/[0.03] border-white/5 hover:bg-white/[0.06] hover:border-white/10'}`}
           >
             <div className={`relative w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all 
-              ${answers[question.id] === option ? 'border-accent-primary-neon bg-accent-primary-neon' : 'border-white/10'}`}>
+              ${answers[question.id] === option ? 'border-emerald-500 bg-emerald-500' : 'border-white/10'}`}>
               <input
                 type="radio"
                 name={question.id}
@@ -65,9 +58,7 @@ export const DailyCheckinModal: React.FC<DailyCheckinModalProps> = ({ questions,
                 onChange={(e) => handleAnswerChange(question.id, e.target.value)}
                 className="opacity-0 absolute inset-0 cursor-pointer"
               />
-              {answers[question.id] === option && (
-                <div className="w-2 h-2 bg-black rounded-full" />
-              )}
+              {answers[question.id] === option && <div className="w-2 h-2 bg-black rounded-full" />}
             </div>
             <span className={`text-sm font-medium transition-colors ${answers[question.id] === option ? 'text-white' : 'text-white/60 group-hover:text-white/80'}`}>
               {option}
@@ -79,64 +70,120 @@ export const DailyCheckinModal: React.FC<DailyCheckinModalProps> = ({ questions,
   }
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-xl flex items-center justify-center z-[100] p-6 animate-entrance">
-      <div className="glass-panel max-w-md w-full flex flex-col max-h-[85vh] overflow-hidden shadow-[0_0_80px_rgba(0,242,255,0.08)] border-white/10">
-        <form onSubmit={handleSubmit} className="flex flex-col flex-grow min-h-0">
-          {/* Header */}
-          <div className="p-6 border-b border-white/5 flex-shrink-0 bg-white/[0.02]">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h2 className="text-[10px] font-black text-accent-primary-neon uppercase tracking-[0.4em] mb-1">Entry Protocol</h2>
-                <h3 className="text-lg font-bold text-white tracking-tight">Mindset Sync</h3>
-              </div>
-              <div className="px-2 py-1 rounded bg-accent-primary-neon/10 border border-accent-primary-neon/20">
-                <span className="text-[10px] font-mono text-accent-primary-neon font-bold">CALIBRATING</span>
-              </div>
-            </div>
-            <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
-              <div
-                className="bg-accent-primary-neon h-full transition-all duration-500 ease-out"
-                style={{ width: `${(Object.keys(answers).length / questions.length) * 100}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Scrollable Content */}
-          <div className="flex-grow overflow-y-auto px-6 py-4 min-h-0 custom-scrollbar bg-black/20">
-            <div className="space-y-6">
-              {questions.map((q, idx) => (
-                <div
-                  key={q.id}
-                  className="animate-entrance border-b border-white/[0.03] pb-6 last:border-0"
-                  style={{ animationDelay: `${idx * 0.1}s` }}
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-[10px] font-mono text-white/20">0{idx + 1}</span>
-                    <label className="block text-[11px] font-bold text-white/70 uppercase tracking-widest">{q.text}</label>
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-xl flex items-center justify-center z-[100] p-6 overflow-hidden">
+      <AnimatePresence mode="wait">
+        {!insight ? (
+          <motion.div
+            key="questions"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            className="glass-panel max-w-md w-full flex flex-col max-h-[85vh] overflow-hidden border-white/10 shadow-2xl"
+          >
+            <form onSubmit={handleSubmit} className="flex flex-col flex-grow min-h-0">
+              <div className="p-6 border-b border-white/5 bg-white/[0.02]">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h2 className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.4em] mb-1">Ritual Sáng Nay</h2>
+                    <h3 className="text-xl font-bold text-white tracking-tight">Mind Scan</h3>
                   </div>
-                  <div className="px-1">
-                    {renderQuestionInput(q)}
+                  <div className="flex flex-col items-end">
+                    <span className="text-[10px] font-mono text-emerald-400 font-bold px-2 py-1 rounded bg-emerald-400/10 border border-emerald-400/20">KAITO ACTIVE</span>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
+                <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
+                  <motion.div
+                    className="bg-emerald-500 h-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(Object.keys(answers).filter(k => answers[k]).length / questions.length) * 100}%` }}
+                  />
+                </div>
+              </div>
 
-          {/* Footer */}
-          <div className="p-4 border-t border-white/5 flex-shrink-0 bg-black/60">
+              <div className="flex-grow overflow-y-auto px-6 py-4 min-h-0 custom-scrollbar">
+                <div className="space-y-8">
+                  {questions.map((q, idx) => (
+                    <div key={q.id} className="space-y-4">
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-mono text-emerald-500/40">0{idx + 1}</span>
+                        <label className="block text-sm font-bold text-white/90">{q.text}</label>
+                      </div>
+                      {renderQuestionInput(q)}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-white/5 bg-black/40">
+                <button
+                  type="submit"
+                  disabled={!isFormValid || isSubmitted}
+                  className="w-full bg-emerald-500 text-black font-black uppercase text-xs tracking-[0.2em] py-4 rounded-xl hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed group flex items-center justify-center gap-2"
+                >
+                  {isSubmitted ? 'Đang phân tích...' : 'Hoàn Thành Mind Scan'}
+                  {!isSubmitted && <SparklesIcon className="w-4 h-4 group-hover:rotate-12 transition-transform" />}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="insight"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-panel max-w-lg w-full p-8 border-emerald-500/20 shadow-[0_0_50px_rgba(16,185,129,0.1)]"
+          >
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/40">
+                <BrainCircuitIcon className="w-8 h-8 text-emerald-500" />
+              </div>
+              <h2 className="text-2xl font-black text-white mb-2">Lời Khuyên Từ Kaito</h2>
+              <p className="text-emerald-400 text-sm italic">"{insight.encouragement}"</p>
+            </div>
+
+            <div className="space-y-6">
+              <div className="bg-white/[0.03] p-4 rounded-2xl border border-white/5">
+                <h4 className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-3 flex items-center">
+                  <ShieldCheckIcon className="w-3 h-3 mr-2 text-emerald-500" />
+                  Đơn Thuốc Hành Vi (Daily Prescription)
+                </h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-400">Mindset:</span>
+                    <span className="text-white font-bold">{insight.daily_prescription?.mindset_shift}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-400">Quy tắc:</span>
+                    <span className="text-white font-bold">{insight.daily_prescription?.behavioral_rule}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-400">Mục tiêu:</span>
+                    <span className="text-white font-bold">{insight.daily_prescription?.success_metric}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-emerald-500/5 p-4 rounded-2xl border border-emerald-500/10">
+                  <p className="text-[10px] text-emerald-400 uppercase font-black mb-1">Trạng Thái</p>
+                  <p className="text-lg font-bold text-white">{insight.emotional_state}</p>
+                </div>
+                <div className="bg-amber-500/5 p-4 rounded-2xl border border-amber-500/10">
+                  <p className="text-[10px] text-amber-400 uppercase font-black mb-1">Tiến Độ</p>
+                  <p className="text-sm font-bold text-white">{insight.progress_marker?.visual_metaphor}</p>
+                </div>
+              </div>
+            </div>
+
             <button
-              type="submit"
-              disabled={!isFormValid}
-              className="w-full bg-accent-primary-neon text-black font-black uppercase text-[11px] tracking-[0.2em] py-4 rounded-lg hover:brightness-110 active:scale-[0.98] transition-all disabled:bg-white/5 disabled:text-white/20 disabled:cursor-not-allowed flex items-center justify-center gap-3 overflow-hidden relative group"
+              onClick={onClose}
+              className="w-full mt-8 bg-white/5 hover:bg-white/10 text-white font-bold py-4 rounded-xl transition-all border border-white/10"
             >
-              <span className="relative z-10">Authorize Session</span>
-              <div className="w-1 h-1 bg-black rounded-full group-hover:animate-ping" />
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+              Bắt Đầu Phiên Giao Dịch
             </button>
-            <p className="text-[9px] text-center text-white/20 mt-3 uppercase tracking-tighter">System Version 2.0.1 // Mental State Guardian</p>
-          </div>
-        </form>
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -37,63 +37,74 @@ export const PostTradeAnalysisCard: React.FC<PostTradeAnalysisCardProps> = ({ an
     const classificationInfo = getClassificationInfo(analysis.trade_classification);
 
     return (
-        <div className="w-full mt-4 p-5 glass-panel border-white/5 bg-white/[0.03]">
-            <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-4">
+        <div className="w-full mt-4 p-6 glass-panel border-emerald-500/10 bg-white/[0.02] shadow-[0_0_40px_rgba(16,185,129,0.03)]">
+            <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
                 <h3 className={`flex items-center text-lg font-black uppercase tracking-wider ${classificationInfo.color}`}>
                     {classificationInfo.icon}
                     {classificationInfo.label}
                 </h3>
+                <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                    <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Kaito Analysis</span>
+                </div>
             </div>
 
-            <div className="mb-6">
-                <p className="text-text-main text-sm font-medium leading-relaxed italic border-l-2 border-accent-primary/30 pl-4 py-1">
+            <div className="mb-8 p-4 bg-emerald-500/5 border-l-4 border-emerald-500 rounded-r-xl">
+                <p className="text-white text-sm font-medium leading-relaxed italic">
                     "{analysis.classification_reason}"
                 </p>
             </div>
 
-            <div className="space-y-4 mt-4">
+            <div className="space-y-6">
+                {/* Behavioral Pattern Card */}
+                {analysis.behavioral_pattern?.identified && (
+                    <div className="bg-amber-500/5 border border-amber-500/10 p-4 rounded-2xl">
+                        <h4 className="text-[10px] font-black text-amber-400 uppercase tracking-widest mb-2">Behavioral Pattern Detected</h4>
+                        <p className="text-sm font-bold text-white mb-1">{analysis.behavioral_pattern.pattern_name}</p>
+                        <p className="text-xs text-slate-400 mb-2">{analysis.behavioral_pattern.description}</p>
+                        <p className="text-[10px] text-amber-500/60 font-bold uppercase tracking-tighter">Frequency: {analysis.behavioral_pattern.frequency}</p>
+                    </div>
+                )}
+
+                {/* Growth Observation */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white/[0.03] border border-white/5 p-4 rounded-2xl">
+                        <h4 className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2">Growth & Progress</h4>
+                        <p className="text-xs text-white/80 mb-2"><span className="text-emerald-500 mr-1">↑</span> {analysis.growth_observation?.improvement}</p>
+                        <p className="text-xs text-white/80"><span className="text-amber-500 mr-1 text-[10px]">FIX</span> {analysis.growth_observation?.area_to_work}</p>
+                    </div>
+                    <div className="bg-white/[0.03] border border-white/5 p-4 rounded-2xl flex flex-col justify-center">
+                        <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Wisdom Nugget</p>
+                        <p className="text-sm text-white font-black italic tracking-tight">"{analysis.wisdom_nugget}"</p>
+                    </div>
+                </div>
+
+                {/* Lessons */}
                 <div>
-                    <h4 className="flex items-center text-sm font-semibold text-gray-200 mb-2">
-                        <LightbulbIcon className="w-4 h-4 mr-2 text-accent-yellow" />
-                        Bài học rút ra
+                    <h4 className="flex items-center text-xs font-black text-white/40 uppercase tracking-widest mb-3">
+                        <LightbulbIcon className="w-3 h-3 mr-2 text-yellow-500" />
+                        Trích xuất bài học
                     </h4>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                         {(analysis?.lessons || []).map(l => <Lesson key={l.lesson_id} lesson={l} />)}
                     </div>
                 </div>
 
-                {analysis.positive_takeaways && analysis.positive_takeaways.length > 0 && (
-                    <div className="bg-accent-green/5 border border-accent-green/10 p-4 rounded-xl">
-                        <h4 className="flex items-center text-xs font-black text-accent-green uppercase tracking-widest mb-3">
-                            <CheckCircleIcon className="w-4 h-4 mr-2" />
-                            Positive Traits Observed
-                        </h4>
-                        <ul className="space-y-2 pl-1">
-                            {(analysis?.positive_takeaways || []).map((item, index) => (
-                                <li key={index} className="flex items-start gap-2 text-xs text-text-secondary leading-tight">
-                                    <span className="text-accent-green mt-1">✦</span>
-                                    {item}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
+                {/* Coaching Reflection */}
+                <div className="bg-accent-primary/5 border border-accent-primary/20 p-5 rounded-2xl text-center">
+                    <p className="text-[10px] font-black text-accent-primary uppercase tracking-widest mb-2">Coaching Question</p>
+                    <p className="text-lg font-bold text-white tracking-tight italic">"{analysis.coaching_question}"</p>
+                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
                     <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                        <h4 className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2 flex items-center gap-2">
-                            <TrendingDownIcon className="w-3 h-3" /> Redo Strategy
-                        </h4>
-                        <p className="text-xs text-text-main italic leading-relaxed">"{analysis.if_you_could_redo}"</p>
+                        <h4 className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2">Suggestion</h4>
+                        <p className="text-xs text-text-main leading-relaxed">"{analysis.growth_observation?.suggestion}"</p>
                     </div>
                     <div className="bg-white/5 p-4 rounded-xl border border-white/5 text-accent-primary/80">
-                        <h4 className="text-[10px] font-black text-accent-primary/40 uppercase tracking-widest mb-2 flex items-center gap-2">
-                            <ClipboardCheckIcon className="w-3 h-3" /> Journal Prompt
-                        </h4>
+                        <h4 className="text-[10px] font-black text-accent-primary/40 uppercase tracking-widest mb-2">Journal Suggestion</h4>
                         <p className="text-xs text-text-main italic leading-relaxed">"{analysis.journal_entry_suggestion}"</p>
                     </div>
                 </div>
-
             </div>
         </div>
     );

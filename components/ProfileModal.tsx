@@ -76,7 +76,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ userProfile, onSave,
   };
 
   const handleDiscover = async () => {
-    setDiscovering(true);
+    setIsDiscovering(true);
     setArchetypeRationale(null);
     try {
       const result = await onDiscoverArchetype();

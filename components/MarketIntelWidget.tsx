@@ -1,6 +1,6 @@
 import React from 'react';
 import { MarketAnalysis } from '../types';
-import { BeakerIcon, FireIcon, ShieldExclamationIcon, TrendingUpIcon, TrendingDownIcon } from '@heroicons/react/24/outline';
+import { BeakerIcon, FireIcon, ShieldExclamationIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon } from '@heroicons/react/24/outline';
 import { ActivityIcon, AlertTriangleIcon } from './icons';
 
 interface MarketIntelWidgetProps {
@@ -24,8 +24,8 @@ export const MarketIntelWidget: React.FC<MarketIntelWidgetProps> = ({ analysis }
         );
     }
 
-    const dangerColor = analysis.danger_level === 'DANGER' || analysis.danger_level === 'EXTREME' ? 'text-accent-red' :
-        analysis.danger_level === 'CAUTION' || analysis.danger_level === 'DANGEROUS' ? 'text-accent-yellow' : 'text-accent-green';
+    const dangerColor = analysis.danger_level === 'DANGEROUS' || analysis.danger_level === 'EXTREME' ? 'text-accent-red' :
+        analysis.danger_level === 'CAUTION' ? 'text-accent-yellow' : 'text-accent-green';
 
     // Derived metrics from analysis (different from main MarketContext)
     const sentiment = analysis.factors?.sentiment || 50;
@@ -117,8 +117,8 @@ export const MarketIntelWidget: React.FC<MarketIntelWidgetProps> = ({ analysis }
                                 </div>
                                 {risk.impact && (
                                     <div className={`text-[10px] font-bold px-2 py-0.5 rounded ${risk.impact === 'HIGH' ? 'bg-accent-red/20 text-accent-red' :
-                                            risk.impact === 'MEDIUM' ? 'bg-accent-yellow/20 text-accent-yellow' :
-                                                'bg-gray-500/20 text-gray-400'
+                                        risk.impact === 'MEDIUM' ? 'bg-accent-yellow/20 text-accent-yellow' :
+                                            'bg-gray-500/20 text-gray-400'
                                         }`}>
                                         {risk.impact}
                                     </div>

@@ -42,11 +42,21 @@ class User(Base):
     xp = Column(Integer, default=0)
     level = Column(String, default="NOVICE")
     archetype = Column(String, default="UNDEFINED")
+    trading_persona = Column(String, default="THE_OBSERVER") # 'The Gambler', 'The Zen Trader', etc.
+    transformation_stage = Column(String, default="AWARENESS") # 'AWARENESS' | 'PRACTICE' | 'MASTERY'
+    current_kata = Column(JSON) # {name: '', principles: [], practice: ''}
+    growth_garden = Column(JSON) # {tree_height: 1.0, blooms: [], last_watered: date}
     
     # Stats cache
     survival_score = Column(Integer, default=50)
     current_streak = Column(Integer, default=0)
     total_trades = Column(Integer, default=0)
+    timezone = Column(String(50), default="UTC") # User's local timezone
+    
+    # AI Cost & Usage Control
+    daily_ai_calls = Column(Integer, default=0)
+    last_ai_reset = Column(DateTime, default=datetime.utcnow)
+    monthly_ai_budget_usd = Column(Numeric, default=5.0) # $5 free tier budget
     
     # Shadow Score (JSON field for behavioral trust metrics)
     shadow_score = Column(JSON)  # Behavioral trust metrics

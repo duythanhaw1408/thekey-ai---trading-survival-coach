@@ -1,0 +1,19 @@
+
+> thekey-ai---trading-survival-coach@1.1.0 typecheck
+> tsc --noEmit
+
+e2e/auth.spec.ts(6,30): error TS2307: Cannot find module '@playwright/test' or its corresponding type declarations.
+e2e/playwright.config.ts(6,39): error TS2307: Cannot find module '@playwright/test' or its corresponding type declarations.
+tests/components/ErrorBoundary.test.tsx(22,5): error TS2304: Cannot find name 'afterEach'.
+tests/components/ErrorBoundary.test.tsx(26,5): error TS2304: Cannot find name 'afterAll'.
+tests/hooks/useAppState.test.ts(91,43): error TS2339: Property 'text' does not exist on type 'ChatMessage'.
+  Property 'text' does not exist on type '{ id: number; sender: "user" | "ai"; } & { type: "analysis"; analysis: CheckinAnalysisResult; }'.
+tests/setup.ts(26,14): error TS2304: Cannot find name 'vi'.
+tests/setup.ts(27,14): error TS2304: Cannot find name 'vi'.
+tests/setup.ts(28,17): error TS2304: Cannot find name 'vi'.
+tests/setup.ts(29,12): error TS2304: Cannot find name 'vi'.
+tests/setup.ts(37,28): error TS2304: Cannot find name 'vi'.
+tests/setup.ts(42,1): error TS2304: Cannot find name 'vi'.
+vitest.config.ts(8,5): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'test' does not exist in type 'UserConfigExport'.

@@ -6,6 +6,7 @@ export interface TraderStats {
     disciplineScore: number; // percentage
     consecutiveLosses: number;
     consecutiveWins: number;
+    achievements?: string[];
 }
 
 // User's self-evaluation from the 7-step Process Dojo
@@ -62,10 +63,15 @@ export type TradeDecision = {
     decision: 'ALLOW' | 'WARN' | 'BLOCK';
     reason: string;
     cooldown?: number; // in seconds
-    statistics?: {
-        overtrade_winrate: string;
-        normal_winrate: string;
-    };
+    behavioral_insight?: string;
+    alternatives?: {
+        type: string;
+        description: string;
+        rationale: string;
+    }[];
+    coaching_question?: string;
+    immediate_action?: string;
+    tone?: 'SUPPORTIVE' | 'CAUTIOUS' | 'EMPOWERING';
     recommended_size?: number;
 };
 
@@ -127,10 +133,21 @@ export interface CheckinQuestion {
 }
 
 export interface CheckinAnalysisResult {
-    insights: string;
-    action_items: string[];
+    insights: any;
+    action_items?: string[];
     encouragement: string;
+    emotional_state?: string;
+    state_intensity?: number;
     reflection_question?: string;
+    daily_prescription?: {
+        mindset_shift: string;
+        behavioral_rule: string;
+        success_metric: string;
+    };
+    progress_marker?: {
+        milestone: string;
+        visual_metaphor: string;
+    };
 }
 
 
@@ -206,6 +223,19 @@ export interface TradeAnalysis {
         confidence: number;
         evidence: string;
     };
+    behavioral_pattern?: {
+        identified: boolean;
+        pattern_name: string;
+        description: string;
+        frequency: string;
+    };
+    growth_observation?: {
+        improvement: string;
+        area_to_work: string;
+        suggestion: string;
+    };
+    wisdom_nugget?: string;
+    coaching_question?: string;
     lessons: PostTradeAnalysisLesson[];
     if_you_could_redo: string;
     positive_takeaways: string[];
@@ -304,6 +334,7 @@ export interface DangerScore {
         factor: string;
         severity: 'HIGH' | 'CRITICAL';
         description: string;
+        impact?: string;
     }[];
     recommendations: {
         action: 'REDUCE_SIZE' | 'HEDGE' | 'STAY_OUT';
@@ -491,6 +522,9 @@ export interface ShadowScore {
         xpMultiplier: number; // e.g., 1.15 for high trust, 0.85 for low trust
         verificationLevel: 'LOW' | 'MEDIUM' | 'HIGH';
     };
+    score?: number;
+    chargingFactors?: { factor: string; impact: string }[];
+    drainingFactors?: { factor: string; impact: string }[];
 }
 
 
