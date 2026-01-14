@@ -28,7 +28,7 @@ async def get_user_ai_stats(
     
     Returns token usage, costs, and breakdown by call type.
     """
-    tracker = AICallTracker(db)
+    tracker = AITracker(db)
     stats = tracker.get_accuracy_stats(user.id)
     
     # Add cost stats from AICallLog

@@ -39,12 +39,12 @@ export const XpPopup: React.FC<XpPopupProps> = ({ xpGain, trigger }) => {
                         style={{ marginTop: index * 10 }}
                     >
                         <div className="relative">
-                            <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-green-400 to-cyan-400 drop-shadow-lg">
-                                +{show.amount} XP
+                            <span className="text-2xl font-black text-accent-neon drop-shadow-[0_0_15px_rgba(0,255,157,0.8)] italic font-sans tracking-widest">
+                                +{show.amount}_XP
                             </span>
                             <motion.div
-                                className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-green-400/20 to-cyan-400/20 blur-xl"
-                                animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0.8, 0] }}
+                                className="absolute inset-0 bg-accent-neon/20 blur-xl"
+                                animate={{ scale: [1, 2, 1], opacity: [0.5, 0.8, 0] }}
                                 transition={{ duration: 1.5 }}
                             />
                         </div>
@@ -68,8 +68,8 @@ export const LevelUpCelebration: React.FC<{ show: boolean; newLevel: string; onC
     newLevel,
     onComplete
 }) => {
-    const colors = ['#FFD700', '#00FF88', '#00D4FF', '#FF6B6B', '#A855F7'];
-    const confetti: ConfettiPiece[] = Array.from({ length: 50 }, (_, i) => ({
+    const colors = ['#00FF9D', '#00E5FF', '#FFFFFF', '#00FF9D', '#00E5FF'];
+    const confetti: ConfettiPiece[] = Array.from({ length: 80 }, (_, i) => ({
         id: i,
         x: Math.random() * 100,
         delay: Math.random() * 0.5,
@@ -78,7 +78,7 @@ export const LevelUpCelebration: React.FC<{ show: boolean; newLevel: string; onC
 
     useEffect(() => {
         if (show) {
-            const timer = setTimeout(onComplete, 4000);
+            const timer = setTimeout(onComplete, 5000);
             return () => clearTimeout(timer);
         }
     }, [show, onComplete]);
@@ -90,27 +90,31 @@ export const LevelUpCelebration: React.FC<{ show: boolean; newLevel: string; onC
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+                    className="fixed inset-0 z-[500] flex items-center justify-center bg-black/95 backdrop-blur-2xl"
                     onClick={onComplete}
                 >
+                    <div className="absolute inset-0 cyber-grid opacity-10 pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-accent-neon/[0.05] to-transparent pointer-events-none" />
+
                     {/* Confetti */}
                     {confetti.map((piece) => (
                         <motion.div
                             key={piece.id}
-                            className="absolute w-3 h-3 rounded-sm"
+                            className="absolute w-1 h-3 rounded-full"
                             style={{
                                 left: `${piece.x}%`,
                                 top: '-5%',
-                                backgroundColor: piece.color
+                                backgroundColor: piece.color,
+                                boxShadow: `0 0 10px ${piece.color}`
                             }}
                             initial={{ y: 0, rotate: 0 }}
                             animate={{
                                 y: '120vh',
-                                rotate: 720,
-                                x: [0, 30, -30, 20, 0]
+                                rotate: 1080,
+                                x: [0, 50, -50, 30, 0]
                             }}
                             transition={{
-                                duration: 3 + Math.random(),
+                                duration: 3 + Math.random() * 2,
                                 delay: piece.delay,
                                 ease: "easeIn"
                             }}
@@ -119,22 +123,46 @@ export const LevelUpCelebration: React.FC<{ show: boolean; newLevel: string; onC
 
                     {/* Level Up Message */}
                     <motion.div
-                        initial={{ scale: 0, rotate: -10 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                        className="text-center z-10"
+                        initial={{ scale: 0, scaleZ: 0, opacity: 0 }}
+                        animate={{ scale: 1, scaleZ: 1, opacity: 1 }}
+                        transition={{ type: "spring", stiffness: 100, damping: 12 }}
+                        className="text-center z-10 p-12 relative"
                     >
+                        <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-accent-neon/40 rounded-tl-3xl" />
+                        <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-accent-neon/40 rounded-br-3xl" />
+
                         <motion.div
-                            animate={{ scale: [1, 1.1, 1] }}
-                            transition={{ repeat: Infinity, duration: 1.5 }}
+                            animate={{
+                                scale: [1, 1.1, 1],
+                                rotateZ: [0, 5, -5, 0]
+                            }}
+                            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                            className="relative inline-block"
                         >
-                            <span className="text-6xl">🎉</span>
+                            <span className="text-8xl filter drop-shadow-[0_0_20px_rgba(0,255,157,0.5)]">💎</span>
+                            <div className="absolute -inset-4 bg-accent-neon/20 blur-2xl rounded-full" />
                         </motion.div>
-                        <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 mt-4">
-                            LEVEL UP!
-                        </h2>
-                        <p className="text-2xl font-bold text-white mt-2">{newLevel}</p>
-                        <p className="text-sm text-white/60 mt-4">Tap to continue</p>
+
+                        <div className="mt-12 space-y-2">
+                            <p className="text-[10px] font-black text-accent-neon uppercase tracking-[0.8em] mb-4 drop-shadow-[0_0_8px_rgba(0,255,157,0.6)]">
+                                CALIBRATION_COMPLETE
+                            </p>
+                            <h2 className="text-7xl font-black text-white tracking-[0.1em] uppercase italic font-sans italic leading-none">
+                                LEVEL_UP
+                            </h2>
+                            <div className="h-0.5 w-full bg-accent-neon/30 mt-6 relative overflow-hidden">
+                                <motion.div
+                                    className="absolute inset-0 bg-accent-neon"
+                                    initial={{ x: '-100%' }}
+                                    animate={{ x: '100%' }}
+                                    transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                                />
+                            </div>
+                            <p className="text-3xl font-black text-accent-neon mt-8 tracking-widest uppercase italic font-sans">{newLevel}</p>
+                            <p className="text-[10px] font-black text-white/20 mt-12 uppercase tracking-[0.5em] animate-pulse">
+                                [ CLICK_TO_SYNCHRONIZE ]
+                            </p>
+                        </div>
                     </motion.div>
                 </motion.div>
             )}

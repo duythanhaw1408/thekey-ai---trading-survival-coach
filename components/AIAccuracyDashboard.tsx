@@ -88,79 +88,88 @@ const AIAccuracyDashboard: React.FC = () => {
 
     return (
         <motion.div
-            className="ai-accuracy-dashboard"
+            className="bg-black/40 backdrop-blur-xl border border-accent-neon/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden group"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
         >
-            <div className="dashboard-header">
-                <h2>🎯 AI Accuracy Dashboard</h2>
-                <span className="total-evaluated">{stats.total_evaluated} lệnh đã đánh giá</span>
+            <div className="absolute inset-0 cyber-grid opacity-[0.03] pointer-events-none" />
+
+            <div className="flex justify-between items-center mb-10 relative z-10">
+                <div className="flex items-center gap-4">
+                    <div className="w-1.5 h-6 bg-accent-neon shadow-[0_0_8px_rgba(0,255,157,0.8)]" />
+                    <h2 className="text-[11px] font-black text-white/40 uppercase tracking-[0.5em]">AI_NEURAL_ACCURACY_MATRIX</h2>
+                </div>
+                <span className="text-[10px] font-black text-accent-neon/60 bg-accent-neon/5 border border-accent-neon/20 px-4 py-1.5 rounded-full uppercase tracking-widest">
+                    TOTAL_EVALUATIONS: {stats.total_evaluated}
+                </span>
             </div>
 
-            <div className="dashboard-grid">
-                {/* Overall Accuracy - Circular Progress */}
-                <div className="stat-card overall-accuracy">
-                    <h3>Độ chính xác tổng</h3>
-                    <div className="circular-progress">
-                        <svg viewBox="0 0 100 100">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-10">
+                {/* Overall Accuracy */}
+                <div className="bg-black/60 border border-white/5 rounded-2xl p-6 flex flex-col items-center group-hover:border-accent-neon/20 transition-all duration-500">
+                    <h3 className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] mb-8">SYSTEM_PRECISION</h3>
+                    <div className="relative w-32 h-32">
+                        <svg className="w-full h-full transform -rotate-90">
                             <circle
-                                className="progress-background"
-                                cx="50"
-                                cy="50"
-                                r="45"
+                                cx="64"
+                                cy="64"
+                                r="58"
                                 fill="none"
-                                stroke="#2a2a2a"
-                                strokeWidth="8"
+                                stroke="rgba(255,255,255,0.03)"
+                                strokeWidth="6"
                             />
                             <motion.circle
-                                className="progress-bar"
-                                cx="50"
-                                cy="50"
-                                r="45"
+                                cx="64"
+                                cy="64"
+                                r="58"
                                 fill="none"
                                 stroke={getAccuracyColor(stats.overall_accuracy)}
-                                strokeWidth="8"
+                                strokeWidth="6"
                                 strokeLinecap="round"
-                                strokeDasharray={`${overallPercent * 2.83} 283`}
-                                transform="rotate(-90 50 50)"
-                                initial={{ strokeDasharray: "0 283" }}
-                                animate={{ strokeDasharray: `${overallPercent * 2.83} 283` }}
-                                transition={{ duration: 1, ease: "easeOut" }}
+                                initial={{ strokeDasharray: "0 364.4" }}
+                                animate={{ strokeDasharray: `${stats.overall_accuracy * 364.4} 364.4` }}
+                                transition={{ duration: 1.5, ease: "easeOut" }}
+                                className="drop-shadow-[0_0_10px_rgba(0,255,157,0.4)]"
                             />
                         </svg>
-                        <div className="progress-text">
-                            <span className="percent">{overallPercent}%</span>
-                            <span className="label">{getAccuracyLabel(stats.overall_accuracy)}</span>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <span className="text-3xl font-black text-white italic tracking-tighter">{overallPercent}%</span>
+                            <span className="text-[8px] font-black text-white/30 uppercase tracking-[0.2em] mt-1">{getAccuracyLabel(stats.overall_accuracy)}</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Accuracy by Decision Type */}
-                <div className="stat-card by-decision">
-                    <h3>Theo loại quyết định</h3>
-                    <div className="decision-bars">
+                <div className="bg-black/60 border border-white/5 rounded-2xl p-6 group-hover:border-accent-neon/20 transition-all duration-500">
+                    <h3 className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] mb-6">DECISION_VECTOR_ANALYSIS</h3>
+                    <div className="space-y-5">
                         {(['BLOCK', 'WARN', 'ALLOW'] as const).map(type => {
                             const data = stats.by_decision[type];
                             const percent = Math.round(data.accuracy * 100);
                             return (
-                                <div key={type} className="decision-bar">
-                                    <div className="bar-header">
-                                        <span className={`decision-type ${type.toLowerCase()}`}>
-                                            {type === 'BLOCK' ? '🛑 BLOCK' : type === 'WARN' ? '⚠️ WARN' : '✅ ALLOW'}
+                                <div key={type} className="space-y-2">
+                                    <div className="flex justify-between items-center text-[9px] font-black tracking-widest uppercase">
+                                        <span className={type === 'BLOCK' ? 'text-accent-red' : type === 'WARN' ? 'text-accent-yellow' : 'text-accent-neon'}>
+                                            {type}
                                         </span>
-                                        <span className="bar-count">{data.count} lệnh</span>
+                                        <span className="text-white/40">{data.count} SESSIONS</span>
                                     </div>
-                                    <div className="bar-container">
+                                    <div className="h-1.5 bg-black border border-white/5 rounded-full overflow-hidden p-0.5">
                                         <motion.div
-                                            className="bar-fill"
-                                            style={{ backgroundColor: getAccuracyColor(data.accuracy) }}
+                                            className="h-full rounded-full"
+                                            style={{
+                                                backgroundColor: getAccuracyColor(data.accuracy),
+                                                boxShadow: `0 0 10px ${getAccuracyColor(data.accuracy)}66`
+                                            }}
                                             initial={{ width: 0 }}
                                             animate={{ width: `${percent}%` }}
-                                            transition={{ duration: 0.8, delay: 0.2 }}
+                                            transition={{ duration: 1, delay: 0.2 }}
                                         />
                                     </div>
-                                    <span className="bar-percent">{percent}%</span>
+                                    <div className="flex justify-end">
+                                        <span className="text-[9px] font-black text-white/60 italic">{percent}%</span>
+                                    </div>
                                 </div>
                             );
                         })}
@@ -168,265 +177,57 @@ const AIAccuracyDashboard: React.FC = () => {
                 </div>
 
                 {/* Override Analysis */}
-                <div className="stat-card override-analysis">
-                    <h3>Phân tích Override</h3>
+                <div className="bg-black/60 border border-white/5 rounded-2xl p-6 group-hover:border-accent-neon/20 transition-all duration-500">
+                    <h3 className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] mb-6">NEURAL_OVERRIDE_LOG</h3>
                     {stats.override_analysis.total_overrides > 0 ? (
-                        <div className="override-stats">
-                            <div className="override-stat">
-                                <span className="stat-number">{stats.override_analysis.total_overrides}</span>
-                                <span className="stat-label">Lần bỏ qua AI</span>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="col-span-2 p-4 bg-black/40 border border-white/5 rounded-xl text-center">
+                                <span className="text-2xl font-black text-white italic block mb-1">{stats.override_analysis.total_overrides}</span>
+                                <span className="text-[8px] font-black text-white/30 uppercase tracking-widest">TOTAL_MANUAL_INTERVENTIONS</span>
                             </div>
-                            <div className="override-stat success">
-                                <span className="stat-number">{stats.override_analysis.successful_overrides}</span>
-                                <span className="stat-label">Thành công</span>
+                            <div className="p-4 bg-accent-neon/5 border border-accent-neon/10 rounded-xl text-center">
+                                <span className="text-lg font-black text-accent-neon italic block mb-1">{stats.override_analysis.successful_overrides}</span>
+                                <span className="text-[8px] font-black text-accent-neon/40 uppercase tracking-widest">VALIDATED</span>
                             </div>
-                            <div className="override-stat failed">
-                                <span className="stat-number">{stats.override_analysis.failed_overrides}</span>
-                                <span className="stat-label">Thất bại</span>
+                            <div className="p-4 bg-accent-red/5 border border-accent-red/10 rounded-xl text-center">
+                                <span className="text-lg font-black text-accent-red italic block mb-1">{stats.override_analysis.failed_overrides}</span>
+                                <span className="text-[8px] font-black text-accent-red/40 uppercase tracking-widest">REJECTED</span>
                             </div>
                         </div>
                     ) : (
-                        <p className="no-overrides">Bạn chưa bao giờ bỏ qua khuyến nghị AI. Tuyệt vời! 🎉</p>
+                        <div className="h-full flex flex-col items-center justify-center text-center p-4">
+                            <div className="w-12 h-12 bg-accent-neon/10 rounded-full flex items-center justify-center mb-4 border border-accent-neon/20">
+                                <span className="text-xl">🛡️</span>
+                            </div>
+                            <p className="text-[10px] font-black text-accent-neon uppercase tracking-widest leading-relaxed">PROTOCOL_ADHERRANCE: 100%</p>
+                            <p className="text-[8px] font-medium text-white/20 uppercase mt-2">No manual overrides detected in current epoch.</p>
+                        </div>
                     )}
                 </div>
             </div>
 
             {/* Insights */}
             {stats.insights.length > 0 && (
-                <div className="insights-section">
-                    <h3>💡 Insights</h3>
-                    <div className="insights-list">
+                <div className="mt-8 pt-8 border-t border-accent-neon/5 relative z-10">
+                    <h3 className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] mb-6">AI_SYSTEM_REFLECTIONS</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {stats.insights.map((insight, index) => (
                             <motion.div
                                 key={index}
-                                className="insight-card"
+                                className="bg-black/60 border-l-2 border-l-accent-neon border-y border-r border-white/5 p-4 rounded-r-xl group/insight hover:bg-accent-neon/5 transition-all duration-300"
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.1 }}
                             >
-                                {insight}
+                                <p className="text-[11px] text-white/60 font-medium leading-relaxed group-hover/insight:text-white transition-colors italic">
+                                    {">"} {insight}
+                                </p>
                             </motion.div>
                         ))}
                     </div>
                 </div>
             )}
-
-            <style>{`
-                .ai-accuracy-dashboard {
-                    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-                    border-radius: 16px;
-                    padding: 24px;
-                    margin: 16px 0;
-                }
-
-                .ai-accuracy-dashboard.loading,
-                .ai-accuracy-dashboard.empty {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    min-height: 200px;
-                    color: #888;
-                }
-
-                .empty-state {
-                    text-align: center;
-                }
-
-                .empty-icon {
-                    font-size: 48px;
-                    display: block;
-                    margin-bottom: 12px;
-                }
-
-                .dashboard-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 20px;
-                }
-
-                .dashboard-header h2 {
-                    margin: 0;
-                    font-size: 18px;
-                    color: #fff;
-                }
-
-                .total-evaluated {
-                    font-size: 13px;
-                    color: #888;
-                    background: rgba(255,255,255,0.1);
-                    padding: 4px 12px;
-                    border-radius: 12px;
-                }
-
-                .dashboard-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                    gap: 16px;
-                }
-
-                .stat-card {
-                    background: rgba(255,255,255,0.05);
-                    border-radius: 12px;
-                    padding: 16px;
-                }
-
-                .stat-card h3 {
-                    margin: 0 0 12px 0;
-                    font-size: 14px;
-                    color: #aaa;
-                    font-weight: 500;
-                }
-
-                /* Circular Progress */
-                .circular-progress {
-                    position: relative;
-                    width: 120px;
-                    height: 120px;
-                    margin: 0 auto;
-                }
-
-                .circular-progress svg {
-                    width: 100%;
-                    height: 100%;
-                }
-
-                .progress-text {
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    text-align: center;
-                }
-
-                .progress-text .percent {
-                    font-size: 28px;
-                    font-weight: bold;
-                    color: #fff;
-                    display: block;
-                }
-
-                .progress-text .label {
-                    font-size: 11px;
-                    color: #888;
-                }
-
-                /* Decision Bars */
-                .decision-bar {
-                    margin-bottom: 12px;
-                }
-
-                .bar-header {
-                    display: flex;
-                    justify-content: space-between;
-                    margin-bottom: 4px;
-                    font-size: 12px;
-                }
-
-                .decision-type {
-                    font-weight: 500;
-                }
-
-                .decision-type.block { color: #EF4444; }
-                .decision-type.warn { color: #F59E0B; }
-                .decision-type.allow { color: #10B981; }
-
-                .bar-count {
-                    color: #666;
-                }
-
-                .bar-container {
-                    height: 8px;
-                    background: #2a2a2a;
-                    border-radius: 4px;
-                    overflow: hidden;
-                }
-
-                .bar-fill {
-                    height: 100%;
-                    border-radius: 4px;
-                }
-
-                .bar-percent {
-                    font-size: 12px;
-                    color: #888;
-                }
-
-                /* Override Stats */
-                .override-stats {
-                    display: flex;
-                    justify-content: space-around;
-                    text-align: center;
-                }
-
-                .override-stat {
-                    flex: 1;
-                }
-
-                .stat-number {
-                    font-size: 24px;
-                    font-weight: bold;
-                    color: #fff;
-                    display: block;
-                }
-
-                .override-stat.success .stat-number { color: #10B981; }
-                .override-stat.failed .stat-number { color: #EF4444; }
-
-                .stat-label {
-                    font-size: 11px;
-                    color: #888;
-                }
-
-                .no-overrides {
-                    text-align: center;
-                    color: #10B981;
-                    font-size: 13px;
-                }
-
-                /* Insights */
-                .insights-section {
-                    margin-top: 20px;
-                }
-
-                .insights-section h3 {
-                    margin: 0 0 12px 0;
-                    font-size: 14px;
-                    color: #aaa;
-                }
-
-                .insights-list {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 8px;
-                }
-
-                .insight-card {
-                    background: rgba(59, 130, 246, 0.1);
-                    border-left: 3px solid #3B82F6;
-                    padding: 12px 16px;
-                    border-radius: 0 8px 8px 0;
-                    font-size: 13px;
-                    color: #ddd;
-                    line-height: 1.5;
-                }
-
-                .loading-spinner {
-                    width: 32px;
-                    height: 32px;
-                    border: 3px solid #333;
-                    border-top-color: #3B82F6;
-                    border-radius: 50%;
-                    animation: spin 1s linear infinite;
-                }
-
-                @keyframes spin {
-                    to { transform: rotate(360deg); }
-                }
-            `}</style>
         </motion.div>
     );
 };
-
 export default AIAccuracyDashboard;

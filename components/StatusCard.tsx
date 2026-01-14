@@ -11,21 +11,29 @@ interface StatusCardProps {
 }
 
 export const StatusCard: React.FC<StatusCardProps> = ({ icon, label, value, isHighlighted = false, tooltip }) => {
-  const highlightClass = isHighlighted ? 'ring-2 ring-accent-primary scale-105' : '';
+  const highlightClass = isHighlighted ? 'border-accent-neon shadow-[0_0_15px_rgba(0,255,157,0.3)] ring-1 ring-accent-neon/50 scale-[1.02]' : 'border-white/5';
 
   const content = (
-    <div className={`glass-panel p-5 flex items-center space-x-4 hover-scale cursor-default ${highlightClass}`}>
-      <div className="flex-shrink-0">{icon}</div>
-      <div className="text-left flex-1">
-        <p className="text-sm font-medium text-text-secondary flex items-center gap-1.5">
-          {label}
+    <div className={`bg-black/40 backdrop-blur-xl p-6 flex items-center space-x-5 transition-all duration-500 border rounded-2xl group hover:border-accent-neon/40 hover:shadow-[0_0_20px_rgba(0,255,157,0.1)] ${highlightClass}`}>
+      <div className="flex-shrink-0 bg-black border border-accent-neon/20 p-3 rounded-xl group-hover:bg-accent-neon/5 group-hover:border-accent-neon/40 transition-all duration-500 shadow-inner">
+        <div className="group-hover:drop-shadow-[0_0_8px_rgba(0,255,157,0.6)] transition-all">
+          {icon}
+        </div>
+      </div>
+      <div className="text-left flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 mb-1.5">
+          <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] truncate group-hover:text-white/60 transition-colors">
+            {label}
+          </p>
           {tooltip && (
-            <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-white/10 text-[9px] text-gray-400 cursor-help hover:bg-white/20 transition-colors">
+            <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-white/5 text-[9px] font-black text-white/40 cursor-help hover:bg-accent-neon/20 hover:text-accent-neon transition-all border border-white/10">
               ?
             </span>
           )}
+        </div>
+        <p className="text-2xl font-black text-white tracking-widest uppercase italic font-sans group-hover:text-accent-neon transition-all duration-300 truncate">
+          {value}
         </p>
-        <p className="text-2xl font-bold text-text-main">{value}</p>
       </div>
     </div>
   );

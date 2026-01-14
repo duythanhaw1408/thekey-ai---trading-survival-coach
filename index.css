@@ -1,60 +1,57 @@
-@import "tailwindcss";
-
 @theme {
-  --color-background: #0D0E12;
-  --color-panel: #1C1C1E;
-  --color-divider: rgba(255, 255, 255, 0.1);
+  --color-background: #000000;
+  --color-panel: #0A0A0A;
+  --color-divider: rgba(0, 255, 157, 0.1);
 
-  /* Flat Dark UI Palette */
-  --color-accent-primary: #4A90E2;
-  --color-accent-glow: rgba(74, 144, 226, 0.5);
-  --color-accent-red: #FF3B30;
-  --color-accent-yellow: #FFCC00;
-  --color-accent-green: #34C759;
-  --color-accent-primary-neon: #00F2FF;
+  /* Neon Cyberpunk Palette */
+  --color-accent-primary: #00ff9d;
+  /* Neon Green */
+  --color-accent-glow: rgba(0, 255, 157, 0.4);
+  --color-accent-red: #ff0055;
+  --color-accent-yellow: #ffee00;
+  --color-accent-green: #00ff9d;
+  --color-accent-primary-neon: #00ff9d;
 
-  --color-text-main: #F5F5F7;
-  --color-text-secondary: #8A8A8E;
+  --color-text-main: #ffffff;
+  --color-text-secondary: #80ffca;
 
-  --font-sans: "Inter", sans-serif;
-
-  --animate-fade-in: fadeIn 0.5s ease-in-out;
-
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-    }
-
-    100% {
-      opacity: 1;
-    }
-  }
+  --font-sans: "Outfit", "Inter", sans-serif;
 }
 
 
 :root {
-  --bg-black: #030303;
-  --panel-glass: rgba(18, 18, 20, 0.75);
-  --panel-border: rgba(255, 255, 255, 0.08);
-  --accent-primary: #00A3FF;
-  --accent-primary-neon: #00F2FF;
-  --accent-red: #FF3B30;
-  --accent-red-neon: #FF003C;
-  --accent-yellow: #FFCC00;
-  --accent-yellow-neon: #FFEA00;
-  --accent-green: #34C759;
-  --accent-green-neon: #00FF55;
-  --text-main: #FFFFFF;
-  --text-secondary: #9FA2AC;
-  --glass-blur: blur(30px);
-  --bento-gap: 1.25rem;
-  --card-radius: 24px;
-  --transition-speed: 0.4s;
+  --bg-black: #000000;
+  --panel-glass: rgba(5, 5, 5, 0.85);
+  --panel-border: rgba(0, 255, 157, 0.15);
+  --accent-neon: #00ff9d;
+  --accent-neon-glow: 0 0 20px rgba(0, 255, 157, 0.3);
+  --accent-red: #ff0055;
+  --accent-yellow: #ffee00;
+  --accent-green: #00ff9d;
+  --text-main: #ffffff;
+  --text-secondary: #a0aec0;
+  --glass-blur: blur(20px);
+  --card-radius: 16px;
+  --transition-speed: 0.3s;
+}
 
-  /* Premium Shadows */
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.4);
-  --shadow-neon: 0 0 20px rgba(0, 163, 255, 0.15);
+/* Cyber Grid Background */
+.cyber-grid {
+  background-image:
+    linear-gradient(rgba(0, 255, 157, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 157, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: center center;
+}
+
+.neon-glow {
+  box-shadow: 0 0 15px rgba(0, 255, 157, 0.2), inset 0 0 10px rgba(0, 255, 157, 0.1);
+  border: 1px solid rgba(0, 255, 157, 0.3);
+}
+
+.neon-text {
+  color: var(--accent-neon);
+  text-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
 }
 
 html,

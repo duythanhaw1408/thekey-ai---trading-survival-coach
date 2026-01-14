@@ -4,7 +4,7 @@ from models import get_db, Trade, User, Checkin
 from sqlalchemy import func
 import uuid
 from services.ai.gemini_client import gemini_client
-from services.ai.ai_tracking import AICallTracker
+from services.ai.ai_tracking import AITracker
 from services.auth.dependencies import get_current_user
 from typing import Dict
 from datetime import datetime, timedelta, timezone
@@ -108,6 +108,6 @@ async def get_ai_accuracy(user: User = Depends(get_current_user), db: Session = 
         - override_analysis: Stats on user overrides
         - insights: List of auto-generated insight messages
     """
-    tracker = AICallTracker(db)
+    tracker = AITracker(db)
     stats = tracker.get_accuracy_stats(user.id)
     return stats

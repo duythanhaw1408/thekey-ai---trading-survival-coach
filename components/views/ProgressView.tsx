@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import type { MasteryData, Pod, WeeklyGoals, WeeklyReport, Trade, TraderStats } from '../../types';
 import { MasteryTracker } from '../MasteryTracker';
 import { WeeklyGoalsCard } from '../WeeklyGoalsCard';
@@ -43,8 +44,8 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
     const { t, language } = useLanguage();
 
     return (
-        <div className="space-y-6 animate-entrance">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="space-y-8 pb-12 animate-entrance selection:bg-accent-neon selection:text-black">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Real-time Progress Card */}
                 <div className="lg:col-span-12">
                     <GoalProgressCard
@@ -54,56 +55,82 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
                     />
                 </div>
 
-                {/* Mastery & Quests - Taking more space */}
+                {/* Mastery & Quests */}
                 <div className="lg:col-span-12">
-                    <div className="bento-card p-6 bg-black/40 border-white/5">
-                        <div className="flex items-center gap-3 mb-6">
-                            <TrophyIcon className="w-5 h-5 text-accent-primary-neon" />
-                            <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em]">Survivor Growth & Mastery</h3>
+                    <div className="bg-black/40 backdrop-blur-md border border-accent-neon/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
+                        <div className="absolute inset-0 cyber-grid opacity-5" />
+                        <div className="flex items-center gap-3 mb-8 relative z-10">
+                            <div className="w-1.5 h-6 bg-accent-neon" />
+                            <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">SURVIVOR_GROWTH_&_MASTERY_CORE</h3>
                         </div>
-                        <MasteryTracker
-                            masteryData={masteryData}
-                            pod={pod}
-                            onSendPodMessage={onSendPodMessage}
-                            shadowScore={shadowScore}
-                        />
+                        <div className="relative z-10">
+                            <MasteryTracker
+                                masteryData={masteryData}
+                                pod={pod}
+                                onSendPodMessage={onSendPodMessage}
+                                shadowScore={shadowScore}
+                            />
+                        </div>
                     </div>
                 </div>
 
                 {/* Analytical Reports Section */}
                 <div className="lg:col-span-6">
-                    <div className="bento-card p-6 bg-black/40 border-white/5 h-full">
-                        <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] flex items-center">
-                                <CalendarIcon className="w-5 h-5 mr-3 text-accent-primary" />
-                                Weekly Objectives
+                    <div className="bg-black/40 backdrop-blur-md border border-accent-neon/10 rounded-3xl p-8 shadow-2xl h-full flex flex-col group">
+                        <div className="flex justify-between items-center mb-8">
+                            <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em] flex items-center">
+                                <CalendarIcon className="w-5 h-5 mr-4 text-accent-neon" />
+                                WEEKLY_OBJECTIVES
                             </h3>
                             <button
                                 onClick={onGetWeeklyGoals}
                                 disabled={isLoadingGoals || tradeHistory.length < 3}
-                                className="px-4 py-2 bg-accent-primary/10 border border-accent-primary/30 text-accent-primary text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-accent-primary/20 transition-all disabled:opacity-30"
+                                className="px-5 py-2.5 bg-accent-neon/5 border border-accent-neon/20 text-accent-neon text-[9px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-accent-neon hover:text-black transition-all disabled:opacity-20 neon-glow"
                             >
-                                {isLoadingGoals ? 'Calibrating...' : 'Refresh Goals'}
+                                {isLoadingGoals ? 'SYNCING_DATA...' : 'REFRESH_GOALS'}
                             </button>
                         </div>
 
-                        {isLoadingGoals && <div className="p-12 text-center text-text-secondary animate-pulse uppercase text-xs font-bold tracking-widest">Generating personalized objectives...</div>}
+                        {isLoadingGoals && (
+                            <div className="flex-1 flex flex-col items-center justify-center p-12 space-y-4">
+                                <div className="w-8 h-8 border-2 border-accent-neon border-t-transparent rounded-full animate-spin" />
+                                <p className="text-[10px] font-black text-accent-neon animate-pulse uppercase tracking-[0.3em]">CALIBRATING_PERSONALIZED_VECTORS...</p>
+                            </div>
+                        )}
+
                         {!weeklyGoals && !isLoadingGoals && (
-                            <div className="p-6 text-center border border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
-                                <CalendarIcon className="w-8 h-8 text-accent-primary/30 mx-auto mb-3" />
-                                <p className="text-white font-bold text-sm mb-2">Mục tiêu Tuần</p>
-                                <p className="text-text-secondary text-xs mb-4">
-                                    AI sẽ tạo mục tiêu cá nhân hóa dựa trên dữ liệu trading của bạn.
+                            <div className="flex-1 flex flex-col items-center justify-center p-10 text-center border border-dashed border-accent-neon/10 rounded-2xl bg-black/20 group-hover:bg-black/40 transition-colors">
+                                <div className="w-16 h-16 bg-accent-neon/5 rounded-full flex items-center justify-center mb-8 border border-accent-neon/10">
+                                    <CalendarIcon className="w-8 h-8 text-accent-neon/40" />
+                                </div>
+                                <h4 className="text-white font-black text-xs uppercase tracking-widest mb-3">MỤC TIÊU TUẦN_LOCKED</h4>
+                                <p className="text-white/30 text-[10px] uppercase font-bold tracking-widest mb-8 max-w-[200px] leading-relaxed">
+                                    AI protocol requires neural data before generating objectives.
                                 </p>
-                                <div className="text-[10px] text-gray-500 bg-white/5 rounded-lg p-3 text-left">
-                                    <p className="font-semibold text-accent-yellow mb-2">📋 Yêu cầu mở khóa:</p>
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] ${tradeHistory.length >= 3 ? 'bg-accent-green text-black' : 'bg-white/10'}`}>
-                                            {tradeHistory.length >= 3 ? '✓' : tradeHistory.length}
-                                        </span>
-                                        <span>Hoàn thành 3 trades với Dojo</span>
+                                <div className="w-full max-w-[240px] space-y-4 bg-black/40 p-5 rounded-xl border border-white/5">
+                                    <p className="text-[8px] font-black text-accent-yellow uppercase tracking-widest flex items-center gap-2">
+                                        <div className="w-1 h-3 bg-accent-yellow" /> UNLOCK_REQUIREMENTS:
+                                    </p>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[9px] font-bold text-white/30 uppercase tracking-widest">DOJO_COMMITS</span>
+                                            <span className={`text-[9px] font-black ${tradeHistory.length >= 3 ? 'text-accent-neon' : 'text-white/20'}`}>
+                                                {tradeHistory.length}/3
+                                            </span>
+                                        </div>
+                                        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${Math.min(tradeHistory.length / 3 * 100, 100)}%` }}
+                                                className="h-full bg-accent-neon shadow-[0_0_8px_rgba(0,255,157,0.5)]"
+                                            />
+                                        </div>
                                     </div>
-                                    <p className="mt-2 text-accent-primary">👉 Còn cần {Math.max(0, 3 - tradeHistory.length)} trade nữa</p>
+                                    {tradeHistory.length < 3 && (
+                                        <p className="text-[8px] font-black text-accent-neon uppercase animate-pulse">
+                                            {">>"} NEED_{Math.max(0, 3 - tradeHistory.length)}_MORE_SESSIONS
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -112,38 +139,61 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
                 </div>
 
                 <div className="lg:col-span-6">
-                    <div className="bento-card p-6 bg-black/40 border-white/5 h-full">
-                        <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] flex items-center">
-                                <FileTextIcon className="w-5 h-5 mr-3 text-accent-primary" />
-                                Survival Performance Report
+                    <div className="bg-black/40 backdrop-blur-md border border-accent-neon/10 rounded-3xl p-8 shadow-2xl h-full flex flex-col group">
+                        <div className="flex justify-between items-center mb-8">
+                            <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em] flex items-center">
+                                <FileTextIcon className="w-5 h-5 mr-4 text-accent-neon" />
+                                SURVIVAL_PERFORMANCE_LEDGER
                             </h3>
                             <button
                                 onClick={onGetWeeklyReport}
                                 disabled={isLoadingReport || tradeHistory.length < 5}
-                                className="px-4 py-2 bg-accent-primary/10 border border-accent-primary/30 text-accent-primary text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-accent-primary/20 transition-all disabled:opacity-30"
+                                className="px-5 py-2.5 bg-accent-neon/5 border border-accent-neon/20 text-accent-neon text-[9px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-accent-neon hover:text-black transition-all disabled:opacity-20 neon-glow"
                             >
-                                {isLoadingReport ? 'Processing...' : 'Generate Report'}
+                                {isLoadingReport ? 'COMPILING...' : 'GENERATE_REPORT'}
                             </button>
                         </div>
 
-                        {isLoadingReport && <div className="p-12 text-center text-text-secondary animate-pulse uppercase text-xs font-bold tracking-widest">Compiling weekly metrics...</div>}
+                        {isLoadingReport && (
+                            <div className="flex-1 flex flex-col items-center justify-center p-12 space-y-4">
+                                <div className="w-8 h-8 border-2 border-accent-neon border-t-transparent rounded-full animate-spin" />
+                                <p className="text-[10px] font-black text-accent-neon animate-pulse uppercase tracking-[0.3em]">PROCESSING_WEEKLY_METRICS...</p>
+                            </div>
+                        )}
+
                         {!weeklyReport && !isLoadingReport && (
-                            <div className="p-6 text-center border border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
-                                <FileTextIcon className="w-8 h-8 text-accent-primary/30 mx-auto mb-3" />
-                                <p className="text-white font-bold text-sm mb-2">Báo cáo Hiệu suất</p>
-                                <p className="text-text-secondary text-xs mb-4">
-                                    AI phân tích chi tiết hiệu suất trading trong tuần và đề xuất cải thiện.
+                            <div className="flex-1 flex flex-col items-center justify-center p-10 text-center border border-dashed border-accent-neon/10 rounded-2xl bg-black/20 group-hover:bg-black/40 transition-colors">
+                                <div className="w-16 h-16 bg-accent-neon/5 rounded-full flex items-center justify-center mb-8 border border-accent-neon/10">
+                                    <FileTextIcon className="w-8 h-8 text-accent-neon/40" />
+                                </div>
+                                <h4 className="text-white font-black text-xs uppercase tracking-widest mb-3">BÁO CÁO HIỆU SUẤT_STANDBY</h4>
+                                <p className="text-white/30 text-[10px] uppercase font-bold tracking-widest mb-8 max-w-[200px] leading-relaxed">
+                                    Insufficient neural bandwidth for full performance ledger.
                                 </p>
-                                <div className="text-[10px] text-gray-500 bg-white/5 rounded-lg p-3 text-left">
-                                    <p className="font-semibold text-accent-yellow mb-2">📊 Yêu cầu mở khóa:</p>
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] ${tradeHistory.length >= 5 ? 'bg-accent-green text-black' : 'bg-white/10'}`}>
-                                            {tradeHistory.length >= 5 ? '✓' : tradeHistory.length}
-                                        </span>
-                                        <span>Hoàn thành 5 trades với Dojo</span>
+                                <div className="w-full max-w-[240px] space-y-4 bg-black/40 p-5 rounded-xl border border-white/5">
+                                    <p className="text-[8px] font-black text-accent-yellow uppercase tracking-widest flex items-center gap-2">
+                                        <div className="w-1 h-3 bg-accent-yellow" /> DATA_THRESHOLD:
+                                    </p>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[9px] font-bold text-white/30 uppercase tracking-widest">MIN_SESSIONS</span>
+                                            <span className={`text-[9px] font-black ${tradeHistory.length >= 5 ? 'text-accent-neon' : 'text-white/20'}`}>
+                                                {tradeHistory.length}/5
+                                            </span>
+                                        </div>
+                                        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${Math.min(tradeHistory.length / 5 * 100, 100)}%` }}
+                                                className="h-full bg-accent-neon shadow-[0_0_8px_rgba(0,255,157,0.5)]"
+                                            />
+                                        </div>
                                     </div>
-                                    <p className="mt-2 text-accent-primary">👉 Còn cần {Math.max(0, 5 - tradeHistory.length)} trade nữa</p>
+                                    {tradeHistory.length < 5 && (
+                                        <p className="text-[8px] font-black text-accent-neon uppercase animate-pulse">
+                                            {">>"} ACCUMULATE_{Math.max(0, 5 - tradeHistory.length)}_MORE_ENTRIES
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -158,8 +208,13 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
 
                 {/* AI Self-Learning Section */}
                 <div className="lg:col-span-12">
-                    <div className="bento-card p-6 bg-black/40 border-white/5">
-                        <LearningInsights />
+                    <div className="bg-black/40 backdrop-blur-md border border-accent-neon/10 rounded-3xl p-10 shadow-2xl overflow-hidden relative">
+                        <div className="absolute top-0 right-0 p-8 opacity-5">
+                            <ChartBarIcon className="w-32 h-32 text-accent-neon" />
+                        </div>
+                        <div className="relative z-10">
+                            <LearningInsights />
+                        </div>
                     </div>
                 </div>
             </div>

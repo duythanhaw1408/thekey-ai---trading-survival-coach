@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import type { Trade, TradeDecision, TradeAnalysis } from '../../types';
 import { TradeInputForm } from '../TradeInputForm';
 import { TradeHistoryList } from '../TradeHistoryList';
@@ -35,13 +36,17 @@ export const TerminalView: React.FC<TerminalViewProps> = (props) => {
     const simulationMode = true;
 
     return (
-        <div className="h-full flex flex-col pt-4 overflow-hidden">
+        <div className="h-full flex flex-col pt-4 overflow-hidden selection:bg-accent-neon selection:text-black">
             <div className="flex-shrink-0 px-4 pb-2">
                 {simulationMode && (
-                    <div className="bg-accent-blue/10 border border-accent-blue/20 text-blue-300 p-2 rounded-lg flex items-center mb-4">
-                        <AlertTriangleIcon className="h-4 w-4 text-accent-blue mr-3" />
-                        <p className="text-[11px] font-semibold">Chế độ mô phỏng đang hoạt động.</p>
-                    </div>
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-accent-neon/5 border border-accent-neon/20 p-2.5 rounded-xl flex items-center mb-6 neon-glow"
+                    >
+                        <div className="w-1.5 h-1.5 rounded-full bg-accent-neon animate-pulse mr-3" />
+                        <p className="text-[10px] font-black text-accent-neon uppercase tracking-[0.2em]">Simulation_Engine: ACTIVE // Sandbox_Mode</p>
+                    </motion.div>
                 )}
                 <TradeInputForm
                     onSubmit={props.onSubmit}
@@ -55,7 +60,11 @@ export const TerminalView: React.FC<TerminalViewProps> = (props) => {
                 />
             </div>
 
-            <div className="flex-1 overflow-auto border-t border-white/5 bg-black/20">
+            <div className="flex-1 overflow-auto border-t border-accent-neon/10 bg-black/40 backdrop-blur-md">
+                <div className="px-4 py-2 bg-gradient-to-r from-accent-neon/5 to-transparent border-b border-accent-neon/5 flex items-center gap-2">
+                    <div className="w-1 h-3 bg-accent-neon/40 shadow-sm" />
+                    <span className="text-[9px] font-black text-accent-neon/40 uppercase tracking-widest">Trade_Ledger_History</span>
+                </div>
                 <TradeHistoryList
                     tradeHistory={props.tradeHistory}
                     onAnalyze={props.onAnalyzeTrade}

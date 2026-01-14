@@ -878,19 +878,23 @@ const App: React.FC = () => {
         {/* Offline Status Banner */}
         <OfflineBanner />
 
-        {/* Navigation Sidebar */}
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+        <Sidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          onLogout={logout}
+          isPro={user?.is_pro || false}
+          simulationMode={simulationMode}
+          setSimulationMode={setSimulationMode}
+        />
 
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col ml-0 md:ml-64 min-h-screen relative overflow-hidden pt-14 pb-20 md:pt-0 md:pb-0">
+        <div className="flex-1 flex flex-col relative z-10 w-full">
           <MainHeader
+            userProfile={userProfile}
             onProfileClick={() => setShowProfile(true)}
-            onLogout={handleLogout}
-            userEmail={user?.email}
-            isPro={user?.is_pro}
+            onLogout={logout}
+            isPro={user?.is_pro || false}
             simulationMode={simulationMode}
             setSimulationMode={setSimulationMode}
-            crisisIntervention={crisisIntervention}
             notificationPermission={notificationPermission}
             handleRequestNotificationPermission={handleRequestNotificationPermission}
             streak={streak}

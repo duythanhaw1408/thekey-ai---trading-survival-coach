@@ -9,7 +9,7 @@ from services.protection.revenge_blocker import RevengeTradePrevention
 from services.protection.size_guardian import PositionSizeGuardian
 from services.protection.fast_check import FastTradeCheck
 from services.ai.gemini_client import gemini_client
-from services.ai.ai_tracking import AICallTracker
+from services.ai.ai_tracking import AITracker
 from services.auth.dependencies import get_current_user
 from models import get_db, User, Trade
 import time
@@ -73,7 +73,7 @@ async def check_trade(data: Dict, user: User = Depends(get_current_user), db: Se
     # If Rule Engine gives a clear decision (not GRAY_ZONE), return immediately
     if engine_result.decision in ["BLOCK", "WARN", "ALLOW"] and not engine_result.needs_ai:
         # Track for AI accuracy dashboard (rule-based decision)
-        tracker = AICallTracker(db)
+        tracker = AITracker(db)
         tracker.log_decision(
             user_id=user.id,
             decision=engine_result.decision if engine_result.decision != "ALLOW" else "ALLOW",

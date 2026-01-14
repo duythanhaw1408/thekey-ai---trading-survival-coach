@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { MarketAnalysis } from '../types';
 import { BeakerIcon, FireIcon, ShieldExclamationIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon } from '@heroicons/react/24/outline';
 import { ActivityIcon, AlertTriangleIcon } from './icons';
@@ -34,91 +35,95 @@ export const MarketIntelWidget: React.FC<MarketIntelWidgetProps> = ({ analysis }
     const volatilityLabel = volatility > 70 ? 'Rất cao' : volatility > 50 ? 'Cao' : volatility > 30 ? 'Trung bình' : 'Thấp';
 
     return (
-        <div className="space-y-4">
-            {/* Header - Different title from MarketContext */}
-            <div className="flex items-center justify-between">
-                <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] flex items-center">
-                    <ActivityIcon className="w-4 h-4 mr-2 text-accent-primary" />
-                    Thông Số Thị Trường
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-accent-neon/5">
+                <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em] flex items-center">
+                    <ActivityIcon className="w-4 h-4 mr-3 text-accent-neon drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]" />
+                    Market_Intelligence
                 </h3>
-                <div className={`flex items-center space-x-2 px-2 py-1 rounded-md bg-white/5 border border-white/10 ${dangerColor}`}>
-                    <span className="text-[10px] font-bold uppercase">{analysis.danger_level}</span>
-                    <span className="text-sm">{analysis.color_code}</span>
+                <div className={`flex items-center gap-2 px-3 py-1 rounded-full bg-black border ${dangerColor.replace('text-', 'border-')}/30 ${dangerColor} shadow-inner`}>
+                    <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${dangerColor.replace('text-', 'bg-')}`} />
+                    <span className="text-[9px] font-black uppercase tracking-widest">{analysis.danger_level}</span>
                 </div>
             </div>
 
-            {/* Sentiment & Volatility - UNIQUE to this widget */}
-            <div className="grid grid-cols-2 gap-3">
-                <div className="p-4 bg-gradient-to-br from-orange-500/5 to-transparent border border-orange-500/10 rounded-xl">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center text-[10px] font-bold text-gray-500 uppercase">
-                            <FireIcon className="w-3.5 h-3.5 mr-1.5 text-orange-400" />
-                            Sentiment
+            {/* Sentiment & Volatility */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-5 bg-black/40 border border-accent-neon/5 rounded-2xl relative group overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-orange-500/[0.03] to-transparent pointer-events-none" />
+                    <div className="flex items-center justify-between mb-4 relative z-10">
+                        <div className="flex items-center text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">
+                            <FireIcon className="w-4 h-4 mr-2 text-orange-500/60" />
+                            SENTIMENT_INDEX
                         </div>
-                        <span className={`text-xs font-bold ${sentiment > 60 ? 'text-accent-red' : sentiment < 40 ? 'text-accent-green' : 'text-gray-400'}`}>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${sentiment > 60 ? 'text-accent-red' : sentiment < 40 ? 'text-accent-neon' : 'text-white/40'}`}>
                             {sentimentLabel}
                         </span>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <span className="text-2xl font-black text-white">{sentiment}</span>
-                        <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
-                            <div
-                                className={`h-full transition-all duration-500 ${sentiment > 60 ? 'bg-accent-red' : sentiment < 40 ? 'bg-accent-green' : 'bg-gray-500'}`}
-                                style={{ width: `${sentiment}%` }}
+                    <div className="flex items-center gap-4 relative z-10">
+                        <span className="text-3xl font-black text-white tracking-tighter italic font-sans">{sentiment}</span>
+                        <div className="flex-1 h-3 bg-black border border-white/5 rounded-full overflow-hidden shadow-inner p-0.5">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${sentiment}%` }}
+                                className={`h-full rounded-full transition-all duration-1000 ${sentiment > 60 ? 'bg-accent-red shadow-[0_0_10px_rgba(255,0,85,0.5)]' : sentiment < 40 ? 'bg-accent-neon shadow-[0_0_10px_rgba(0,255,157,0.5)]' : 'bg-white/20'}`}
                             />
                         </div>
                     </div>
-                    <p className="text-[10px] text-gray-600 mt-2">
-                        {sentiment > 60 ? '⚠️ Thị trường đang quá tham lam' : sentiment < 40 ? '✅ Cơ hội tích lũy' : 'Tâm lý cân bằng'}
+                    <p className="text-[9px] font-bold text-white/20 mt-4 uppercase tracking-widest italic group-hover:text-white/40 transition-colors">
+                        {sentiment > 60 ? 'ALERT: EXCESSIVE_GREED_DETECTED' : sentiment < 40 ? 'OPPORTUNITY: EXTREME_FEAR_STAGED' : 'SYSTEM_STATUS: NEUTRAL_STABILITY'}
                     </p>
                 </div>
 
-                <div className="p-4 bg-gradient-to-br from-blue-500/5 to-transparent border border-blue-500/10 rounded-xl">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center text-[10px] font-bold text-gray-500 uppercase">
-                            <BeakerIcon className="w-3.5 h-3.5 mr-1.5 text-blue-400" />
-                            Volatility
+                <div className="p-5 bg-black/40 border border-accent-neon/5 rounded-2xl relative group overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.03] to-transparent pointer-events-none" />
+                    <div className="flex items-center justify-between mb-4 relative z-10">
+                        <div className="flex items-center text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">
+                            <BeakerIcon className="w-4 h-4 mr-2 text-blue-500/60" />
+                            VOLATILITY_FLOW
                         </div>
-                        <span className={`text-xs font-bold ${volatility > 50 ? 'text-accent-yellow' : 'text-accent-green'}`}>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${volatility > 50 ? 'text-accent-yellow' : 'text-accent-neon'}`}>
                             {volatilityLabel}
                         </span>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <span className="text-2xl font-black text-white">{volatility}</span>
-                        <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
-                            <div
-                                className={`h-full transition-all duration-500 ${volatility > 70 ? 'bg-accent-red' : volatility > 50 ? 'bg-accent-yellow' : 'bg-accent-green'}`}
-                                style={{ width: `${volatility}%` }}
+                    <div className="flex items-center gap-4 relative z-10">
+                        <span className="text-3xl font-black text-white tracking-tighter italic font-sans">{volatility}</span>
+                        <div className="flex-1 h-3 bg-black border border-white/5 rounded-full overflow-hidden shadow-inner p-0.5">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${volatility}%` }}
+                                className={`h-full rounded-full transition-all duration-1000 ${volatility > 70 ? 'bg-accent-red shadow-[0_0_10px_rgba(255,0,85,0.5)]' : volatility > 50 ? 'bg-accent-yellow shadow-[0_0_10px_rgba(245,158,11,0.5)]' : 'bg-accent-neon shadow-[0_0_10px_rgba(0,255,157,0.5)]'}`}
                             />
                         </div>
                     </div>
-                    <p className="text-[10px] text-gray-600 mt-2">
-                        {volatility > 70 ? '🔥 Biến động mạnh, cẩn thận!' : volatility > 50 ? '⚡ Cần theo dõi' : '✨ Ổn định'}
+                    <p className="text-[9px] font-bold text-white/20 mt-4 uppercase tracking-widest italic group-hover:text-white/40 transition-colors">
+                        {volatility > 70 ? 'WARNING: UNSTABLE_VECTORS' : volatility > 50 ? 'CAUTION: INCREASED_NOISE' : 'SIGNAL: OPTIMAL_VELOCITY'}
                     </p>
                 </div>
             </div>
 
-            {/* Risk Factors - UNIQUE detailed breakdown */}
+            {/* Risk Factors */}
             {analysis.risk_factors && analysis.risk_factors.length > 0 && (
-                <div className="space-y-2">
-                    <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center">
-                        <ShieldExclamationIcon className="w-3.5 h-3.5 mr-1.5 text-accent-red" />
-                        Yếu Tố Rủi Ro Chính
+                <div className="space-y-4">
+                    <h4 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] flex items-center">
+                        <ShieldExclamationIcon className="w-4 h-4 mr-3 text-accent-red/60" />
+                        CRITICAL_RISK_FACTORS
                     </h4>
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-1 gap-3">
                         {analysis.risk_factors.slice(0, 3).map((risk, idx) => (
-                            <div key={idx} className="flex items-start space-x-3 p-3 bg-accent-red/5 border border-accent-red/10 rounded-lg group hover:border-accent-red/30 transition-all">
-                                <div className="w-5 h-5 rounded-full bg-accent-red/20 flex items-center justify-center flex-shrink-0">
-                                    <span className="text-[10px] font-bold text-accent-red">{idx + 1}</span>
+                            <div key={idx} className="flex items-center space-x-4 p-4 bg-black/20 border border-white/5 rounded-2xl group hover:border-accent-neon/20 transition-all duration-500">
+                                <div className="w-10 h-10 rounded-xl bg-black border border-white/10 flex items-center justify-center flex-shrink-0 group-hover:border-accent-neon/30 transition-colors">
+                                    <span className="text-xs font-black text-white/40 group-hover:text-accent-neon transition-colors">{idx + 1}</span>
                                 </div>
                                 <div className="flex-grow min-w-0">
-                                    <p className="text-xs font-bold text-white">{risk.factor}</p>
-                                    <p className="text-[10px] text-gray-500 mt-0.5 line-clamp-2">{risk.description}</p>
+                                    <p className="text-xs font-black text-white uppercase tracking-tighter truncate">{risk.factor}</p>
+                                    <p className="text-[9px] text-white/30 font-bold uppercase tracking-wider mt-1 truncate">{risk.description}</p>
                                 </div>
                                 {risk.impact && (
-                                    <div className={`text-[10px] font-bold px-2 py-0.5 rounded ${risk.impact === 'HIGH' ? 'bg-accent-red/20 text-accent-red' :
-                                        risk.impact === 'MEDIUM' ? 'bg-accent-yellow/20 text-accent-yellow' :
-                                            'bg-gray-500/20 text-gray-400'
+                                    <div className={`text-[8px] font-black px-3 py-1 rounded-full border ${risk.impact === 'HIGH' ? 'bg-accent-red/10 border-accent-red/30 text-accent-red' :
+                                        risk.impact === 'MEDIUM' ? 'bg-accent-yellow/10 border-accent-yellow/30 text-accent-yellow' :
+                                            'bg-white/5 border-white/10 text-white/30'
                                         }`}>
                                         {risk.impact}
                                     </div>
@@ -129,15 +134,16 @@ export const MarketIntelWidget: React.FC<MarketIntelWidgetProps> = ({ analysis }
                 </div>
             )}
 
-            {/* Trading Tip - UNIQUE actionable advice */}
-            <div className="p-3 bg-accent-primary/5 border border-accent-primary/20 rounded-lg">
-                <p className="text-[10px] text-gray-400">
-                    💡 <span className="font-semibold text-accent-primary">Gợi ý:</span>{' '}
+            {/* Trading Tip */}
+            <div className="p-4 bg-accent-neon/5 border border-accent-neon/20 rounded-2xl relative overflow-hidden group">
+                <div className="absolute inset-0 bg-accent-neon/[0.02] animate-pulse" />
+                <p className="text-[10px] text-white/60 font-medium relative z-10 leading-relaxed uppercase tracking-widest">
+                    <span className="font-black text-accent-neon mr-2">PROTOCOL_ADVICE:</span>
                     {analysis.danger_level === 'SAFE' ?
-                        'Điều kiện thuận lợi, có thể tăng position size.' :
+                        'OPTIMAL CONDITIONS. OVERWEIGHT POSITIONING AUTHORIZED.' :
                         analysis.danger_level === 'CAUTION' ?
-                            'Giữ position size bình thường, đặt SL chặt.' :
-                            'Giảm position size hoặc đứng ngoài thị trường.'
+                            'ELEVATED NOISE. MAINTAIN STANDARD SIZING. TIGHTEN STOPS.' :
+                            'EXTREME HAZARD. DRASTIC SIZING REDUCTION OR SYSTEM HALT ADVISED.'
                     }
                 </p>
             </div>

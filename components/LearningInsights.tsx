@@ -46,18 +46,22 @@ export const LearningInsights: React.FC = () => {
     </div>;
 
     return (
-        <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider flex items-center">
-                <BeakerIcon className="w-4 h-4 mr-2" />
-                AI Self-Learning Insights
+        <div className="space-y-8">
+            <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em] flex items-center">
+                <BeakerIcon className="w-5 h-5 mr-4 text-accent-neon drop-shadow-[0_0_8px_rgba(0,255,157,0.5)]" />
+                AI_SELF_LEARNING_ANALYTICS
             </h3>
 
             {insights.length === 0 ? (
-                <div className="bg-panel/50 border border-divider border-dashed rounded-xl p-6 text-center">
-                    <p className="text-sm text-text-secondary">AI đang thu thập thêm dữ liệu để học hỏi thói quen của bạn. Cần ít nhất 5 trades để bắt đầu tạo Insight.</p>
+                <div className="bg-black/40 backdrop-blur-md border border-accent-neon/10 border-dashed rounded-3xl p-10 text-center relative overflow-hidden group">
+                    <div className="absolute inset-0 cyber-grid opacity-[0.05] pointer-events-none" />
+                    <p className="text-[10px] font-black text-accent-neon/40 uppercase tracking-widest leading-relaxed relative z-10 max-w-[300px] mx-auto">
+                        SYSTEM_IDLE: AWAITING_NEURAL_DENSITY_THRESHOLD. <br />
+                        <span className="text-white/20 mt-4 block italic font-medium">Capture 5+ sessions to initiate pattern recognition.</span>
+                    </p>
                 </div>
             ) : (
-                <div className="grid gap-3">
+                <div className="grid gap-4">
                     <AnimatePresence>
                         {insights.map((insight, idx) => (
                             <motion.div
@@ -65,22 +69,29 @@ export const LearningInsights: React.FC = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: idx * 0.1 }}
-                                className="bg-panel border border-divider rounded-xl p-4 hover:border-accent-primary/50 transition-all group"
+                                className="bg-black/60 backdrop-blur-md border border-white/5 rounded-2xl p-6 hover:border-accent-neon/30 transition-all duration-500 group relative overflow-hidden"
                             >
-                                <div className="flex items-start space-x-3">
-                                    <div className="p-2 bg-background rounded-lg border border-divider group-hover:border-accent-primary/30 transition-colors">
-                                        {getIcon(insight.insight_type)}
+                                <div className="absolute inset-y-0 left-0 w-1 bg-accent-neon opacity-20 group-hover:opacity-100 transition-opacity shadow-[0_0_10px_rgba(0,255,157,0.5)]" />
+                                <div className="flex items-start space-x-6 relative z-10">
+                                    <div className="p-3 bg-black border border-white/10 rounded-xl group-hover:border-accent-neon/20 transition-colors shadow-inner">
+                                        {React.cloneElement(getIcon(insight.insight_type) as React.ReactElement, { className: 'w-6 h-6 text-accent-neon' })}
                                     </div>
-                                    <div className="flex-grow">
-                                        <div className="flex justify-between items-center mb-1">
-                                            <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{insight.insight_type}</span>
-                                            <span className="text-[10px] text-accent-primary font-mono">Confidence: {Math.round(insight.confidence * 100)}%</span>
+                                    <div className="flex-grow min-w-0">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em]">{insight.insight_type}_PROTOCOL</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">CONFIDENCE</span>
+                                                <span className="text-[10px] text-accent-neon font-black italic tracking-tighter">
+                                                    {Math.round(insight.confidence * 100)}%
+                                                </span>
+                                            </div>
                                         </div>
-                                        <p className="text-sm text-text-main leading-relaxed mb-2">{insight.description}</p>
+                                        <p className="text-[11px] text-white/70 font-medium leading-relaxed mb-4 uppercase tracking-wide truncate-lines-2">{insight.description}</p>
                                         {insight.is_actionable && insight.recommendation && (
-                                            <div className="bg-accent-primary/5 border border-accent-primary/10 rounded-lg p-2 mt-2">
-                                                <p className="text-xs text-accent-primary font-medium">
-                                                    💡 Khuyến nghị: {insight.recommendation}
+                                            <div className="bg-accent-neon/5 border border-accent-neon/20 rounded-xl p-4 mt-2 group-hover:bg-accent-neon/10 transition-colors">
+                                                <p className="text-[10px] text-accent-neon font-black uppercase tracking-widest mb-1 shadow-sm">NEURAL_ADVICE_LINK:</p>
+                                                <p className="text-[10px] text-white/60 italic font-medium">
+                                                    {insight.recommendation}
                                                 </p>
                                             </div>
                                         )}

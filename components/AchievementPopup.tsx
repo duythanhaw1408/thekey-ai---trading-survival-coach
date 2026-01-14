@@ -15,17 +15,17 @@ interface AchievementPopupProps {
 }
 
 const rarityColors = {
-    common: 'from-gray-500 to-gray-600',
-    rare: 'from-blue-500 to-blue-600',
-    epic: 'from-purple-500 to-purple-600',
-    legendary: 'from-amber-500 to-orange-500'
+    common: 'from-accent-neon/20 to-accent-neon/40',
+    rare: 'from-accent-neon/40 to-accent-neon/60',
+    epic: 'from-accent-neon/60 to-accent-neon/80',
+    legendary: 'from-accent-neon to-accent-neon hover:shadow-[0_0_30px_rgba(0,255,157,0.5)]'
 };
 
 const rarityGlow = {
-    common: 'shadow-gray-500/30',
-    rare: 'shadow-blue-500/30',
-    epic: 'shadow-purple-500/30',
-    legendary: 'shadow-amber-500/50'
+    common: 'shadow-accent-neon/10',
+    rare: 'shadow-accent-neon/20',
+    epic: 'shadow-accent-neon/30',
+    legendary: 'shadow-accent-neon/50'
 };
 
 export const AchievementPopup: React.FC<AchievementPopupProps> = ({
@@ -37,104 +37,101 @@ export const AchievementPopup: React.FC<AchievementPopupProps> = ({
     useEffect(() => {
         if (achievement) {
             setShow(true);
-            // Auto close after 5 seconds
             const timer = setTimeout(() => {
                 setShow(false);
                 setTimeout(onClose, 300);
-            }, 5000);
+            }, 6000);
             return () => clearTimeout(timer);
         }
     }, [achievement, onClose]);
 
+    if (!achievement) return null;
+
     return (
         <AnimatePresence>
-            {show && achievement && (
+            {show && (
                 <motion.div
-                    initial={{ opacity: 0, y: 100, scale: 0.8 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -50, scale: 0.8 }}
-                    className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[300]"
+                    initial={{ opacity: 0, y: 100, scale: 0.9, filter: 'blur(10px)' }}
+                    animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                    exit={{ opacity: 0, y: -50, scale: 0.9, filter: 'blur(10px)' }}
+                    className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[300] w-full max-w-sm px-4"
                 >
-                    <div
-                        className={`relative bg-gradient-to-r ${rarityColors[achievement.rarity]} rounded-2xl p-1 shadow-2xl ${rarityGlow[achievement.rarity]}`}
-                    >
-                        <div className="bg-black/90 backdrop-blur-xl rounded-xl p-4 flex items-center gap-4">
-                            {/* Icon with glow */}
-                            <motion.div
-                                animate={{
-                                    scale: [1, 1.2, 1],
-                                    rotate: [0, 10, -10, 0]
-                                }}
-                                transition={{ duration: 0.5, repeat: 2 }}
-                                className="text-4xl"
-                            >
-                                {achievement.icon}
-                            </motion.div>
+                    <div className={`relative bg-black border border-accent-neon/30 rounded-3xl p-1 overflow-hidden shadow-2xl ${rarityGlow[achievement.rarity]}`}>
+                        <div className="absolute inset-0 cyber-grid opacity-10 pointer-events-none" />
+
+                        <div className="bg-black/80 backdrop-blur-2xl rounded-[1.4rem] p-6 flex items-center gap-6 relative z-10">
+                            {/* Icon with pulsing neon glow */}
+                            <div className="relative">
+                                <motion.div
+                                    animate={{
+                                        scale: [1, 1.15, 1],
+                                        rotate: [0, 5, -5, 0]
+                                    }}
+                                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                                    className="text-5xl filter drop-shadow-[0_0_15px_rgba(0,255,157,0.4)]"
+                                >
+                                    {achievement.icon}
+                                </motion.div>
+                                <div className="absolute -inset-2 bg-accent-neon/20 blur-xl rounded-full animate-pulse pointer-events-none" />
+                            </div>
 
                             {/* Content */}
-                            <div className="flex-1">
-                                <p className="text-[10px] text-white/50 uppercase tracking-wider font-bold">
-                                    Thành Tựu Mới!
-                                </p>
-                                <h3 className="text-lg font-black text-white">
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <span className="w-1.5 h-3 bg-accent-neon shadow-[0_0_8px_rgba(0,255,157,0.8)]" />
+                                    <p className="text-[10px] font-black text-accent-neon uppercase tracking-[0.3em]">
+                                        ACHIEVEMENT_UNLOCKED
+                                    </p>
+                                </div>
+                                <h3 className="text-xl font-black text-white uppercase tracking-tight italic font-sans truncate">
                                     {achievement.title}
                                 </h3>
-                                <p className="text-xs text-white/70 mt-0.5">
+                                <p className="text-[10px] text-white/40 font-medium uppercase tracking-wide mt-1 leading-tight">
                                     {achievement.description}
                                 </p>
                             </div>
 
-                            {/* XP Badge */}
+                            {/* XP Reward Chip */}
                             <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ delay: 0.3, type: 'spring' }}
-                                className={`bg-gradient-to-r ${rarityColors[achievement.rarity]} rounded-full px-3 py-1`}
+                                initial={{ x: 20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                transition={{ delay: 0.2 }}
+                                className="bg-accent-neon/10 border border-accent-neon/30 rounded-xl px-4 py-2 shadow-inner"
                             >
-                                <span className="text-sm font-black text-white">
-                                    +{achievement.xpReward} XP
+                                <span className="text-[11px] font-black text-accent-neon uppercase font-mono">
+                                    +{achievement.xpReward}_XP
                                 </span>
                             </motion.div>
                         </div>
 
-                        {/* Sparkles effect */}
+                        {/* Particle Effects for Legendary */}
                         {achievement.rarity === 'legendary' && (
                             <div className="absolute inset-0 pointer-events-none">
-                                {[...Array(6)].map((_, i) => (
+                                {[...Array(8)].map((_, i) => (
                                     <motion.div
                                         key={i}
-                                        className="absolute w-1 h-1 bg-amber-300 rounded-full"
-                                        initial={{
-                                            x: '50%',
-                                            y: '50%',
-                                            opacity: 0
-                                        }}
+                                        className="absolute w-0.5 h-0.5 bg-accent-neon rounded-full"
+                                        initial={{ x: '50%', y: '80%', opacity: 0 }}
                                         animate={{
-                                            x: `${50 + (Math.random() - 0.5) * 100}%`,
-                                            y: `${50 + (Math.random() - 0.5) * 100}%`,
-                                            opacity: [0, 1, 0],
-                                            scale: [0, 1.5, 0]
+                                            x: `${10 + Math.random() * 80}%`,
+                                            y: `${10 + Math.random() * 80}%`,
+                                            opacity: [0, 1, 0]
                                         }}
-                                        transition={{
-                                            duration: 1.5,
-                                            delay: i * 0.2,
-                                            repeat: Infinity
-                                        }}
+                                        transition={{ duration: 1.5, delay: i * 0.1, repeat: Infinity }}
                                     />
                                 ))}
                             </div>
                         )}
                     </div>
 
-                    {/* Tap to dismiss */}
                     <button
                         onClick={() => {
                             setShow(false);
                             setTimeout(onClose, 300);
                         }}
-                        className="block mx-auto mt-2 text-[10px] text-white/30 hover:text-white/50 transition-colors"
+                        className="block mx-auto mt-4 text-[9px] font-black text-white/20 hover:text-white/50 uppercase tracking-[0.5em] transition-all hover:tracking-[0.6em]"
                     >
-                        Nhấn để đóng
+                        [ TAP_TO_DISMISS ]
                     </button>
                 </motion.div>
             )}

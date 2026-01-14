@@ -54,28 +54,34 @@ export const ExecutionView: React.FC<ExecutionViewProps> = ({
 
     return (
         <div className="flex flex-col h-full animate-entrance">
-            <div className="bento-card flex-1 p-0 overflow-hidden flex flex-col bg-black/40 border-white/5">
+            <div className="flex-1 p-0 overflow-hidden flex flex-col bg-black/40 backdrop-blur-xl border border-accent-neon/10 rounded-3xl shadow-2xl relative">
+                {/* Corner HUD Markers */}
+                <div className="absolute top-0 left-0 w-6 h-6 border-t border-l border-accent-neon/20 rounded-tl-3xl pointer-events-none" />
+                <div className="absolute top-0 right-0 w-6 h-6 border-t border-r border-accent-neon/20 rounded-tr-3xl pointer-events-none" />
+
                 {/* Internal Tabs for Execution */}
-                <div className="flex border-b border-white/5 bg-white/5 p-1 gap-1">
+                <div className="flex border-b border-accent-neon/5 bg-black/60 p-1.5 gap-1.5 relative z-10">
                     <button
                         onClick={() => setSubTab('terminal')}
-                        className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-xl text-xs font-black uppercase tracking-[0.2em] transition-all ${subTab === 'terminal'
-                            ? 'bg-white/10 text-accent-primary shadow-[0_0_15px_rgba(34,211,238,0.1)]'
-                            : 'text-text-secondary hover:bg-white/5 hover:text-white'
+                        className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-500 relative overflow-hidden group ${subTab === 'terminal'
+                            ? 'bg-accent-neon/10 text-accent-neon border border-accent-neon/30 shadow-[0_0_20px_rgba(0,255,157,0.1)]'
+                            : 'text-white/40 border border-transparent hover:bg-white/5 hover:text-white'
                             }`}
                     >
-                        <TerminalIcon className="w-4 h-4" />
-                        Terminal
+                        {subTab === 'terminal' && <div className="absolute inset-0 bg-accent-neon/[0.02] animate-pulse" />}
+                        <TerminalIcon className={`w-4 h-4 transition-transform duration-500 ${subTab === 'terminal' ? 'scale-110 drop-shadow-[0_0_8px_rgba(0,255,157,0.6)]' : 'group-hover:scale-110'}`} />
+                        TERMINAL_CORE
                     </button>
                     <button
                         onClick={() => setSubTab('coach')}
-                        className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-xl text-xs font-black uppercase tracking-[0.2em] transition-all ${subTab === 'coach'
-                            ? 'bg-white/10 text-accent-primary shadow-[0_0_15px_rgba(34,211,238,0.1)]'
-                            : 'text-text-secondary hover:bg-white/5 hover:text-white'
+                        className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-500 relative overflow-hidden group ${subTab === 'coach'
+                            ? 'bg-accent-neon/10 text-accent-neon border border-accent-neon/30 shadow-[0_0_20px_rgba(0,255,157,0.1)]'
+                            : 'text-white/40 border border-transparent hover:bg-white/5 hover:text-white'
                             }`}
                     >
-                        <AcademicCapIcon className="w-4 h-4" />
-                        AI Coach
+                        {subTab === 'coach' && <div className="absolute inset-0 bg-accent-neon/[0.02] animate-pulse" />}
+                        <AcademicCapIcon className={`w-4 h-4 transition-transform duration-500 ${subTab === 'coach' ? 'scale-110 drop-shadow-[0_0_8px_rgba(0,255,157,0.6)]' : 'group-hover:scale-110'}`} />
+                        AI_STRATEGIST
                     </button>
                 </div>
 

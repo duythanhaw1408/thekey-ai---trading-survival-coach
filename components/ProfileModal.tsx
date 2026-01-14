@@ -13,36 +13,45 @@ interface ProfileModalProps {
 
 const ArchetypeDisplay: React.FC<{ archetype: UserProfile['archetype'], rationale: string | null, onDiscover: () => void, isLoading: boolean }> = ({ archetype, rationale, onDiscover, isLoading }) => {
   const archetypeInfo = {
-    ANALYTICAL_TRADER: { title: "Nhà Giao Dịch Phân Tích", color: "text-accent-blue", description: "Bạn có xu hướng dựa vào dữ liệu, phân tích kỹ thuật và có kế hoạch rõ ràng." },
-    EMOTIONAL_TRADER: { title: "Nhà Giao Dịch Cảm Xúc", color: "text-accent-red", description: "Các quyết định của bạn thường bị ảnh hưởng bởi cảm xúc như sợ hãi, tham lam, hoặc hưng phấn." },
-    SYSTEMATIC_TRADER: { title: "Nhà Giao Dịch Hệ Thống", color: "text-accent-green", description: "Bạn tuân thủ nghiêm ngặt một bộ quy tắc và hệ thống giao dịch đã được xác định trước." },
-    UNDEFINED: { title: "Chưa xác định", color: "text-text-secondary", description: "Hãy để AI phân tích hành vi của bạn để khám phá phong cách giao dịch cốt lõi của bạn." }
+    ANALYTICAL_TRADER: { title: "ANALYTICAL_TRADER", color: "text-accent-blue", description: "DATA-DRIVEN_SPECULATOR. UTILIZES_QUANTITATIVE_MODELS_AND_PRECISION_ANALYSIS." },
+    EMOTIONAL_TRADER: { title: "EMOTIONAL_TRADER", color: "text-accent-red", description: "SENTIMENT-DRIVEN_ACTOR. HIGH_VULNERABILITY_TO_NEURAL_BIAS_AND_MARKET_TURBULENCE." },
+    SYSTEMATIC_TRADER: { title: "SYSTEMATIC_TRADER", color: "text-accent-neon", description: "ALGORITHMIC_OPERATOR. RIGID_ADHERENCE_TO_ESTABLISHED_DISCIPLINE_PROTOCOLS." },
+    UNDEFINED: { title: "UNDEFINED_VECTOR", color: "text-white/20", description: "AWAITING_NEURAL_DENSITY_ANALYSIS. INITIATE_SCAN_TO_DETERMINE_CORE_TRADING_LOGIC." }
   };
   const info = archetypeInfo[archetype];
 
   return (
-    <div className="bg-background p-4 rounded-md border border-divider">
-      <h3 className="text-sm font-semibold text-text-secondary mb-2">Trader Archetype</h3>
+    <div className="bg-black/40 p-6 rounded-3xl border border-white/5 group hover:border-accent-neon/20 transition-all duration-500 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-accent-neon/[0.03] to-transparent pointer-events-none" />
+      <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mb-4">NEURAL_ARCHETYPE_PROFILE</h3>
       {archetype === 'UNDEFINED' && !isLoading && (
-        <div className="text-center p-4">
-          <p className="text-text-secondary mb-4">{info.description}</p>
-          <button onClick={onDiscover} className="bg-accent-primary text-black font-semibold py-2 px-4 rounded-md hover:brightness-110 transition-all flex items-center justify-center mx-auto">
-            <BrainCircuitIcon className="w-5 h-5 mr-2" />
-            Khám phá Archetype của tôi
+        <div className="text-center p-6 space-y-6">
+          <p className="text-[11px] text-white/40 uppercase tracking-wide leading-relaxed italic">{info.description}</p>
+          <button onClick={onDiscover} className="w-full bg-accent-neon text-black font-black uppercase text-xs tracking-[0.3em] py-4 rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(0,255,157,0.2)]">
+            <BrainCircuitIcon className="w-5 h-5" />
+            INITIATE_CORE_SCAN
           </button>
         </div>
       )}
       {isLoading && (
-        <div className="text-center p-4">
-          <svg className="animate-spin mx-auto h-8 w-8 text-accent-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-          <p className="mt-2 text-text-secondary">AI đang phân tích hành vi của bạn...</p>
+        <div className="text-center p-10">
+          <div className="w-12 h-12 border-4 border-accent-neon/20 border-t-accent-neon rounded-full animate-spin mx-auto mb-6" />
+          <p className="text-[10px] font-black text-accent-neon uppercase tracking-[0.3em] animate-pulse">ANALYZING_NEURAL_FEED_PATTERNS...</p>
         </div>
       )}
       {archetype !== 'UNDEFINED' && !isLoading && (
-        <div>
-          <h4 className={`text-lg font-bold ${info.color}`}>{info.title}</h4>
-          <p className="text-sm text-text-secondary mt-1">{info.description}</p>
-          {rationale && <p className="text-sm text-text-main mt-3 pt-3 border-t border-divider italic">"{rationale}"</p>}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h4 className={`text-2xl font-black italic tracking-widest ${info.color} drop-shadow-[0_0_10px_rgba(0,255,157,0.2)]`}>{info.title}</h4>
+            <div className="w-2 h-2 rounded-full bg-accent-neon shadow-[0_0_10px_rgba(0,255,157,0.8)] animate-pulse" />
+          </div>
+          <p className="text-[11px] text-white/60 uppercase tracking-tight leading-relaxed italic border-l-2 border-accent-neon/30 pl-4 bg-accent-neon/[0.02] py-2 rounded-r-lg">{info.description}</p>
+          {rationale && (
+            <div className="mt-6 pt-6 border-t border-white/5">
+              <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] mb-2">AI_EVALUATION_RATIONALE</p>
+              <p className="text-[10px] text-accent-neon font-medium italic leading-relaxed uppercase tracking-wide">"{rationale}"</p>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -83,119 +92,145 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ userProfile, onSave,
       setArchetypeRationale(result.rationale);
     } catch (error) {
       console.error("Failed to discover archetype:", error);
-      setArchetypeRationale("Lỗi: Không thể phân tích archetype của bạn lúc này.");
+      setArchetypeRationale("FAULT_REPORT: NEURAL_ANALYSIS_FAILURE. RE-INITIATE_SCAN.");
     } finally {
       setIsDiscovering(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-panel rounded-md shadow-2xl max-w-2xl w-full flex flex-col max-h-[90vh] border border-divider">
-        <header className="p-4 border-b border-divider flex-shrink-0 flex justify-between items-center">
-          <div className="flex items-center">
-            <UserCircleIcon className="w-6 h-6 mr-3 text-accent-primary" />
-            <h2 className="text-lg font-bold text-text-main">{t('profile.title')}</h2>
+    <div className="fixed inset-0 bg-black/95 backdrop-blur-2xl flex items-center justify-center z-[150] p-6 overflow-hidden">
+      <div className="absolute inset-0 cyber-grid opacity-[0.05] pointer-events-none" />
+      <div className="bg-black border border-accent-neon/20 rounded-[3rem] shadow-[0_0_100px_rgba(0,0,0,0.8)] max-w-2xl w-full flex flex-col max-h-[90vh] relative overflow-hidden">
+        {/* Corner HUD Markers */}
+        <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-accent-neon/30 rounded-tl-[3rem] pointer-events-none" />
+        <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-accent-neon/30 rounded-tr-[3rem] pointer-events-none" />
+
+        <header className="p-10 border-b border-accent-neon/5 flex-shrink-0 flex justify-between items-center bg-black/60 relative">
+          <div className="absolute inset-0 bg-gradient-to-br from-accent-neon/[0.03] to-transparent pointer-events-none" />
+          <div className="flex items-center gap-6 relative z-10">
+            <div className="w-12 h-12 rounded-2xl bg-black border border-accent-neon/20 flex items-center justify-center shadow-inner group-hover:border-accent-neon transition-colors">
+              <UserCircleIcon className="w-6 h-6 text-accent-neon drop-shadow-[0_0_8px_rgba(0,255,157,0.5)]" />
+            </div>
+            <div>
+              <h2 className="text-[10px] font-black text-accent-neon uppercase tracking-[0.5em] mb-2 drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]">OPERATOR_IDENTITY_VECT</h2>
+              <h3 className="text-3xl font-black text-white tracking-widest uppercase italic font-sans italic leading-none">{t('profile.title')}</h3>
+            </div>
           </div>
-          <button onClick={onClose} className="text-2xl text-text-secondary hover:text-text-main">&times;</button>
+          <button onClick={onClose} className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/20 hover:text-white hover:bg-white/10 transition-all font-sans text-2xl relative z-10">&times;</button>
         </header>
 
-        <form onSubmit={handleSave} className="flex-grow overflow-y-auto p-6 space-y-6">
-          {/* Username Section - For Anonymity */}
-          <div className="bg-background p-4 rounded-md border border-divider">
-            <h3 className="text-sm font-semibold text-text-secondary mb-4 flex items-center">
-              <span className="w-2 h-2 bg-accent-primary rounded-full mr-2"></span>
-              Anonymous Display Name
+        <form onSubmit={handleSave} className="flex-grow overflow-y-auto px-10 py-8 min-h-0 custom-scrollbar space-y-10 relative z-10">
+          {/* Username Section */}
+          <div className="bg-black/40 p-6 rounded-2xl border border-white/5 hover:border-accent-neon/10 transition-all duration-500">
+            <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mb-6 flex items-center">
+              <span className="w-1.5 h-4 bg-accent-neon mr-3 shadow-[0_0_10px_rgba(0,255,157,0.8)]"></span>
+              NEURAL_IDENTITY_HANDLE
             </h3>
-            <div>
-              <label className="text-xs text-text-secondary uppercase mb-1 block">Username (hiển thị công khai)</label>
+            <div className="space-y-4">
+              <label className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] block mb-2">ANONYMOUS_OPERATOR_NAME</label>
               <input
                 type="text"
                 value={profile.username || ''}
                 onChange={(e) => setProfile(prev => ({ ...prev, username: e.target.value }))}
-                placeholder="VD: trader_001, shadow_master..."
-                className="w-full bg-background border border-divider rounded-md py-2 px-3 text-accent-primary font-mono focus:border-accent-primary outline-none"
+                placeholder="OPERATOR_X, SHADOW_001..."
+                className="w-full bg-black border border-white/10 rounded-xl py-4 px-6 text-accent-neon font-black italic tracking-widest focus:border-accent-neon focus:ring-0 outline-none transition-all"
                 maxLength={20}
               />
-              <p className="text-[10px] text-gray-500 mt-1">3-20 ký tự, chỉ chữ cái, số và underscore (_)</p>
+              <p className="text-[9px] text-white/20 uppercase tracking-widest italic font-medium">SYSTEM_REQUIREMENT: 3-20_CHARS, ALPHANUMERIC_ONLY</p>
             </div>
           </div>
 
           <ArchetypeDisplay archetype={profile.archetype} rationale={archetypeRationale} onDiscover={handleDiscover} isLoading={isDiscovering} />
 
-          <div className="bg-background p-4 rounded-md border border-divider">
-            <h3 className="text-sm font-semibold text-text-secondary mb-4 flex items-center">
-              <span className="w-2 h-2 bg-accent-green rounded-full mr-2"></span>
-              Capital Management (Quản lý vốn)
+          {/* Capital Management */}
+          <div className="bg-black/40 p-6 rounded-2xl border border-white/5 hover:border-accent-green/10 transition-all duration-500">
+            <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mb-8 flex items-center">
+              <span className="w-1.5 h-4 bg-accent-green mr-3 shadow-[0_0_10px_rgba(0,229,255,0.8)]"></span>
+              CAPITAL_DEPLOYMENT_CORE
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-8">
               <div>
-                <label className="text-xs text-text-secondary uppercase mb-1 block">Account Balance (Vốn đầu tư $)</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary">$</span>
+                <label className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] block mb-3">TOTAL_OPERATIONAL_BALANCE</label>
+                <div className="relative group">
+                  <span className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 font-black tracking-widest">$</span>
                   <input
                     type="number"
                     value={profile.accountBalance}
                     onChange={(e) => setProfile(prev => ({ ...prev, accountBalance: Number(e.target.value) }))}
                     onFocus={(e) => e.target.select()}
-                    className="w-full bg-background border border-divider rounded-md py-2 pl-8 pr-4 text-accent-primary font-mono focus:border-accent-primary outline-none"
+                    className="w-full bg-black border border-white/10 rounded-xl py-5 pl-12 pr-6 text-3xl font-black text-white font-sans italic tracking-widest focus:border-accent-green focus:ring-0 outline-none transition-all shadow-inner"
                   />
+                  <div className="absolute inset-0 border border-accent-green/20 opacity-0 group-focus-within:opacity-100 rounded-xl pointer-events-none transition-opacity" />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs text-text-secondary uppercase mb-1 block">Max Size (USD)</label>
-                  <input
-                    type="number"
-                    value={profile.tradingRules.maxPositionSizeUSD || 0}
-                    onChange={(e) => handleChange('tradingRules', 'maxPositionSizeUSD', Number(e.target.value))}
-                    onFocus={(e) => e.target.select()}
-                    className="w-full bg-background border border-divider rounded-md py-2 px-3 text-accent-blue font-mono focus:border-accent-blue outline-none"
-                  />
+              <div className="grid grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <label className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] block">MAX_POSITION_SIZE_VECT</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      value={profile.tradingRules.maxPositionSizeUSD || 0}
+                      onChange={(e) => handleChange('tradingRules', 'maxPositionSizeUSD', Number(e.target.value))}
+                      onFocus={(e) => e.target.select()}
+                      className="w-full bg-black/60 border border-white/5 rounded-xl py-4 px-6 text-xl font-black text-accent-blue font-sans italic tracking-widest focus:border-accent-blue outline-none transition-all shadow-inner"
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[8px] font-black text-white/20 uppercase">USD</span>
+                  </div>
                 </div>
-                <div>
-                  <label className="text-xs text-text-secondary uppercase mb-1 block">Risk per Trade (%)</label>
-                  <input
-                    type="number"
-                    value={profile.tradingRules.riskPerTradePct || 0}
-                    onChange={(e) => handleChange('tradingRules', 'riskPerTradePct', Number(e.target.value))}
-                    onFocus={(e) => e.target.select()}
-                    className="w-full bg-background border border-divider rounded-md py-2 px-3 text-accent-green font-mono focus:border-accent-green outline-none"
-                  />
+                <div className="space-y-3">
+                  <label className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] block">RISK_PER_PROTOCOL (%)</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      value={profile.tradingRules.riskPerTradePct || 0}
+                      onChange={(e) => handleChange('tradingRules', 'riskPerTradePct', Number(e.target.value))}
+                      onFocus={(e) => e.target.select()}
+                      className="w-full bg-black/60 border border-white/5 rounded-xl py-4 px-6 text-xl font-black text-accent-green font-sans italic tracking-widest focus:border-accent-green outline-none transition-all shadow-inner"
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[8px] font-black text-white/20 uppercase">%</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-background p-4 rounded-md border border-divider">
-            <h3 className="text-sm font-semibold text-text-secondary mb-4 flex items-center">
-              <span className="w-2 h-2 bg-accent-blue rounded-full mr-2"></span>
-              Trading Rules
+          {/* User Constraints */}
+          <div className="bg-black/40 p-6 rounded-2xl border border-white/5 hover:border-accent-blue/10 transition-all duration-500">
+            <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mb-10 flex items-center">
+              <span className="w-1.5 h-4 bg-accent-blue mr-3 shadow-[0_0_10px_rgba(0,111,255,0.8)]"></span>
+              TRADING_DISCIPLINE_CONSTRAINTS
             </h3>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <label htmlFor="dailyTradeLimit" className="text-sm font-medium text-text-main">Daily Trade Limit</label>
-                  <span className="text-sm font-mono rounded-md bg-panel text-accent-primary">{profile.tradingRules.dailyTradeLimit} trades</span>
+            <div className="space-y-10">
+              <div className="space-y-6">
+                <div className="flex justify-between items-end">
+                  <div>
+                    <label className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] block mb-2">DAILY_TRANSACTION_CEILING</label>
+                    <p className="text-xl font-black text-white uppercase italic tracking-widest">{profile.tradingRules.dailyTradeLimit} <span className="text-[10px] text-white/20 tracking-normal">TRADES_LIMIT</span></p>
+                  </div>
+                  <span className="text-[9px] font-black text-accent-blue uppercase tracking-widest animate-pulse">SYSTEM_ENFORCED</span>
                 </div>
-                <input type="range" id="dailyTradeLimit" value={profile.tradingRules.dailyTradeLimit} onChange={(e) => handleChange('tradingRules', 'dailyTradeLimit', Number(e.target.value))} min="1" max="20" step="1" className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-accent-primary" />
+                <input type="range" value={profile.tradingRules.dailyTradeLimit} onChange={(e) => handleChange('tradingRules', 'dailyTradeLimit', Number(e.target.value))} min="1" max="20" step="1" className="w-full h-1.5 bg-black border border-white/10 rounded-full appearance-none cursor-pointer accent-accent-blue shadow-inner" />
               </div>
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <label htmlFor="positionSizeWarningThreshold" className="text-sm font-medium text-text-main">Sensitivity Threshold (%)</label>
-                  <span className="text-sm font-mono rounded-md bg-panel text-accent-primary">{profile.tradingRules.positionSizeWarningThreshold}%</span>
+
+              <div className="space-y-6">
+                <div className="flex justify-between items-end">
+                  <div>
+                    <label className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] block mb-2">SENSITIVITY_THRESHOLD_CALIBRATION</label>
+                    <p className="text-xl font-black text-white uppercase italic tracking-widest">{profile.tradingRules.positionSizeWarningThreshold}% <span className="text-[10px] text-white/20 tracking-normal">ACCURACY_TOLERANCE</span></p>
+                  </div>
+                  <span className="text-[9px] font-black text-accent-neon/40 uppercase tracking-widest">NEURAL_GAIN</span>
                 </div>
-                <input type="range" id="positionSizeWarningThreshold" value={profile.tradingRules.positionSizeWarningThreshold} onChange={(e) => handleChange('tradingRules', 'positionSizeWarningThreshold', Number(e.target.value))} min="100" max="300" step="10" className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-accent-primary" />
-                <p className="text-[10px] text-text-secondary mt-1">Mức độ nhạy bén của cảnh báo dựa trên volume dự kiến.</p>
+                <input type="range" value={profile.tradingRules.positionSizeWarningThreshold} onChange={(e) => handleChange('tradingRules', 'positionSizeWarningThreshold', Number(e.target.value))} min="100" max="300" step="10" className="w-full h-1.5 bg-black border border-white/10 rounded-full appearance-none cursor-pointer accent-accent-neon shadow-inner" />
               </div>
             </div>
           </div>
         </form>
 
-        <footer className="p-4 border-t border-divider flex-shrink-0 flex justify-end items-center space-x-3">
-          <button type="button" onClick={onClose} className="px-4 py-2 rounded-md text-text-main bg-gray-600 hover:bg-gray-500 transition-colors">Cancel</button>
-          <button type="submit" onClick={handleSave} className="px-4 py-2 rounded-md text-black font-semibold bg-accent-primary hover:brightness-110 transition-colors">Save Profile</button>
+        <footer className="p-10 border-t border-accent-neon/5 flex-shrink-0 flex justify-end items-center gap-6 bg-black/80 rounded-b-[3rem] relative z-10">
+          <button type="button" onClick={onClose} className="px-10 py-4 rounded-xl text-[10px] font-black text-white/40 hover:text-white uppercase tracking-[0.5em] transition-all">[ ABORT_CHANGES ]</button>
+          <button type="submit" onClick={handleSave} className="px-12 py-4 rounded-xl text-[10px] font-black text-black bg-accent-neon hover:scale-[1.02] active:scale-[0.98] uppercase tracking-[0.5em] transition-all shadow-[0_0_30px_rgba(0,255,157,0.2)]">COMMIT_IDENTITY_SYNCHRONIZATION</button>
         </footer>
       </div>
     </div>

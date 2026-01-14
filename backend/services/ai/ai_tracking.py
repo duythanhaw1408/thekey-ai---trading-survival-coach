@@ -14,7 +14,7 @@ import json
 from models import AIPrediction
 
 
-class AICallTracker:
+class AITracker:
     """
     Tracks AI decisions for validation and accuracy measurement.
     """

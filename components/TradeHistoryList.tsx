@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { motion } from 'framer-motion';
 import type { Trade, TradeAnalysis } from '../types';
 import { ShieldCheckIcon, AlertTriangleIcon, FileTextIcon, BrainCircuitIcon } from './icons';
 import { TradeAnalysisDetail } from './TradeAnalysisDetail';
@@ -18,11 +18,11 @@ interface TradeHistoryListProps {
 const DecisionIcon: React.FC<{ decision: Trade['decision'] }> = ({ decision }) => {
     switch (decision) {
         case 'ALLOW':
-            return <span title="Allowed"><ShieldCheckIcon className="w-4 h-4 text-accent-green" /></span>;
+            return <span title="Allowed"><ShieldCheckIcon className="w-4 h-4 text-accent-neon drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]" /></span>;
         case 'WARN':
-            return <span title="Warned"><AlertTriangleIcon className="w-4 h-4 text-accent-yellow" /></span>;
+            return <span title="Warned"><AlertTriangleIcon className="w-4 h-4 text-accent-yellow drop-shadow-[0_0_5px_rgba(245,158,11,0.5)]" /></span>;
         case 'BLOCK':
-            return <span title="Blocked"><AlertTriangleIcon className="w-4 h-4 text-accent-red" /></span>;
+            return <span title="Blocked"><AlertTriangleIcon className="w-4 h-4 text-accent-red drop-shadow-[0_0_5px_rgba(255,0,85,0.5)]" /></span>;
         default:
             return null;
     }
@@ -31,85 +31,99 @@ const DecisionIcon: React.FC<{ decision: Trade['decision'] }> = ({ decision }) =
 export const TradeHistoryList: React.FC<TradeHistoryListProps> = ({ tradeHistory, onAnalyze, onCloseTrade, isAnalyzing, selectedTrade, analysis, onClearAnalysis, mode = 'FULL' }) => {
 
     return (
-        <div className="space-y-4 flex flex-col h-full w-full">
+        <div className="space-y-4 flex flex-col h-full w-full bg-black/20">
             {mode !== 'DETAIL_ONLY' && (
-                <h2 className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] px-3 pt-4">Entry Log & Analytics</h2>
+                <div className="px-4 pt-6 pb-2">
+                    <h2 className="text-[10px] font-black text-accent-neon/30 uppercase tracking-[0.4em]">LEDGER_PROTOCOL_HISTORY</h2>
+                </div>
             )}
 
             {tradeHistory.length === 0 && mode !== 'DETAIL_ONLY' ? (
-                <div className="flex flex-col items-center justify-center text-center p-6 glass-panel border-dashed flex-1 bg-white/[0.02] mx-3 mb-3">
-                    <FileTextIcon className="w-10 h-10 text-accent-primary/30 mb-3" />
-                    <h3 className="font-bold text-white text-sm mb-2">Chưa có lịch sử giao dịch</h3>
-                    <p className="text-text-secondary text-xs mb-4 max-w-xs">
-                        Ghi lại lệnh đầu tiên để bắt đầu theo dõi và phân tích hành vi trading.
+                <div className="flex flex-col items-center justify-center text-center p-8 border border-dashed border-accent-neon/20 rounded-2xl flex-1 bg-black/40 mx-4 mb-4 backdrop-blur-md">
+                    <div className="w-16 h-16 bg-accent-neon/5 rounded-full flex items-center justify-center mb-6 border border-accent-neon/10 neon-glow">
+                        <FileTextIcon className="w-8 h-8 text-accent-neon/40" />
+                    </div>
+                    <h3 className="font-black text-white text-xs mb-2 uppercase tracking-widest">NO_RECORDS_FOUND_IN_BUFFER</h3>
+                    <p className="text-accent-neon/30 text-[10px] mb-6 max-w-xs uppercase tracking-wider font-bold">
+                        Initialize trade protocol to begin neural recording.
                     </p>
-                    <div className="text-[10px] text-gray-500 bg-white/5 rounded-lg p-3 w-full max-w-xs">
-                        <p className="font-semibold text-accent-yellow mb-2">📋 Cách thêm lệnh:</p>
-                        <ol className="text-left space-y-1">
-                            <li>1️⃣ Nhập thông tin lệnh ở form bên trên</li>
-                            <li>2️⃣ Bấm <strong className="text-white">Gửi</strong> để AI đánh giá</li>
-                            <li>3️⃣ Khi đóng lệnh, hoàn thành <strong className="text-white">Dojo</strong></li>
-                        </ol>
+                    <div className="space-y-2 w-full max-w-[200px]">
+                        <div className="h-px bg-gradient-to-r from-transparent via-accent-neon/20 to-transparent" />
+                        <p className="text-[9px] text-accent-neon/20 font-black uppercase tracking-widest">STANDBY_MODE</p>
                     </div>
                 </div>
             ) : (
                 <div className="flex flex-col flex-1 overflow-hidden">
                     {/* Trade List Panel */}
                     {(mode === 'FULL' || mode === 'LIST_ONLY') && (
-                        <div className={`space-y-2 px-3 pb-4 overflow-y-auto custom-scrollbar w-full ${selectedTrade && mode === 'FULL' ? 'hidden md:block' : 'block'}`}>
-                            {tradeHistory.map(trade => {
+                        <div className={`space-y-3 px-4 pb-6 overflow-y-auto custom-scrollbar w-full ${selectedTrade && mode === 'FULL' ? 'hidden md:block' : 'block'}`}>
+                            {tradeHistory.map((trade, idx) => {
                                 const isSelected = selectedTrade?.id === trade.id;
 
                                 return (
-                                    <div key={trade.id} className={`glass-panel p-3 hover:border-white/20 transition-all cursor-pointer w-full ${isSelected ? 'border-accent-primary bg-accent-primary/10' : ''}`} onClick={() => onAnalyze(trade)}>
-                                        <div className="flex justify-between items-center">
-                                            <div className="flex items-center space-x-3 min-w-0">
-                                                <div className={`p-1.5 rounded-lg flex-shrink-0 ${isSelected ? 'bg-accent-primary/20' : 'bg-white/5'}`}>
+                                    <motion.div
+                                        key={trade.id}
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: idx * 0.05 }}
+                                        className={`group border transition-all cursor-pointer relative overflow-hidden rounded-xl bg-black/60 shadow-xl ${isSelected ? 'border-accent-neon ring-1 ring-accent-neon/30' : 'border-white/5 hover:border-accent-neon/20'}`}
+                                        onClick={() => onAnalyze(trade)}
+                                    >
+                                        {/* Background accent */}
+                                        {isSelected && (
+                                            <div className="absolute inset-0 bg-accent-neon/5 animate-pulse" />
+                                        )}
+
+                                        <div className="relative p-4 flex justify-between items-center">
+                                            <div className="flex items-center space-x-4 min-w-0">
+                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${isSelected ? 'bg-accent-neon text-black' : 'bg-white/5 group-hover:bg-accent-neon/10'}`}>
                                                     <DecisionIcon decision={trade.decision} />
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <p className="font-bold text-sm tracking-tight flex items-center">
-                                                        {trade.asset}
-                                                        <span className={`ml-2 font-bold text-[8px] px-1.5 py-0.5 rounded-full uppercase ${trade.direction === 'BUY' ? 'bg-accent-green/10 text-accent-green border border-accent-green/20' : 'bg-accent-red/10 text-accent-red border border-accent-red/20'}`}>
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <span className="font-black text-[12px] text-white tracking-widest uppercase italic">{trade.asset}</span>
+                                                        <span className={`text-[8px] font-black px-1.5 py-0.5 rounded leading-none uppercase tracking-tighter ${trade.direction === 'BUY' ? 'bg-accent-neon/10 text-accent-neon' : 'bg-accent-red/10 text-accent-red'}`}>
                                                             {trade.direction}
                                                         </span>
-                                                    </p>
-                                                    <p className="text-[10px] font-mono text-text-secondary opacity-50">#{String(trade.id).slice(0, 8)}</p>
+                                                    </div>
+                                                    <p className="text-[9px] font-black text-white/20 uppercase tracking-widest">ID_AUTH_{String(trade.id).toUpperCase()}</p>
                                                 </div>
                                             </div>
-                                            <div className="flex-shrink-0 ml-2">
+
+                                            <div className="flex-shrink-0 ml-4">
                                                 {trade.processEvaluation ? (
-                                                    // Show Dojo score if evaluation exists (regardless of status)
-                                                    <div className="flex items-center space-x-1 bg-accent-green/10 px-2 py-1 rounded-lg border border-accent-green/20">
-                                                        <BrainCircuitIcon className="w-3 h-3 text-accent-green" />
-                                                        <span className="text-[10px] font-black text-accent-green">{trade.processEvaluation?.totalProcessScore || 0}</span>
+                                                    <div className="flex items-center gap-2 group/score">
+                                                        <div className="text-right">
+                                                            <p className="text-[8px] font-black text-white/10 uppercase leading-tight tracking-tighter">DISCIPLINE</p>
+                                                            <p className="text-xs font-black text-accent-neon tracking-tighter">{trade.processEvaluation?.totalProcessScore || 0}%</p>
+                                                        </div>
+                                                        <div className="w-10 h-10 rounded-full border border-accent-neon/20 flex items-center justify-center bg-accent-neon/5 shadow-inner">
+                                                            <BrainCircuitIcon className="w-4 h-4 text-accent-neon" />
+                                                        </div>
                                                     </div>
                                                 ) : trade.status === 'OPEN' ? (
-                                                    // Show Review button for OPEN trades without evaluation
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); onCloseTrade(trade); }}
-                                                        className="text-[9px] font-black uppercase tracking-widest py-1 px-2.5 rounded-full bg-accent-primary text-white hover:brightness-110 transition-all border border-white/10 active:scale-95 shadow-lg shadow-accent-primary/20"
+                                                        className="px-4 py-2 rounded-lg bg-black border border-accent-neon text-accent-neon text-[9px] font-black uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(0,255,157,0.1)] hover:bg-accent-neon hover:text-black transition-all active:scale-95"
                                                     >
-                                                        Review
+                                                        REVIEW_CORE
                                                     </button>
                                                 ) : (
-                                                    // CLOSED but no evaluation - show pending indicator
-                                                    <div className="flex items-center space-x-1 bg-white/5 px-2 py-1 rounded-lg border border-white/5">
-                                                        <BrainCircuitIcon className="w-3 h-3 text-gray-500" />
-                                                        <span className="text-[10px] font-medium text-gray-500">--</span>
+                                                    <div className="w-8 h-8 rounded-full border border-white/5 flex items-center justify-center opacity-30">
+                                                        <BrainCircuitIcon className="w-3 h-3 text-white" />
                                                     </div>
                                                 )}
                                             </div>
                                         </div>
-                                    </div>
+                                    </motion.div>
                                 );
                             })}
                         </div>
                     )}
 
-                    {/* Detail View Panel - Only shown in FULL mode or if specifically requested */}
+                    {/* Detail View Panel */}
                     {mode === 'FULL' && selectedTrade && (
-                        <div className="w-full h-full overflow-auto p-3">
+                        <div className="w-full h-full overflow-auto p-4 bg-black/40 backdrop-blur-xl border-t border-accent-neon/10">
                             <TradeAnalysisDetail
                                 trade={selectedTrade}
                                 analysis={analysis}

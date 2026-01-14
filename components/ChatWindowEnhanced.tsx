@@ -88,7 +88,7 @@ const FailedMessage: React.FC<{
     <div className="flex items-end justify-end mb-2">
         <div className="relative">
             <div className="bg-accent-red/20 border border-accent-red/30 text-white/80 px-4 py-2 rounded-2xl rounded-br-lg max-w-xs">
-                <p className="text-sm" style={{ whiteSpace: 'pre-wrap' }}>{message.text}</p>
+                <p className="text-sm" style={{ whiteSpace: 'pre-wrap' }}>{(message as any).text}</p>
             </div>
             <div className="flex items-center justify-end gap-2 mt-1">
                 <span className="text-[10px] text-accent-red">Gửi thất bại</span>
@@ -165,7 +165,7 @@ export const ChatWindowEnhanced: React.FC<ChatWindowEnhancedProps> = ({
     ];
 
     return (
-        <div className="h-[calc(100vh-280px)] min-h-[500px] flex flex-col">
+        <div className="h-[calc(100vh-280px)] min-h-[500px] flex flex-col bg-black/40 backdrop-blur-sm rounded-2xl border border-accent-neon/10 overflow-hidden">
             {/* Offline indicator */}
             <AnimatePresence>
                 {!isOnline && (
@@ -173,35 +173,39 @@ export const ChatWindowEnhanced: React.FC<ChatWindowEnhancedProps> = ({
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="bg-amber-500/20 border-b border-amber-500/30 px-4 py-2 flex items-center gap-2"
+                        className="bg-accent-red/10 border-b border-accent-red/20 px-4 py-2 flex items-center gap-2"
                     >
-                        <WifiOffIcon className="w-4 h-4 text-amber-500" />
-                        <span className="text-xs text-amber-500">Đang offline - Tin nhắn sẽ được gửi khi có mạng</span>
+                        <WifiOffIcon className="w-4 h-4 text-accent-red" />
+                        <span className="text-[10px] uppercase tracking-widest text-accent-red/80 font-bold">SYSTEM OFFLINE - ENCRYPTION QUEUE ACTIVE</span>
                     </motion.div>
                 )}
             </AnimatePresence>
 
             {/* Messages container */}
-            <div ref={scrollableContainerRef} className="flex-1 p-4 overflow-y-auto">
-                <div className="flex flex-col space-y-4">
+            <div ref={scrollableContainerRef} className="flex-1 p-6 overflow-y-auto custom-scrollbar">
+                <div className="flex flex-col space-y-6">
                     {/* Welcome message if empty */}
                     {messages.length === 0 && (
-                        <div className="text-center py-8">
-                            <div className="w-16 h-16 bg-accent-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <span className="text-3xl">🧠</span>
-                            </div>
-                            <h3 className="text-lg font-bold text-white mb-2">Xin chào! Tôi là Kaito</h3>
-                            <p className="text-sm text-white/60 max-w-sm mx-auto">
-                                Huấn luyện viên sinh tồn giao dịch của bạn. Hãy chia sẻ bất kỳ điều gì bạn đang suy nghĩ.
+                        <div className="text-center py-12">
+                            <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className="w-20 h-20 bg-accent-neon/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-accent-neon/20 neon-glow"
+                            >
+                                <span className="text-4xl">🤖</span>
+                            </motion.div>
+                            <h3 className="text-xl font-black text-white mb-2 tracking-tighter">KAITO_OS v2.5</h3>
+                            <p className="text-xs text-accent-neon/50 max-w-sm mx-auto uppercase tracking-[0.2em] font-medium">
+                                Neural Trading Psychology Interface
                             </p>
 
                             {/* Quick actions */}
-                            <div className="flex flex-wrap justify-center gap-2 mt-6">
+                            <div className="flex flex-wrap justify-center gap-3 mt-8">
                                 {quickActions.map((action, i) => (
                                     <button
                                         key={i}
                                         onClick={() => setInput(action.text)}
-                                        className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-xs text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+                                        className="px-4 py-2 bg-black border border-accent-neon/30 rounded-lg text-[10px] font-bold text-accent-neon uppercase tracking-widest hover:bg-accent-neon hover:text-black transition-all active:scale-95"
                                     >
                                         {action.label}
                                     </button>
@@ -212,34 +216,38 @@ export const ChatWindowEnhanced: React.FC<ChatWindowEnhancedProps> = ({
 
                     {/* Render messages */}
                     {messages.map((msg) => (
-                        <div
+                        <motion.div
+                            initial={{ opacity: 0, x: msg.sender === 'user' ? 20 : -20 }}
+                            animate={{ opacity: 1, x: 0 }}
                             key={msg.id}
                             className={`flex items-end ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                         >
                             {msg.type === 'text' ? (
-                                <div className="flex flex-col">
+                                <div className="flex flex-col max-w-[80%]">
                                     {/* Avatar for AI */}
                                     {msg.sender === 'ai' && (
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <div className="w-6 h-6 rounded-full bg-accent-primary/20 flex items-center justify-center">
-                                                <span className="text-xs">🧠</span>
+                                        <div className="flex items-center gap-2 mb-2 ml-1">
+                                            <div className="w-5 h-5 rounded-full bg-accent-neon/20 flex items-center justify-center border border-accent-neon/40 shadow-sm shadow-accent-neon/20">
+                                                <span className="text-[10px]">🤖</span>
                                             </div>
-                                            <span className="text-[10px] text-accent-primary font-bold uppercase tracking-wider">Kaito</span>
+                                            <span className="text-[9px] text-accent-neon font-black uppercase tracking-[0.2em]">KAITO</span>
                                         </div>
                                     )}
                                     <div
-                                        className={`max-w-xs md:max-w-md lg:max-w-xs xl:max-w-md px-4 py-2 rounded-2xl ${msg.sender === 'user'
-                                                ? 'bg-accent-primary text-white rounded-br-lg'
-                                                : 'bg-gray-700 text-text-main rounded-bl-lg'
+                                        className={`px-5 py-3 rounded-2xl shadow-2xl ${msg.sender === 'user'
+                                            ? 'bg-accent-neon text-black font-bold rounded-br-none'
+                                            : 'bg-white/5 backdrop-blur-md border border-white/10 text-white rounded-bl-none'
                                             }`}
                                     >
-                                        <p className="text-sm" style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</p>
+                                        <p className="text-sm leading-relaxed" style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</p>
                                     </div>
                                 </div>
                             ) : (
-                                <AnalysisCard analysis={msg.analysis} />
+                                <div className="neon-glow rounded-3xl overflow-hidden p-[1px] bg-gradient-to-br from-accent-neon/50 to-transparent">
+                                    <AnalysisCard analysis={msg.analysis} />
+                                </div>
                             )}
-                        </div>
+                        </motion.div>
                     ))}
 
                     {/* Failed messages */}
@@ -258,38 +266,49 @@ export const ChatWindowEnhanced: React.FC<ChatWindowEnhancedProps> = ({
                 </div>
             </div>
 
-            {/* Input area */}
-            <div className="p-3 border-t border-divider bg-panel/50">
-                <form onSubmit={handleSend} className="flex items-center space-x-2">
-                    <input
-                        ref={inputRef}
-                        type="text"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        placeholder={isLoading ? "Kaito đang trả lời..." : "Hỏi Kaito bất cứ điều gì..."}
-                        className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-text-main placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all"
-                        disabled={isLoading}
-                    />
-                    <button
-                        type="submit"
-                        className={`p-3 rounded-xl transition-all ${isLoading || !input.trim()
-                                ? 'bg-white/5 text-white/30 cursor-not-allowed'
-                                : 'bg-accent-primary text-white hover:brightness-110 active:scale-95'
-                            }`}
-                        disabled={isLoading || !input.trim()}
-                    >
-                        <SendIcon className="w-5 h-5" />
-                    </button>
+            {/* Input area - "NEON GLOW SEARCH" STYLE */}
+            <div className="p-6 bg-black">
+                <form onSubmit={handleSend} className="relative group">
+                    {/* The Neon Glow Background Ring */}
+                    <div className="absolute -inset-1 bg-accent-neon/20 rounded-2xl blur-md group-focus-within:bg-accent-neon/40 transition-all duration-500" />
+
+                    <div className="relative flex items-center bg-black border border-accent-neon/30 rounded-xl p-1 group-focus-within:border-accent-neon transition-all">
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            placeholder={isLoading ? "Neural connection active..." : "Neural link established. Input query..."}
+                            className="flex-1 bg-transparent px-6 py-4 text-white placeholder:text-accent-neon/20 text-sm focus:outline-none uppercase tracking-widest font-bold"
+                            disabled={isLoading}
+                        />
+                        <button
+                            type="submit"
+                            className={`p-4 rounded-lg transition-all ${isLoading || !input.trim()
+                                ? 'text-white/10'
+                                : 'text-accent-neon hover:scale-110 active:scale-95'
+                                }`}
+                            disabled={isLoading || !input.trim()}
+                        >
+                            <SendIcon className="w-6 h-6" />
+                        </button>
+                    </div>
                 </form>
 
-                {/* Character hint */}
-                <div className="flex justify-between items-center mt-2 px-1">
-                    <span className="text-[10px] text-white/30">
-                        💡 Tip: Chia sẻ cảm xúc để nhận lời khuyên tốt hơn
-                    </span>
+                {/* Status Bar */}
+                <div className="flex justify-between items-center mt-4 px-2">
+                    <div className="flex items-center gap-4">
+                        <span className="text-[9px] text-accent-neon/40 font-black uppercase tracking-widest flex items-center gap-1.5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-accent-neon animate-pulse" />
+                            Core.Stable
+                        </span>
+                        <span className="text-[9px] text-accent-neon/40 font-black uppercase tracking-widest">
+                            Buffer: 1024kb
+                        </span>
+                    </div>
                     {!isOnline && (
-                        <span className="text-[10px] text-amber-500 flex items-center gap-1">
-                            <WifiOffIcon className="w-3 h-3" /> Offline
+                        <span className="text-[9px] text-accent-red font-black uppercase tracking-widest flex items-center gap-1">
+                            <WifiOffIcon className="w-3 h-3" /> Offline.Queueing
                         </span>
                     )}
                 </div>
