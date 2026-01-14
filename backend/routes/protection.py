@@ -44,12 +44,13 @@ async def check_trade(data: Dict, user: User = Depends(get_current_user), db: Se
     active_pattern = data.get("activePattern")
     market_analysis = data.get("marketAnalysis")
 
-    # Build user settings from DB + request
+    # Build user settings from DB + request (prioritize request settings for per-trade intent)
+    balance = float(settings.get("account_balance") or user.account_balance or 1000)
     user_settings = {
-        "account_balance": float(user.account_balance or 1000),
-        "max_position_size_usd": float(user.max_position_size_usd or 500),
-        "max_position_size_pct": 5.0,
-        "risk_per_trade_pct": float(user.risk_per_trade_pct or 2),
+        "account_balance": balance,
+        "max_position_size_usd": float(settings.get("max_position_size_usd") or user.max_position_size_usd or (balance * 0.1)),
+        "max_position_size_pct": 10.0, # Increased default cap
+        "risk_per_trade_pct": float(settings.get("risk_per_trade_pct") or user.risk_per_trade_pct or 2),
         "max_daily_trades": int(user.daily_trade_limit or 5),
         "protection_level": user.protection_level or "SURVIVAL",
         "cooldown_after_loss_minutes": int(user.cooldown_minutes or 30),

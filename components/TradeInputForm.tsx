@@ -15,6 +15,10 @@ interface TradeInputFormProps {
     entryPrice: number;
     takeProfit?: number;
     stopLoss?: number;
+    settings?: {
+      account_balance?: number;
+      risk_per_trade_pct?: number;
+    };
   }) => void;
   isLoading: boolean;
   decision: TradeDecision | null;
@@ -43,9 +47,10 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({
   const [reasoning, setReasoning] = useState('');
   const [direction, setDirection] = useState<'BUY' | 'SELL'>('BUY');
 
-  // Use Profile settings (no longer editable in Terminal)
-  const accountSize = profileAccountSize;
-  const riskPercent = profileRiskPercent;
+  // Use Profile settings as defaults, but allow local overrides
+  const [accountSize, setAccountSize] = useState<number>(profileAccountSize);
+  const [riskPercent, setRiskPercent] = useState<number>(profileRiskPercent);
+
   const [entryPrice, setEntryPrice] = useState<number | ''>('');
   const [stopLoss, setStopLoss] = useState<number | ''>('');
   const [takeProfit, setTakeProfit] = useState<number | ''>('');
@@ -88,10 +93,22 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({
       stopLoss: stopLoss !== '' ? Number(stopLoss) : undefined,
     };
     if (decision?.decision === 'WARN') {
-      onSubmit(tradeData);
+      onSubmit({
+        ...tradeData,
+        settings: {
+          account_balance: accountSize,
+          risk_per_trade_pct: riskPercent
+        }
+      });
       onProceed();
     } else {
-      onSubmit(tradeData);
+      onSubmit({
+        ...tradeData,
+        settings: {
+          account_balance: accountSize,
+          risk_per_trade_pct: riskPercent
+        }
+      });
     }
     setReasoning('');
   };
@@ -128,21 +145,33 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({
           </button>
         </div>
 
-        {/* Profile Settings Info */}
+        {/* Editable Context Info */}
         <div className="bg-black/40 border border-accent-neon/10 rounded-xl px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <div className="flex flex-col">
-              <span className="text-[8px] text-accent-neon/30 font-black uppercase tracking-widest mb-1">ACC_SIZE</span>
-              <span className="text-sm font-black text-white italic tracking-tighter font-mono">${accountSize.toLocaleString()}</span>
+              <span className="text-[8px] text-accent-neon/30 font-black uppercase tracking-widest mb-1">ACC_SIZE ($)</span>
+              <input
+                type="number"
+                value={accountSize}
+                onChange={(e) => setAccountSize(Number(e.target.value))}
+                className="bg-transparent border-b border-white/10 text-sm font-black text-white italic tracking-tighter font-mono w-20 focus:border-accent-neon focus:outline-none transition-colors"
+                placeholder="1000"
+              />
             </div>
             <div className="flex flex-col">
-              <span className="text-[8px] text-accent-neon/30 font-black uppercase tracking-widest mb-1">RISK_STRAT</span>
-              <span className="text-sm font-black text-accent-neon italic tracking-tighter font-mono">{riskPercent}%</span>
+              <span className="text-[8px] text-accent-neon/30 font-black uppercase tracking-widest mb-1">RISK_STRAT (%)</span>
+              <input
+                type="number"
+                value={riskPercent}
+                onChange={(e) => setRiskPercent(Number(e.target.value))}
+                className="bg-transparent border-b border-white/10 text-sm font-black text-accent-neon italic tracking-tighter font-mono w-12 focus:border-accent-neon focus:outline-none transition-colors"
+                placeholder="2"
+              />
             </div>
           </div>
           <div className="text-right">
-            <span className="text-[8px] text-accent-neon/30 font-black uppercase tracking-widest mb-1 block">MAX_POS</span>
-            <span className="text-sm font-black text-accent-yellow italic tracking-tighter font-mono">${profileMaxPositionSize}</span>
+            <span className="text-[8px] text-accent-neon/30 font-black uppercase tracking-widest mb-1 block">MAX_ALLOWED</span>
+            <span className="text-sm font-black text-accent-yellow italic tracking-tighter font-mono">${Math.round(accountSize * 0.1)}</span> {/* Default 10% cap for warning */}
           </div>
         </div>
 
@@ -163,7 +192,7 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({
               <span className="text-[9px] text-accent-neon/40 uppercase font-black tracking-widest">{t('terminal.positionSize')}</span>
               {isAutoSize && calculatedRisk !== null && (
                 <span className="text-[8px] text-white/20 font-bold uppercase tracking-widest">
-                  (SUGGESTED: ${Math.min(Math.round(Number(positionSize) || 0), profileMaxPositionSize)})
+                  (SUGGESTED_VOL)
                 </span>
               )}
             </div>
@@ -175,19 +204,18 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({
           <input
             type="number"
             min="0"
-            max={profileMaxPositionSize * 2}
             value={positionSize}
             onChange={(e) => { setIsAutoSize(false); setPositionSize(Number(e.target.value)); }}
-            className={`${inputClasses} ${Number(positionSize) > profileMaxPositionSize ? 'border-accent-red/50 bg-accent-red/5 !text-accent-red' : ''}`}
+            className={`${inputClasses} ${Number(positionSize) > accountSize * 0.2 ? 'border-accent-red/50 bg-accent-red/5 !text-accent-red' : ''}`}
             required
           />
 
           {/* Risk estimate */}
-          {Number(positionSize) > profileMaxPositionSize ? (
+          {Number(positionSize) > accountSize * 0.2 ? (
             <div className="flex items-center justify-between mt-2 px-1">
               <p className="text-[9px] text-accent-red font-black uppercase tracking-widest flex items-center gap-2">
                 <AlertTriangleIcon className="w-3 h-3" />
-                THRESHOLD_EXCEEDED: ${profileMaxPositionSize}
+                DANGER: POSITION EXCEEDS 20% OF ACCOUNT
               </p>
             </div>
           ) : calculatedRisk !== null && (
