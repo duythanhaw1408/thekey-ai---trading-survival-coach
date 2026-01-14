@@ -15,9 +15,10 @@ class GeminiClient:
     # Note: gemini-1.5-flash is NOT available for this API key
     # Using 2.0-flash-lite for best free tier performance
     MODELS = [
-        'models/gemini-2.0-flash-lite',  # Primary: Fast, lightweight, free tier friendly
-        'models/gemini-2.0-flash',       # Fallback: More capable
-        'models/gemini-2.5-flash',       # Fallback: Latest version
+        'models/gemini-2.0-flash',       # Primary: Fast, latest 2.0 version
+        'models/gemini-2.0-flash-lite',  # Lite: Efficient
+        'models/gemini-1.5-flash',       # Stable Fallback
+        'models/gemini-1.5-pro',         # High Capability Fallback
     ]
 
     # =========================================
@@ -360,7 +361,7 @@ Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
             }
 
     async def generate_market_analysis(self) -> Dict:
-        """Analyze market danger level with 10-minute caching."""
+        """Analyze market danger level with real-time web search and 10-minute caching."""
         import time
         now = time.time()
         
@@ -369,17 +370,17 @@ Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
             return self._market_cache
 
         prompt = f"""
-        You are THEKEY's Market Context Analyzer. Analyze current crypto market conditions for risk.
-        Task: Decide if the current market is 'SAFE', 'CAUTION', or 'DANGER'.
-        Consider overall volatility, leverage, and macro sentiment.
+        Analyze the CURRENT crypto market conditions (BTC, ETH, and overall sentiment).
+        Directly search for 'crypto market sentiment', 'BTC price action today', and 'crypto liquidations'.
         
+        Task: Decide if the current market is 'SAFE', 'CAUTION', or 'DANGER'.
         Provide exactly this JSON:
         {{
           "danger_level": "SAFE" | "CAUTION" | "DANGER",
           "danger_score": 0-100,
           "color_code": "🟢" | "🟡" | "🔴",
           "headline": "One short Vietnamese warning headline",
-          "risk_factors": [{{"factor": "...", "severity": "...", "description": "..."}}],
+          "risk_factors": [{{"factor": "...", "severity": "HIGH/MEDIUM/LOW", "description": "..."}}],
           "factors": {{"volatility": 0-100, "liquidity": 0-100, "leverage": 0-100, "sentiment": 0-100, "events": 0-100}},
           "recommendation": {{"action": "Wait/Trade/Reduce", "position_adjustment": "...", "stop_adjustment": "...", "rationale": "..."}}
         }}
@@ -387,7 +388,23 @@ Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
         LANGUAGE: Vietnamese. Return ONLY valid JSON.
         """
         try:
-            response_text = await self._generate(prompt)
+            # Use search for market analysis to avoid "I don't know" or "Lỗi kết nối"
+            async with self._semaphore:
+                safe_prompt = self.SAFETY_RAILS + prompt
+                response = await self.client.aio.models.generate_content(
+                    model='models/gemini-2.0-flash',
+                    contents=safe_prompt,
+                    config={
+                        'tools': [{'google_search': {}}]
+                    }
+                )
+                
+                if not response or not response.text:
+                    # Fallback to normal generation if search fails or model unavailable
+                    response_text = await self._generate(prompt)
+                else:
+                    response_text = response.text
+
             result = self._clean_and_parse_json(response_text)
             
             # Update cache on success

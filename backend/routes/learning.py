@@ -100,7 +100,7 @@ async def get_archetype(data: Dict, user: User = Depends(get_current_user)):
     trade_history = data.get("trade_history", [])
     checkin_history = data.get("checkin_history", [])
     
-    analysis = await gemini_client.get_trader_archetype(trade_history, checkin_history)
+    analysis = await gemini_client.analyze_trader_archetype(trade_history, checkin_history)
     return analysis
 
 @router.post("/shadow-patterns/record")
