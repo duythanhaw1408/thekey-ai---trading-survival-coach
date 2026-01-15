@@ -137,41 +137,41 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({
 
       <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
         <div className="grid grid-cols-2 gap-3">
-          <button type="button" onClick={() => setDirection('BUY')} className={`w-full font-black py-3 rounded-xl transition-all text-[10px] tracking-[0.2em] uppercase border ${direction === 'BUY' ? 'bg-accent-neon text-black border-accent-neon neon-glow' : 'bg-black border-accent-neon/20 text-accent-neon/40 hover:bg-accent-neon/5'}`}>
-            {t('terminal.buy')}
+          <button type="button" onClick={() => setDirection('BUY')} className={`w-full font-bold py-3 rounded-xl transition-all text-sm border ${direction === 'BUY' ? 'bg-accent-neon text-black border-accent-neon' : 'bg-black border-white/10 text-white/40 hover:bg-white/5'}`}>
+            MUA
           </button>
-          <button type="button" onClick={() => setDirection('SELL')} className={`w-full font-black py-3 rounded-xl transition-all text-[10px] tracking-[0.2em] uppercase border ${direction === 'SELL' ? 'bg-accent-red text-black border-accent-red shadow-[0_0_15px_rgba(255,0,85,0.4)]' : 'bg-black border-accent-red/20 text-accent-red/40 hover:bg-accent-red/5'}`}>
-            {t('terminal.sell')}
+          <button type="button" onClick={() => setDirection('SELL')} className={`w-full font-bold py-3 rounded-xl transition-all text-sm border ${direction === 'SELL' ? 'bg-accent-red text-white border-accent-red' : 'bg-black border-white/10 text-white/40 hover:bg-white/5'}`}>
+            BÁN
           </button>
         </div>
 
-        {/* Editable Context Info */}
+        {/* Cài đặt vốn & rủi ro */}
         <div className="bg-black/40 border border-accent-neon/10 rounded-xl px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <div className="flex flex-col">
-              <span className="text-[8px] text-accent-neon/30 font-black uppercase tracking-widest mb-1">ACC_SIZE ($)</span>
+              <span className="text-[9px] text-white/40 font-medium mb-1">Vốn tài khoản ($)</span>
               <input
                 type="number"
                 value={accountSize}
                 onChange={(e) => setAccountSize(Number(e.target.value))}
-                className="bg-transparent border-b border-white/10 text-sm font-black text-white italic tracking-tighter font-mono w-20 focus:border-accent-neon focus:outline-none transition-colors"
+                className="bg-transparent border-b border-white/10 text-base font-bold text-white w-24 focus:border-accent-neon focus:outline-none transition-colors"
                 placeholder="1000"
               />
             </div>
             <div className="flex flex-col">
-              <span className="text-[8px] text-accent-neon/30 font-black uppercase tracking-widest mb-1">RISK_STRAT (%)</span>
+              <span className="text-[9px] text-white/40 font-medium mb-1">Rủi ro / lệnh (%)</span>
               <input
                 type="number"
                 value={riskPercent}
                 onChange={(e) => setRiskPercent(Number(e.target.value))}
-                className="bg-transparent border-b border-white/10 text-sm font-black text-accent-neon italic tracking-tighter font-mono w-12 focus:border-accent-neon focus:outline-none transition-colors"
+                className="bg-transparent border-b border-white/10 text-base font-bold text-accent-neon w-16 focus:border-accent-neon focus:outline-none transition-colors"
                 placeholder="2"
               />
             </div>
           </div>
           <div className="text-right">
-            <span className="text-[8px] text-accent-neon/30 font-black uppercase tracking-widest mb-1 block">MAX_ALLOWED</span>
-            <span className="text-sm font-black text-accent-yellow italic tracking-tighter font-mono">${Math.round(accountSize * 0.1)}</span> {/* Default 10% cap for warning */}
+            <span className="text-[9px] text-white/40 font-medium block mb-1">Cảnh báo nếu vượt</span>
+            <span className="text-base font-bold text-accent-yellow">${Math.round(accountSize * 0.1)}</span>
           </div>
         </div>
 
@@ -188,18 +188,7 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({
 
         <div>
           <div className="flex items-center justify-between px-1 mb-2">
-            <div className="flex items-center gap-2">
-              <span className="text-[9px] text-accent-neon/40 uppercase font-black tracking-widest">{t('terminal.positionSize')}</span>
-              {isAutoSize && calculatedRisk !== null && (
-                <span className="text-[8px] text-white/20 font-bold uppercase tracking-widest">
-                  (SUGGESTED_VOL)
-                </span>
-              )}
-            </div>
-            <button type="button" onClick={() => setIsAutoSize(!isAutoSize)} className="text-accent-neon/40 hover:text-accent-neon transition-colors flex items-center gap-1.5 px-2 py-0.5 rounded-md border border-accent-neon/10 hover:border-accent-neon/30">
-              {isAutoSize ? <LockClosedIcon className="w-2.5 h-2.5" /> : <LockOpenIcon className="w-2.5 h-2.5" />}
-              <span className="text-[8px] font-black uppercase tracking-widest">{isAutoSize ? 'AUTO' : 'MANUAL'}</span>
-            </button>
+            <span className="text-[10px] text-white/50 font-medium">Volume (USD) {isAutoSize && calculatedRisk !== null && <span className="text-accent-neon/60 ml-1">• tự tính</span>}</span>
           </div>
           <input
             type="number"
@@ -213,18 +202,18 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({
           {/* Risk estimate */}
           {Number(positionSize) > accountSize * 0.2 ? (
             <div className="flex items-center justify-between mt-2 px-1">
-              <p className="text-[9px] text-accent-red font-black uppercase tracking-widest flex items-center gap-2">
+              <p className="text-[10px] text-accent-red font-medium flex items-center gap-2">
                 <AlertTriangleIcon className="w-3 h-3" />
-                DANGER: POSITION EXCEEDS 20% OF ACCOUNT
+                ⚠️ Volume quá lớn (vượt 20% vốn)
               </p>
             </div>
           ) : calculatedRisk !== null && (
             <div className="flex items-center justify-between mt-2 px-1">
-              <p className="text-[9px] text-accent-neon/40 font-black uppercase tracking-widest">
-                {t('terminal.estRisk')} <span className="text-accent-red font-mono ml-1">${calculatedRisk.toFixed(2)}</span>
+              <p className="text-[10px] text-white/50 font-medium">
+                Nếu thua: <span className="text-accent-red font-bold">-${calculatedRisk.toFixed(0)}</span>
               </p>
-              <span className="text-[8px] text-accent-neon/60 font-black uppercase tracking-[0.2em] animate-pulse">
-                ✓ SAFETY_NOMINAL
+              <span className="text-[10px] text-accent-neon/70 font-medium">
+                ✓ An toàn
               </span>
             </div>
           )}
@@ -232,8 +221,8 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({
 
         <div>
           <textarea id="reasoning" rows={2} value={reasoning} onChange={(e) => setReasoning(e.target.value)}
-            placeholder={t('terminal.reasoningPlaceholder')}
-            className={`${inputClasses} !normal-case !font-medium`} required />
+            placeholder="Tại sao bạn vào lệnh này? (không bắt buộc)"
+            className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-accent-neon/50 transition-all" />
         </div>
 
         {isWarn && (
@@ -306,8 +295,8 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({
               {isLoading ? (
                 <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
               ) : isWarn ? <AlertTriangleIcon className="w-5 h-5" /> : <CheckCircleIcon className="w-5 h-5" />}
-              <span className="uppercase tracking-[0.3em] text-[11px] font-black">
-                {isLoading ? 'EXECUTING_PROTOCOL...' : isWarn ? 'CONFIRM_PROTOCOL_BYPASS' : 'ESTABLISH_TRADE_LINK'}
+              <span className="text-sm font-bold">
+                {isLoading ? 'Đang xử lý...' : isWarn ? 'XÁC NHẬN VÀO LỆNH' : 'GHI LỆNH'}
               </span>
             </div>
             {decision?.decision === 'BLOCK' && !isLoading && <p className="text-[8px] mt-1.5 opacity-60 font-black uppercase tracking-[0.2em]">PROTOCOL_BLOCKED: SAFETY_LOCK_ENGAGED</p>}
