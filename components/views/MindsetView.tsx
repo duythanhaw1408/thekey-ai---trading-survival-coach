@@ -155,7 +155,7 @@ export const MindsetView: React.FC<MindsetViewProps> = ({
                     </div>
                 </div>
 
-                {/* Report Insights (If Available) */}
+                {/* Report Insights - Show useful personalized data */}
                 <AnimatePresence>
                     {behavioralReport && !isAnalyzing && (
                         <motion.div
@@ -164,21 +164,53 @@ export const MindsetView: React.FC<MindsetViewProps> = ({
                             className="border-t border-accent-neon/10 bg-black/60 backdrop-blur-xl"
                         >
                             <div className="p-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                                {[
-                                    { label: t('mindset.emotionalTrigger'), val: behavioralReport.fingerprint.emotionalTrigger, icon: '🌊', color: 'border-white/5' },
-                                    { label: t('mindset.activePattern'), val: behavioralReport.activePattern.name, icon: '🔄', color: 'border-accent-yellow/30', sub: behavioralReport.activePattern.description },
-                                    { label: t('mindset.strategicFocus'), val: behavioralReport.predictions.nextWeekFocus, icon: '🎯', color: 'border-accent-blue/30' },
-                                    { label: t('mindset.survivalProtocol'), val: behavioralReport.recommendations.action, icon: '🧬', color: 'border-accent-neon/30' }
-                                ].map((item, i) => (
-                                    <div key={i} className={`p-5 rounded-2xl border ${item.color} bg-black/40 hover:bg-black group transition-all`}>
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <span className="text-xl group-hover:animate-bounce">{item.icon}</span>
-                                            <h4 className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">{item.label}</h4>
-                                        </div>
-                                        <p className="text-sm font-black text-white uppercase tracking-tight">{item.val || t('common.notEnoughData')}</p>
-                                        {item.sub && <p className="text-[9px] font-bold text-white/10 mt-2 uppercase">"{item.sub}"</p>}
+                                {/* Card 1: Điểm mạnh chính */}
+                                <div className="p-5 rounded-2xl border border-accent-neon/30 bg-accent-neon/5 hover:bg-accent-neon/10 group transition-all">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <span className="text-xl">💪</span>
+                                        <h4 className="text-[9px] font-black text-accent-neon uppercase tracking-[0.2em]">ĐIỂM MẠNH</h4>
                                     </div>
-                                ))}
+                                    <p className="text-sm font-black text-white uppercase tracking-tight">
+                                        {behavioralReport.fingerprint?.primaryStrength || traderArchetype?.primary_strength || 'Kỷ luật Stop Loss'}
+                                    </p>
+                                    <p className="text-[9px] font-bold text-white/40 mt-2">Dựa trên {dojoTradesCount} lệnh đã phân tích</p>
+                                </div>
+
+                                {/* Card 2: Điểm cần cải thiện */}
+                                <div className="p-5 rounded-2xl border border-accent-red/30 bg-accent-red/5 hover:bg-accent-red/10 group transition-all">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <span className="text-xl">⚠️</span>
+                                        <h4 className="text-[9px] font-black text-accent-red uppercase tracking-[0.2em]">CẦN CẢI THIỆN</h4>
+                                    </div>
+                                    <p className="text-sm font-black text-white uppercase tracking-tight">
+                                        {behavioralReport.fingerprint?.primaryWeakness || traderArchetype?.primary_weakness || 'Kiểm soát cảm xúc'}
+                                    </p>
+                                    <p className="text-[9px] font-bold text-white/40 mt-2">Tập trung cải thiện trong tuần tới</p>
+                                </div>
+
+                                {/* Card 3: Hành động tiếp theo */}
+                                <div className="p-5 rounded-2xl border border-accent-blue/30 bg-accent-blue/5 hover:bg-accent-blue/10 group transition-all">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <span className="text-xl">🎯</span>
+                                        <h4 className="text-[9px] font-black text-accent-blue uppercase tracking-[0.2em]">HÀNH ĐỘNG</h4>
+                                    </div>
+                                    <p className="text-sm font-black text-white uppercase tracking-tight">
+                                        {behavioralReport.recommendations?.action || 'Giảm size 50% khi cảm xúc dao động'}
+                                    </p>
+                                    <p className="text-[9px] font-bold text-white/40 mt-2">Áp dụng cho lệnh tiếp theo</p>
+                                </div>
+
+                                {/* Card 4: Thói quen nhỏ */}
+                                <div className="p-5 rounded-2xl border border-accent-yellow/30 bg-accent-yellow/5 hover:bg-accent-yellow/10 group transition-all">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <span className="text-xl">🧠</span>
+                                        <h4 className="text-[9px] font-black text-accent-yellow uppercase tracking-[0.2em]">MICRO HABIT</h4>
+                                    </div>
+                                    <p className="text-sm font-black text-white uppercase tracking-tight">
+                                        {behavioralReport.recommendations?.microHabit || 'Hít thở 3 lần trước khi click'}
+                                    </p>
+                                    <p className="text-[9px] font-bold text-white/40 mt-2">Thực hiện mỗi ngày</p>
+                                </div>
                             </div>
                         </motion.div>
                     )}

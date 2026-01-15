@@ -581,18 +581,39 @@ Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
             return {"survival_score": 85, "key_achievements": ["Duy trì kỷ luật."], "areas_to_improve": ["Kiểm soát tâm lý."]}
 
     async def analyze_trader_archetype(self, history: List[Dict], checkin_history: List[Dict]) -> Dict:
-        """Analyze the trader's behavioral archetype."""
+        """Analyze the trader's behavioral archetype with detailed insights."""
+        
+        # Calculate some stats from history
+        total_trades = len(history)
+        wins = sum(1 for t in history if t.get('pnl', 0) > 0)
+        losses = sum(1 for t in history if t.get('pnl', 0) < 0)
+        win_rate = (wins / total_trades * 100) if total_trades > 0 else 0
+        
         prompt = f"""
-        Analyze the trader's style based on data and determine their archetype.
-        History: {json.dumps(history)}
-        Checkins: {json.dumps(checkin_history)}
+        Phân tích phong cách trading của trader dựa trên dữ liệu thực tế.
         
-        Provide:
-        1. archetype (STUBBORN, GAMBLER, GUARDIAN, etc.)
-        2. description (Vietnamese)
-        3. primary_strength (Vietnamese)
-        4. primary_weakness (Vietnamese)
+        DỮ LIỆU:
+        - Tổng số lệnh: {total_trades}
+        - Win/Loss: {wins}/{losses} ({win_rate:.1f}% win rate)
+        - Lịch sử trade: {json.dumps(history[:10], ensure_ascii=False)}  # Chỉ lấy 10 lệnh gần nhất
+        - Checkin tâm lý: {json.dumps(checkin_history[:5], ensure_ascii=False)}
         
+        PHÂN TÍCH VÀ TRẢ VỀ JSON:
+        {{
+          "archetype": "ANALYTICAL_TRADER" | "SYSTEMATIC_TRADER" | "EMOTIONAL_TRADER" | "IMPULSIVE_TRADER",
+          "archetype_name_vi": "Tên tiếng Việt của archetype",
+          "description": "Mô tả 1-2 câu về phong cách trading dựa trên dữ liệu thực",
+          "primary_strength": "Điểm mạnh CỤ THỂ nhất dựa trên data (VD: 'Tuân thủ SL tốt - 90% lệnh có SL')",
+          "primary_weakness": "Điểm yếu CỤ THỂ nhất cần cải thiện (VD: 'Hay vào lệnh khi FOMO - 60% lệnh thua là lúc thị trường FOMO')",
+          "action_recommendation": "Hành động CỤ THỂ cho lệnh tiếp theo",
+          "micro_habit": "Một thói quen nhỏ cụ thể để cải thiện",
+          "weekly_focus": "Mục tiêu tuần này",
+          "winning_pattern": "Pattern/setup nào trader làm tốt nhất",
+          "losing_pattern": "Pattern/setup nào hay thua nhất"
+        }}
+
+        QUAN TRỌNG: Phân tích DỰA TRÊN DỮ LIỆU THỰC, không đưa ra nhận xét chung chung.
+        Nếu không có đủ data, vẫn đưa ra insight dựa trên những gì có.
         Return ONLY valid JSON.
         """
         try:
@@ -600,6 +621,17 @@ Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
             return self._clean_and_parse_json(response_text)
         except Exception as e:
             print(f"❌ Gemini Error (analyze_trader_archetype): {e}")
-            return {"archetype": "GUARDIAN", "description": "Người bảo vệ kỷ luật.", "primary_strength": "Kiên nhẫn.", "primary_weakness": "Cẩn thận quá mức."}
+            return {
+                "archetype": "SYSTEMATIC_TRADER", 
+                "archetype_name_vi": "Trader Hệ Thống",
+                "description": "Đang trong quá trình xây dựng phong cách trading.", 
+                "primary_strength": "Kiên nhẫn học hỏi", 
+                "primary_weakness": "Cần thêm dữ liệu để phân tích",
+                "action_recommendation": "Hoàn thành Dojo sau mỗi lệnh",
+                "micro_habit": "Ghi chép lý do vào/ra lệnh",
+                "weekly_focus": "Tuân thủ quy trình 100%",
+                "winning_pattern": "Đang thu thập data",
+                "losing_pattern": "Đang thu thập data"
+            }
 
 gemini_client = GeminiClient()
