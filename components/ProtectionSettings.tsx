@@ -14,31 +14,35 @@ export const ProtectionSettings: React.FC<ProtectionSettingsProps> = ({ profile,
         {
             id: 'SURVIVAL',
             label: 'Sinh tồn (Survival)',
-            desc: 'Nghiêm khắc nhất. Khóa 30 phút sau 2 lệnh lỗ. Phù hợp để bảo vệ vốn tuyệt đối.',
+            desc: 'Bảo vệ vốn tuyệt đối. Rủi ro thấp, cooldown dài.',
             icon: ShieldCheckIcon,
             color: 'text-emerald-500',
             bgColor: 'bg-emerald-500/10',
             borderColor: 'border-emerald-500/20',
             activeBorder: 'border-emerald-500',
             cooldown: 30,
-            lossLimit: 2
+            lossLimit: 2,
+            riskPct: 1,
+            maxPositionPct: 5
         },
         {
             id: 'DISCIPLINE',
             label: 'Kỷ luật (Discipline)',
-            desc: 'Cân bằng. Khóa 10 phút sau 2 lệnh lỗ. Phù hợp cho trader đã có hệ thống ổn định.',
+            desc: 'Cân bằng giữa bảo vệ và tăng trưởng.',
             icon: ShieldExclamationIcon,
             color: 'text-amber-500',
             bgColor: 'bg-amber-500/10',
             borderColor: 'border-amber-500/20',
             activeBorder: 'border-amber-500',
             cooldown: 10,
-            lossLimit: 2
+            lossLimit: 2,
+            riskPct: 2,
+            maxPositionPct: 10
         },
         {
             id: 'FLEXIBLE',
-            label: 'Linh hoạt (Flexible)',
-            desc: 'Tùy chỉnh. Thích hợp cho Scalpers hoặc người có volume lớn cần nghỉ ngắn (2-5p).',
+            label: 'Tùy chỉnh',
+            desc: 'Tự định nghĩa mức rủi ro và volume.',
             icon: AdjustmentsHorizontalIcon,
             color: 'text-purple-500',
             bgColor: 'bg-purple-500/10',
@@ -53,6 +57,8 @@ export const ProtectionSettings: React.FC<ProtectionSettingsProps> = ({ profile,
         if (!level.isCustom) {
             updates.cooldownMinutes = level.cooldown;
             updates.consecutiveLossLimit = level.lossLimit;
+            updates.risk_per_trade_pct = level.riskPct;
+            updates.max_position_size_pct = level.maxPositionPct;
         }
         onUpdate(updates);
     };
@@ -74,8 +80,8 @@ export const ProtectionSettings: React.FC<ProtectionSettingsProps> = ({ profile,
                             key={level.id}
                             onClick={() => handleLevelSelect(level)}
                             className={`flex flex-col md:flex-row items-start md:items-center gap-4 p-4 rounded-xl border transition-all text-left ${isActive
-                                    ? `${level.activeBorder} ${level.bgColor} shadow-lg shadow-indigo-500/5`
-                                    : 'border-divider bg-panel/50 hover:border-gray-600'
+                                ? `${level.activeBorder} ${level.bgColor} shadow-lg shadow-indigo-500/5`
+                                : 'border-divider bg-panel/50 hover:border-gray-600'
                                 }`}
                         >
                             <div className={`p-3 rounded-full ${level.bgColor} ${level.color}`}>
@@ -103,36 +109,68 @@ export const ProtectionSettings: React.FC<ProtectionSettingsProps> = ({ profile,
                     </h4>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Risk per trade */}
+                        <div className="space-y-2">
+                            <label className="text-sm text-text-secondary block">Rủi ro / lệnh (%)</label>
+                            <div className="flex items-center gap-4">
+                                <input
+                                    type="range"
+                                    min="0.5"
+                                    max="5"
+                                    step="0.5"
+                                    value={profile.risk_per_trade_pct || 2}
+                                    onChange={(e) => onUpdate({ risk_per_trade_pct: parseFloat(e.target.value) })}
+                                    className="flex-1 accent-purple-500 h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                                />
+                                <span className="text-xl font-mono font-bold text-accent-neon w-12 text-center">{profile.risk_per_trade_pct || 2}%</span>
+                            </div>
+                        </div>
+
+                        {/* Max position % */}
+                        <div className="space-y-2">
+                            <label className="text-sm text-text-secondary block">Volume tối đa (% vốn)</label>
+                            <div className="flex items-center gap-4">
+                                <input
+                                    type="range"
+                                    min="5"
+                                    max="30"
+                                    step="5"
+                                    value={profile.max_position_size_pct || 10}
+                                    onChange={(e) => onUpdate({ max_position_size_pct: parseFloat(e.target.value) })}
+                                    className="flex-1 accent-purple-500 h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                                />
+                                <span className="text-xl font-mono font-bold text-accent-yellow w-12 text-center">{profile.max_position_size_pct || 10}%</span>
+                            </div>
+                        </div>
+
+                        {/* Cooldown */}
                         <div className="space-y-2">
                             <label className="text-sm text-text-secondary block">Thời gian khóa (phút)</label>
                             <div className="flex items-center gap-4">
                                 <input
                                     type="range"
                                     min="2"
-                                    max="10"
+                                    max="30"
                                     step="1"
                                     value={profile.cooldownMinutes}
                                     onChange={(e) => onUpdate({ cooldownMinutes: parseInt(e.target.value) })}
                                     className="flex-1 accent-purple-500 h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer"
                                 />
-                                <span className="text-xl font-mono font-bold text-white w-8 text-center">{profile.cooldownMinutes}m</span>
-                            </div>
-                            <div className="text-[10px] text-text-secondary flex justify-between">
-                                <span>Cực ngắn (2p)</span>
-                                <span>Tập trung (10p)</span>
+                                <span className="text-xl font-mono font-bold text-white w-12 text-center">{profile.cooldownMinutes}p</span>
                             </div>
                         </div>
 
+                        {/* Loss limit */}
                         <div className="space-y-2">
-                            <label className="text-sm text-text-secondary block">Giới hạn lệnh lỗ liên tiếp</label>
+                            <label className="text-sm text-text-secondary block">Lệnh lỗ liên tiếp tối đa</label>
                             <div className="flex items-center gap-2">
                                 {[1, 2, 3, 4, 5].map((num) => (
                                     <button
                                         key={num}
                                         onClick={() => onUpdate({ consecutiveLossLimit: num })}
                                         className={`flex-1 py-2 rounded-lg font-bold border transition-all ${profile.consecutiveLossLimit === num
-                                                ? 'bg-purple-600 border-purple-500 text-white shadow-lg'
-                                                : 'bg-background/50 border-divider text-text-secondary hover:border-gray-500'
+                                            ? 'bg-purple-600 border-purple-500 text-white shadow-lg'
+                                            : 'bg-background/50 border-divider text-text-secondary hover:border-gray-500'
                                             }`}
                                     >
                                         {num}

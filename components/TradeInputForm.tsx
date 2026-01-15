@@ -137,41 +137,41 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({
 
       <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
         <div className="grid grid-cols-2 gap-3">
-          <button type="button" onClick={() => setDirection('BUY')} className={`w-full font-bold py-3 rounded-xl transition-all text-sm border ${direction === 'BUY' ? 'bg-accent-neon text-black border-accent-neon' : 'bg-black border-white/10 text-white/40 hover:bg-white/5'}`}>
-            MUA
+          <button type="button" onClick={() => setDirection('BUY')} className={`w-full font-black py-3 rounded-xl transition-all text-[10px] tracking-[0.2em] uppercase border ${direction === 'BUY' ? 'bg-accent-neon text-black border-accent-neon neon-glow' : 'bg-black border-accent-neon/20 text-accent-neon/40 hover:bg-accent-neon/5'}`}>
+            {t('terminal.buy')}
           </button>
-          <button type="button" onClick={() => setDirection('SELL')} className={`w-full font-bold py-3 rounded-xl transition-all text-sm border ${direction === 'SELL' ? 'bg-accent-red text-white border-accent-red' : 'bg-black border-white/10 text-white/40 hover:bg-white/5'}`}>
-            BÁN
+          <button type="button" onClick={() => setDirection('SELL')} className={`w-full font-black py-3 rounded-xl transition-all text-[10px] tracking-[0.2em] uppercase border ${direction === 'SELL' ? 'bg-accent-red text-black border-accent-red shadow-[0_0_15px_rgba(255,0,85,0.4)]' : 'bg-black border-accent-red/20 text-accent-red/40 hover:bg-accent-red/5'}`}>
+            {t('terminal.sell')}
           </button>
         </div>
 
-        {/* Cài đặt vốn & rủi ro */}
+        {/* Risk Settings HUD */}
         <div className="bg-black/40 border border-accent-neon/10 rounded-xl px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <div className="flex flex-col">
-              <span className="text-[9px] text-white/40 font-medium mb-1">Vốn tài khoản ($)</span>
+              <span className="text-[8px] text-accent-neon/30 font-black uppercase tracking-widest mb-1">ACC_SIZE</span>
               <input
                 type="number"
                 value={accountSize}
                 onChange={(e) => setAccountSize(Number(e.target.value))}
-                className="bg-transparent border-b border-white/10 text-base font-bold text-white w-24 focus:border-accent-neon focus:outline-none transition-colors"
+                className="bg-transparent border-b border-white/10 text-sm font-black text-white italic tracking-tighter font-mono w-20 focus:border-accent-neon focus:outline-none transition-colors"
                 placeholder="1000"
               />
             </div>
             <div className="flex flex-col">
-              <span className="text-[9px] text-white/40 font-medium mb-1">Rủi ro / lệnh (%)</span>
+              <span className="text-[8px] text-accent-neon/30 font-black uppercase tracking-widest mb-1">RISK_%</span>
               <input
                 type="number"
                 value={riskPercent}
                 onChange={(e) => setRiskPercent(Number(e.target.value))}
-                className="bg-transparent border-b border-white/10 text-base font-bold text-accent-neon w-16 focus:border-accent-neon focus:outline-none transition-colors"
+                className="bg-transparent border-b border-white/10 text-sm font-black text-accent-neon italic tracking-tighter font-mono w-12 focus:border-accent-neon focus:outline-none transition-colors"
                 placeholder="2"
               />
             </div>
           </div>
           <div className="text-right">
-            <span className="text-[9px] text-white/40 font-medium block mb-1">Cảnh báo nếu vượt</span>
-            <span className="text-base font-bold text-accent-yellow">${Math.round(accountSize * 0.1)}</span>
+            <span className="text-[8px] text-accent-neon/30 font-black uppercase tracking-widest mb-1 block">MAX_VOL</span>
+            <span className="text-sm font-black text-accent-yellow italic tracking-tighter font-mono">${Math.round(accountSize * (profileMaxPositionSize / 100) / 100) * 100}</span>
           </div>
         </div>
 
