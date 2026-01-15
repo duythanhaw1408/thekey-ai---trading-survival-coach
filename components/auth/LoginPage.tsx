@@ -1,6 +1,6 @@
 /**
  * THEKEY AI - Login Page
- * Email/Password + Google OAuth login
+ * HUD-styled Email/Password + Google OAuth login
  */
 
 import React, { useState } from 'react';
@@ -48,62 +48,71 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignup, onForgot
         }
     };
 
+    const inputClasses = "w-full px-5 py-4 bg-black border border-accent-neon/20 rounded-xl text-white font-bold placeholder-white/20 focus:outline-none focus:border-accent-neon focus:ring-1 focus:ring-accent-neon/50 transition-all uppercase tracking-wider disabled:opacity-50";
+
     return (
-        <AuthLayout title="Đăng nhập" subtitle="Chào mừng bạn trở lại">
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <AuthLayout title="Đăng nhập" subtitle="Chào mừng trở lại, Operator">
+            <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Error Message */}
                 {error && (
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm text-center"
+                        className="p-4 bg-accent-red/10 border border-accent-red/30 rounded-xl text-accent-red text-sm text-center font-bold uppercase tracking-wide"
                     >
-                        {error}
+                        ⚠ {error}
                     </motion.div>
                 )}
 
                 {/* Email Input */}
                 <div>
-                    <label className="block text-gray-400 text-sm mb-2">Email</label>
+                    <label className="block text-[9px] font-black text-accent-neon/40 uppercase tracking-[0.3em] mb-2">
+                        OPERATOR_EMAIL
+                    </label>
                     <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="your@email.com"
-                        className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                        className={inputClasses}
                         disabled={isLoading}
                     />
                 </div>
 
                 {/* Password Input */}
                 <div>
-                    <label className="block text-gray-400 text-sm mb-2">Mật khẩu</label>
+                    <label className="block text-[9px] font-black text-accent-neon/40 uppercase tracking-[0.3em] mb-2">
+                        ACCESS_KEY
+                    </label>
                     <input
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                        className={inputClasses}
                         disabled={isLoading}
                     />
                 </div>
 
                 {/* Remember Me & Forgot Password */}
                 <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-2 text-gray-400 text-sm cursor-pointer">
+                    <label className="flex items-center gap-2 text-white/40 text-sm cursor-pointer group">
+                        <div className={`w-4 h-4 rounded border ${rememberMe ? 'bg-accent-neon border-accent-neon' : 'border-white/20'} flex items-center justify-center transition-all`}>
+                            {rememberMe && <span className="text-black text-xs">✓</span>}
+                        </div>
                         <input
                             type="checkbox"
                             checked={rememberMe}
                             onChange={(e) => setRememberMe(e.target.checked)}
-                            className="w-4 h-4 rounded border-gray-600 bg-gray-900 text-cyan-500 focus:ring-cyan-500"
+                            className="sr-only"
                         />
-                        Ghi nhớ đăng nhập
+                        <span className="group-hover:text-white/60 transition-colors">Ghi nhớ</span>
                     </label>
                     {onForgotPassword && (
                         <button
                             type="button"
                             onClick={onForgotPassword}
-                            className="text-cyan-400 text-sm hover:text-cyan-300 transition-colors"
+                            className="text-accent-neon/60 text-sm hover:text-accent-neon transition-colors"
                         >
                             Quên mật khẩu?
                         </button>
@@ -116,18 +125,23 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignup, onForgot
                     disabled={isLoading}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full py-3 bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-semibold rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-4 bg-accent-neon text-black font-black uppercase text-sm tracking-[0.3em] rounded-xl shadow-[0_0_20px_rgba(0,255,157,0.3)] hover:shadow-[0_0_30px_rgba(0,255,157,0.5)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+                    {isLoading ? (
+                        <span className="flex items-center justify-center gap-3">
+                            <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                            AUTHENTICATING...
+                        </span>
+                    ) : 'ESTABLISH_CONNECTION'}
                 </motion.button>
 
                 {/* Divider */}
                 <div className="relative my-6">
                     <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-700"></div>
+                        <div className="w-full border-t border-white/10"></div>
                     </div>
-                    <div className="relative flex justify-center text-sm">
-                        <span className="px-4 bg-gray-800/50 text-gray-500">hoặc</span>
+                    <div className="relative flex justify-center">
+                        <span className="px-4 bg-black text-[9px] text-white/30 uppercase tracking-widest">hoặc</span>
                     </div>
                 </div>
 
@@ -138,7 +152,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignup, onForgot
                     disabled={isLoading}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full py-3 bg-white text-gray-900 font-semibold rounded-xl flex items-center justify-center gap-3 hover:bg-gray-100 transition-all disabled:opacity-50"
+                    className="w-full py-4 bg-white text-gray-900 font-bold rounded-xl flex items-center justify-center gap-3 hover:bg-gray-100 transition-all disabled:opacity-50"
                 >
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -150,12 +164,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignup, onForgot
                 </motion.button>
 
                 {/* Switch to Signup */}
-                <p className="text-center text-gray-400 mt-6">
+                <p className="text-center text-white/40 mt-6 text-sm">
                     Chưa có tài khoản?{' '}
                     <button
                         type="button"
                         onClick={onSwitchToSignup}
-                        className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+                        className="text-accent-neon hover:text-accent-neon/80 font-bold transition-colors"
                     >
                         Đăng ký ngay
                     </button>

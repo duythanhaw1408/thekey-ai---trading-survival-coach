@@ -1,6 +1,6 @@
 /**
  * THEKEY AI - Auth Layout
- * Shared layout for authentication pages
+ * HUD-styled layout for authentication pages
  */
 
 import React, { ReactNode } from 'react';
@@ -15,48 +15,82 @@ interface AuthLayoutProps {
 
 export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitle }) => {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-[#0a0b0e] flex items-center justify-center p-4 relative overflow-hidden">
             {/* Background Effects */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+            <div className="fixed inset-0 pointer-events-none">
+                {/* Cyber Grid */}
+                <div className="absolute inset-0 opacity-[0.03]" style={{
+                    backgroundImage: `linear-gradient(rgba(0,255,157,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,157,0.1) 1px, transparent 1px)`,
+                    backgroundSize: '50px 50px'
+                }} />
+                {/* Neon Glow Orbs */}
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent-neon/5 rounded-full blur-[100px]" />
+                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-blue/5 rounded-full blur-[100px]" />
+                {/* Scan Lines */}
+                <motion.div
+                    animate={{ top: ['0%', '100%', '0%'] }}
+                    transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                    className="absolute left-0 right-0 h-px bg-accent-neon/20"
+                />
             </div>
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="relative w-full max-w-md"
+                className="relative w-full max-w-md z-10"
             >
-                {/* Logo */}
-                <div className="text-center mb-8">
+                {/* Logo & Brand */}
+                <div className="text-center mb-10">
                     <motion.div
                         initial={{ scale: 0.8 }}
                         animate={{ scale: 1 }}
                         transition={{ type: "spring", stiffness: 200 }}
-                        className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-cyan-500 to-purple-600 rounded-2xl shadow-lg shadow-cyan-500/25 mb-4"
+                        className="inline-flex items-center justify-center w-20 h-20 bg-black border-2 border-accent-neon/30 rounded-2xl shadow-[0_0_30px_rgba(0,255,157,0.2)] mb-6 relative"
                     >
-                        <KeyIcon className="w-8 h-8 text-white" />
+                        <KeyIcon className="w-10 h-10 text-accent-neon drop-shadow-[0_0_10px_rgba(0,255,157,0.8)]" />
+                        {/* HUD corners */}
+                        <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-accent-neon/50" />
+                        <div className="absolute top-1 right-1 w-2 h-2 border-t border-r border-accent-neon/50" />
+                        <div className="absolute bottom-1 left-1 w-2 h-2 border-b border-l border-accent-neon/50" />
+                        <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-accent-neon/50" />
                     </motion.div>
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                        THEKEY AI
+
+                    <h1 className="text-4xl font-black text-white tracking-widest uppercase italic mb-3">
+                        THE<span className="text-accent-neon">KEY</span> AI
                     </h1>
-                    <p className="text-gray-400 text-sm mt-1">Trading Survival Coach</p>
+
+                    {/* Slogan */}
+                    <p className="text-[11px] font-bold text-accent-neon/60 uppercase tracking-[0.4em] mb-4">
+                        Trading Survival Coach
+                    </p>
+                    <p className="text-sm text-white/30 italic font-medium">
+                        "Kỷ luật là chìa khóa sinh tồn"
+                    </p>
                 </div>
 
                 {/* Card */}
-                <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-8 shadow-2xl">
-                    <div className="text-center mb-6">
-                        <h2 className="text-2xl font-semibold text-white">{title}</h2>
-                        {subtitle && <p className="text-gray-400 mt-2">{subtitle}</p>}
+                <div className="bg-black/60 backdrop-blur-2xl border border-accent-neon/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+                    {/* HUD Corners */}
+                    <div className="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-accent-neon/30 rounded-tl-3xl pointer-events-none" />
+                    <div className="absolute top-0 right-0 w-10 h-10 border-t-2 border-r-2 border-accent-neon/30 rounded-tr-3xl pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 w-10 h-10 border-b-2 border-l-2 border-accent-neon/30 rounded-bl-3xl pointer-events-none" />
+                    <div className="absolute bottom-0 right-0 w-10 h-10 border-b-2 border-r-2 border-accent-neon/30 rounded-br-3xl pointer-events-none" />
+
+                    <div className="text-center mb-8">
+                        <h2 className="text-[10px] font-black text-accent-neon/40 uppercase tracking-[0.5em] mb-2">
+                            {title === 'Đăng nhập' ? 'AUTHENTICATE' : 'INITIALIZE'}
+                        </h2>
+                        <h3 className="text-2xl font-black text-white uppercase tracking-widest">{title}</h3>
+                        {subtitle && <p className="text-white/40 mt-2 text-sm">{subtitle}</p>}
                     </div>
 
                     {children}
                 </div>
 
                 {/* Footer */}
-                <p className="text-center text-gray-500 text-xs mt-6">
-                    © 2026 THEKEY AI. All rights reserved.
+                <p className="text-center text-white/20 text-[10px] mt-8 uppercase tracking-widest">
+                    © 2026 THEKEY AI • NEURAL_TRADING_PROTOCOL
                 </p>
             </motion.div>
         </div>

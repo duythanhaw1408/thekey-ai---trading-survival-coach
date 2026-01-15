@@ -1,6 +1,6 @@
 /**
  * THEKEY AI - Signup Page
- * Email/Password registration with email verification notice
+ * HUD-styled Email/Password registration with email verification notice
  */
 
 import React, { useState } from 'react';
@@ -61,6 +61,8 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onSwitchToLogin }) => {
         }
     };
 
+    const inputClasses = "w-full px-5 py-4 bg-black border border-accent-neon/20 rounded-xl text-white font-bold placeholder-white/20 focus:outline-none focus:border-accent-neon focus:ring-1 focus:ring-accent-neon/50 transition-all uppercase tracking-wider disabled:opacity-50";
+
     if (success) {
         return (
             <AuthLayout title="Xác nhận Email" subtitle="Kiểm tra hộp thư của bạn">
@@ -69,21 +71,19 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onSwitchToLogin }) => {
                     animate={{ opacity: 1, scale: 1 }}
                     className="text-center py-8"
                 >
-                    <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
+                    <div className="w-20 h-20 bg-accent-neon/10 border-2 border-accent-neon/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <span className="text-4xl">✓</span>
                     </div>
-                    <h3 className="text-white text-lg font-semibold mb-2">Đăng ký thành công!</h3>
-                    <p className="text-gray-400 mb-6">
-                        Chúng tôi đã gửi email xác nhận đến <span className="text-cyan-400">{email}</span>.
-                        Vui lòng kiểm tra và xác nhận để kích hoạt tài khoản Pro.
+                    <h3 className="text-white text-xl font-black uppercase tracking-widest mb-3">REGISTRATION_COMPLETE</h3>
+                    <p className="text-white/40 mb-6">
+                        Email xác nhận đã được gửi đến <span className="text-accent-neon">{email}</span>.
+                        Vui lòng kiểm tra để kích hoạt tính năng Pro.
                     </p>
                     <button
                         onClick={onSwitchToLogin}
-                        className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+                        className="text-accent-neon hover:text-accent-neon/80 font-bold transition-colors uppercase tracking-widest"
                     >
-                        Đăng nhập ngay
+                        → Đăng nhập ngay
                     </button>
                 </motion.div>
             </AuthLayout>
@@ -91,46 +91,50 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onSwitchToLogin }) => {
     }
 
     return (
-        <AuthLayout title="Tạo tài khoản" subtitle="Bắt đầu hành trình trading của bạn">
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <AuthLayout title="Tạo tài khoản" subtitle="Bắt đầu hành trình trading">
+            <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Error Message */}
                 {error && (
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm text-center"
+                        className="p-4 bg-accent-red/10 border border-accent-red/30 rounded-xl text-accent-red text-sm text-center font-bold uppercase tracking-wide"
                     >
-                        {error}
+                        ⚠ {error}
                     </motion.div>
                 )}
 
                 {/* Email Input */}
                 <div>
-                    <label className="block text-gray-400 text-sm mb-2">Email</label>
+                    <label className="block text-[9px] font-black text-accent-neon/40 uppercase tracking-[0.3em] mb-2">
+                        OPERATOR_EMAIL
+                    </label>
                     <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="your@email.com"
-                        className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                        className={inputClasses}
                         disabled={isLoading}
                     />
                 </div>
 
                 {/* Password Input */}
                 <div>
-                    <label className="block text-gray-400 text-sm mb-2">Mật khẩu</label>
+                    <label className="block text-[9px] font-black text-accent-neon/40 uppercase tracking-[0.3em] mb-2">
+                        CREATE_ACCESS_KEY
+                    </label>
                     <input
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Ít nhất 8 ký tự"
-                        className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                        className={inputClasses}
                         disabled={isLoading}
                     />
                     {/* Password Strength Indicator */}
                     {password && (
-                        <div className="mt-2 space-y-2">
+                        <div className="mt-3 space-y-2">
                             {/* Strength Bar */}
                             <div className="flex gap-1">
                                 {[1, 2, 3, 4].map((i) => {
@@ -140,27 +144,27 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onSwitchToLogin }) => {
                                     const hasLength = password.length >= 8;
                                     const score = [hasLength, hasUpper, hasLower, hasNumber].filter(Boolean).length;
 
-                                    let color = 'bg-gray-700';
+                                    let color = 'bg-white/10';
                                     if (score >= i) {
-                                        if (score <= 2) color = 'bg-red-500';
-                                        else if (score === 3) color = 'bg-yellow-500';
-                                        else color = 'bg-green-500';
+                                        if (score <= 2) color = 'bg-accent-red';
+                                        else if (score === 3) color = 'bg-accent-yellow';
+                                        else color = 'bg-accent-neon';
                                     }
                                     return <div key={i} className={`h-1 flex-1 rounded-full transition-all ${color}`} />;
                                 })}
                             </div>
                             {/* Requirements Checklist */}
-                            <div className="text-xs space-y-1">
-                                <div className={password.length >= 8 ? 'text-green-400' : 'text-gray-500'}>
+                            <div className="text-[10px] space-y-1 uppercase tracking-wide">
+                                <div className={password.length >= 8 ? 'text-accent-neon' : 'text-white/20'}>
                                     {password.length >= 8 ? '✓' : '○'} Ít nhất 8 ký tự
                                 </div>
-                                <div className={/[A-Z]/.test(password) ? 'text-green-400' : 'text-gray-500'}>
+                                <div className={/[A-Z]/.test(password) ? 'text-accent-neon' : 'text-white/20'}>
                                     {/[A-Z]/.test(password) ? '✓' : '○'} Có chữ hoa (A-Z)
                                 </div>
-                                <div className={/[a-z]/.test(password) ? 'text-green-400' : 'text-gray-500'}>
+                                <div className={/[a-z]/.test(password) ? 'text-accent-neon' : 'text-white/20'}>
                                     {/[a-z]/.test(password) ? '✓' : '○'} Có chữ thường (a-z)
                                 </div>
-                                <div className={/\d/.test(password) ? 'text-green-400' : 'text-gray-500'}>
+                                <div className={/\d/.test(password) ? 'text-accent-neon' : 'text-white/20'}>
                                     {/\d/.test(password) ? '✓' : '○'} Có số (0-9)
                                 </div>
                             </div>
@@ -170,36 +174,42 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onSwitchToLogin }) => {
 
                 {/* Confirm Password Input */}
                 <div>
-                    <label className="block text-gray-400 text-sm mb-2">Xác nhận mật khẩu</label>
+                    <label className="block text-[9px] font-black text-accent-neon/40 uppercase tracking-[0.3em] mb-2">
+                        CONFIRM_ACCESS_KEY
+                    </label>
                     <input
                         type="password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Nhập lại mật khẩu"
-                        className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                        className={`${inputClasses} ${confirmPassword && confirmPassword !== password ? 'border-accent-red/50' : ''}`}
                         disabled={isLoading}
                     />
                 </div>
 
                 {/* Terms Checkbox */}
-                <label className="flex items-start gap-3 text-gray-400 text-sm cursor-pointer">
+                <label className="flex items-start gap-3 text-white/40 text-sm cursor-pointer group">
+                    <div className={`w-5 h-5 rounded border-2 mt-0.5 ${agreedToTerms ? 'bg-accent-neon border-accent-neon' : 'border-white/20'} flex items-center justify-center transition-all`}>
+                        {agreedToTerms && <span className="text-black text-xs font-bold">✓</span>}
+                    </div>
                     <input
                         type="checkbox"
                         checked={agreedToTerms}
                         onChange={(e) => setAgreedToTerms(e.target.checked)}
-                        className="w-4 h-4 mt-0.5 rounded border-gray-600 bg-gray-900 text-cyan-500 focus:ring-cyan-500"
+                        className="sr-only"
                     />
-                    <span>
+                    <span className="group-hover:text-white/60 transition-colors">
                         Tôi đồng ý với{' '}
-                        <a href="#" className="text-cyan-400 hover:text-cyan-300">Điều khoản sử dụng</a>
+                        <a href="#" className="text-accent-neon hover:text-accent-neon/80">Điều khoản sử dụng</a>
                         {' '}và{' '}
-                        <a href="#" className="text-cyan-400 hover:text-cyan-300">Chính sách bảo mật</a>
+                        <a href="#" className="text-accent-neon hover:text-accent-neon/80">Chính sách bảo mật</a>
                     </span>
                 </label>
 
                 {/* Pro Notice */}
-                <div className="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-lg text-cyan-400 text-sm">
-                    💡 Xác nhận email để mở khóa tính năng <span className="font-semibold">Pro</span>: AI insights nâng cao, reports chi tiết, và nhiều hơn nữa!
+                <div className="p-4 bg-accent-neon/5 border border-accent-neon/20 rounded-xl text-accent-neon/80 text-sm">
+                    <span className="text-lg mr-2">🔑</span>
+                    Xác nhận email để mở khóa <span className="font-black">PRO_ACCESS</span>: AI insights nâng cao, reports chi tiết
                 </div>
 
                 {/* Submit Button */}
@@ -208,18 +218,23 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onSwitchToLogin }) => {
                     disabled={isLoading}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full py-3 bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-semibold rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-4 bg-accent-neon text-black font-black uppercase text-sm tracking-[0.3em] rounded-xl shadow-[0_0_20px_rgba(0,255,157,0.3)] hover:shadow-[0_0_30px_rgba(0,255,157,0.5)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    {isLoading ? 'Đang tạo tài khoản...' : 'Tạo tài khoản'}
+                    {isLoading ? (
+                        <span className="flex items-center justify-center gap-3">
+                            <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                            INITIALIZING...
+                        </span>
+                    ) : 'CREATE_IDENTITY'}
                 </motion.button>
 
                 {/* Divider */}
                 <div className="relative my-6">
                     <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-700"></div>
+                        <div className="w-full border-t border-white/10"></div>
                     </div>
-                    <div className="relative flex justify-center text-sm">
-                        <span className="px-4 bg-gray-800/50 text-gray-500">hoặc</span>
+                    <div className="relative flex justify-center">
+                        <span className="px-4 bg-black text-[9px] text-white/30 uppercase tracking-widest">hoặc</span>
                     </div>
                 </div>
 
@@ -230,7 +245,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onSwitchToLogin }) => {
                     disabled={isLoading}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full py-3 bg-white text-gray-900 font-semibold rounded-xl flex items-center justify-center gap-3 hover:bg-gray-100 transition-all disabled:opacity-50"
+                    className="w-full py-4 bg-white text-gray-900 font-bold rounded-xl flex items-center justify-center gap-3 hover:bg-gray-100 transition-all disabled:opacity-50"
                 >
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -242,12 +257,12 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onSwitchToLogin }) => {
                 </motion.button>
 
                 {/* Switch to Login */}
-                <p className="text-center text-gray-400 mt-6">
+                <p className="text-center text-white/40 mt-6 text-sm">
                     Đã có tài khoản?{' '}
                     <button
                         type="button"
                         onClick={onSwitchToLogin}
-                        className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+                        className="text-accent-neon hover:text-accent-neon/80 font-bold transition-colors"
                     >
                         Đăng nhập
                     </button>
