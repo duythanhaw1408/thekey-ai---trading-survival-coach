@@ -25,12 +25,12 @@ const PEER_REPLIES = [
 ];
 
 class SurvivalMasteryEngine {
-    
+
     public calculateMastery(stats: TraderStats, tradeHistory: Trade[], shadowScore: ShadowScore | null): Omit<MasteryData, 'quests'> {
         let xp = 0;
         // Award XP for survival days
         xp += stats.survivalDays * 50;
-        
+
         // Award XP for disciplined trades (not blocked)
         const disciplinedTrades = tradeHistory.filter(t => t.decision !== 'BLOCK').length;
         xp += disciplinedTrades * 15;
@@ -45,7 +45,7 @@ class SurvivalMasteryEngine {
                 }
             }
         });
-        
+
         if (shadowScore) {
             xp *= shadowScore.adjustmentFactors.xpMultiplier;
         }
@@ -54,7 +54,7 @@ class SurvivalMasteryEngine {
 
         const currentLevelInfo = this.getLevelFromXp(xp);
         const nextLevelInfo = this.getNextLevel(currentLevelInfo.level);
-        
+
         return {
             level: currentLevelInfo.level,
             levelTitle: currentLevelInfo.title,
@@ -64,46 +64,64 @@ class SurvivalMasteryEngine {
         };
     }
 
-    public generateQuests(masteryData: MasteryData, detectedPattern: DetectedPattern | null): Quest[] {
+    public generateQuests(
+        masteryData: MasteryData,
+        detectedPattern: DetectedPattern | null,
+        checkinCount: number = 0,
+        tradeHistory: Trade[] = []
+    ): Quest[] {
         const quests: Quest[] = [];
 
-        // Base quest for everyone
+        // Quest 1: Daily Check-in Streak - track actual checkin count (capped at 3)
+        const checkinProgress = Math.min(checkinCount, 3);
         quests.push({
             id: 'daily_checkin_streak',
             title: 'Mindful Start',
             description: 'Complete the daily check-in for 3 consecutive days to build a routine of self-awareness.',
             metric: 'daily_checkins',
             target: 3,
-            progress: 0, // This would need to be tracked in state
-            status: 'ACTIVE',
+            progress: checkinProgress,
+            status: checkinProgress >= 3 ? 'COMPLETED' : 'ACTIVE',
             rewardXp: 150
         });
 
-        // Pattern-based quest
+        // Quest 2: Warn-Free Streak or Cool-down Protocol based on pattern
         if (detectedPattern && detectedPattern.pattern_name.toLowerCase().includes('revenge')) {
-             quests.push({
+            quests.push({
                 id: 'revenge_killer',
                 title: 'Cool-down Protocol',
                 description: 'After your next 3 losing trades, wait at least 30 minutes before entering a new trade.',
                 metric: 'cooldown_adherence',
                 target: 3,
-                progress: 0,
+                progress: 0, // This would need special tracking
                 status: 'ACTIVE',
                 rewardXp: 300
             });
         } else {
-             quests.push({
+            // Count consecutive trades without WARN decision
+            let warnFreeCount = 0;
+            // Check from most recent trades
+            for (let i = tradeHistory.length - 1; i >= 0; i--) {
+                if (tradeHistory[i].decision !== 'WARN' && tradeHistory[i].decision !== 'BLOCK') {
+                    warnFreeCount++;
+                } else {
+                    break; // Stop at first WARN/BLOCK
+                }
+            }
+            const warnFreeProgress = Math.min(warnFreeCount, 5);
+
+            quests.push({
                 id: 'warn_free_streak',
                 title: 'Process Purity',
                 description: 'Execute 5 consecutive trades without triggering a warning from the AI.',
                 metric: 'warn_free_trades',
                 target: 5,
-                progress: 0,
-                status: 'ACTIVE',
+                progress: warnFreeProgress,
+                status: warnFreeProgress >= 5 ? 'COMPLETED' : 'ACTIVE',
                 rewardXp: 250
             });
         }
-        
+
         return quests;
     }
 
@@ -133,7 +151,7 @@ class SurvivalMasteryEngine {
     private getUnlockedContent(currentLevel: MasteryLevel): UnlockedContent[] {
         const levels: MasteryLevel[] = ['NOVICE', 'APPRENTICE', 'JOURNEYMAN', 'MASTER', 'GRANDMASTER'];
         const currentLevelIndex = levels.indexOf(currentLevel);
-        
+
         return EDUCATIONAL_CONTENT.filter(content => {
             const requiredLevelIndex = levels.indexOf(content.levelRequired);
             return currentLevelIndex >= requiredLevelIndex;

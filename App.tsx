@@ -336,7 +336,8 @@ const App: React.FC = () => {
     // The filter now correctly selects trades based on the simulationMode.
     const relevantHistory = tradeHistory.filter(t => (simulationMode ? t.mode === 'SIMULATION' : t.mode === 'LIVE'));
     const newMasteryBase = masteryEngine.calculateMastery(stats, relevantHistory, shadowScore);
-    const quests = masteryEngine.generateQuests({ ...newMasteryBase, quests: [] }, activePattern);
+    // Pass checkinHistory.length and relevantHistory for real quest progress tracking
+    const quests = masteryEngine.generateQuests({ ...newMasteryBase, quests: [] }, activePattern, checkinHistory.length, relevantHistory);
 
     // XP Change & Level-Up Detection
     if (masteryData && newMasteryBase.xp > masteryData.xp) {
@@ -353,7 +354,7 @@ const App: React.FC = () => {
     setPreviousLevel(newMasteryBase.levelTitle);
 
     setMasteryData({ ...newMasteryBase, quests });
-  }, [stats, tradeHistory, simulationMode, activePattern, shadowScore]);
+  }, [stats, tradeHistory, simulationMode, activePattern, shadowScore, checkinHistory]);
 
   // Sync Mastery to Backend
   useEffect(() => {
