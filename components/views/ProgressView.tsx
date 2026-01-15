@@ -101,37 +101,49 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
                         {!weeklyGoals && !isLoadingGoals && (
                             <div className="flex-1 flex flex-col items-center justify-center p-10 text-center border border-dashed border-accent-neon/10 rounded-2xl bg-black/20 group-hover:bg-black/40 transition-colors">
                                 <div className="w-16 h-16 bg-accent-neon/5 rounded-full flex items-center justify-center mb-8 border border-accent-neon/10">
-                                    <CalendarIcon className="w-8 h-8 text-accent-neon/40" />
+                                    <CalendarIcon className={`w-8 h-8 ${tradeHistory.length >= 3 ? 'text-accent-neon animate-pulse' : 'text-accent-neon/40'}`} />
                                 </div>
-                                <h4 className="text-white font-black text-xs uppercase tracking-widest mb-3">MỤC TIÊU TUẦN_LOCKED</h4>
+                                <h4 className="text-white font-black text-xs uppercase tracking-widest mb-3">
+                                    {tradeHistory.length >= 3 ? 'MỤC TIÊU_SẴN SÀNG' : 'MỤC TIÊU TUẦN_LOCKED'}
+                                </h4>
                                 <p className="text-white/30 text-[10px] uppercase font-bold tracking-widest mb-8 max-w-[200px] leading-relaxed">
-                                    AI protocol requires neural data before generating objectives.
+                                    {tradeHistory.length >= 3
+                                        ? 'Dữ liệu đã đủ. Nhấn REFRESH để AI thiết lập lộ trình mục tiêu cho tuần này.'
+                                        : 'AI protocol requires neural data before generating objectives.'}
                                 </p>
-                                <div className="w-full max-w-[240px] space-y-4 bg-black/40 p-5 rounded-xl border border-white/5">
-                                    <p className="text-[8px] font-black text-accent-yellow uppercase tracking-widest flex items-center gap-2">
-                                        <div className="w-1 h-3 bg-accent-yellow" /> UNLOCK_REQUIREMENTS:
-                                    </p>
-                                    <div className="space-y-3">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-[9px] font-bold text-white/30 uppercase tracking-widest">DOJO_COMMITS</span>
-                                            <span className={`text-[9px] font-black ${tradeHistory.length >= 3 ? 'text-accent-neon' : 'text-white/20'}`}>
-                                                {tradeHistory.length}/3
-                                            </span>
+
+                                {tradeHistory.length >= 3 ? (
+                                    <button
+                                        onClick={onGetWeeklyGoals}
+                                        className="w-full max-w-[200px] py-4 bg-accent-neon text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(0,255,157,0.3)]"
+                                    >
+                                        ACTIVATE_NEURAL_PLAN
+                                    </button>
+                                ) : (
+                                    <div className="w-full max-w-[240px] space-y-4 bg-black/40 p-5 rounded-xl border border-white/5">
+                                        <p className="text-[8px] font-black text-accent-yellow uppercase tracking-widest flex items-center gap-2">
+                                            <div className="w-1 h-3 bg-accent-yellow" /> UNLOCK_REQUIREMENTS:
+                                        </p>
+                                        <div className="space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[9px] font-bold text-white/30 uppercase tracking-widest">DOJO_COMMITS</span>
+                                                <span className={`text-[9px] font-black ${tradeHistory.length >= 3 ? 'text-accent-neon' : 'text-white/20'}`}>
+                                                    {tradeHistory.length}/3
+                                                </span>
+                                            </div>
+                                            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                                <motion.div
+                                                    initial={{ width: 0 }}
+                                                    animate={{ width: `${Math.min(tradeHistory.length / 3 * 100, 100)}%` }}
+                                                    className="h-full bg-accent-neon shadow-[0_0_8px_rgba(0,255,157,0.5)]"
+                                                />
+                                            </div>
                                         </div>
-                                        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                                            <motion.div
-                                                initial={{ width: 0 }}
-                                                animate={{ width: `${Math.min(tradeHistory.length / 3 * 100, 100)}%` }}
-                                                className="h-full bg-accent-neon shadow-[0_0_8px_rgba(0,255,157,0.5)]"
-                                            />
-                                        </div>
-                                    </div>
-                                    {tradeHistory.length < 3 && (
-                                        <p className="text-[8px] font-black text-accent-neon uppercase animate-pulse">
+                                        <p className="text-[8px] font-black text-accent-neon uppercase animate-pulse text-left">
                                             {">>"} NEED_{Math.max(0, 3 - tradeHistory.length)}_MORE_SESSIONS
                                         </p>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                         {weeklyGoals && <WeeklyGoalsCard goals={weeklyGoals} />}
@@ -164,37 +176,49 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
                         {!weeklyReport && !isLoadingReport && (
                             <div className="flex-1 flex flex-col items-center justify-center p-10 text-center border border-dashed border-accent-neon/10 rounded-2xl bg-black/20 group-hover:bg-black/40 transition-colors">
                                 <div className="w-16 h-16 bg-accent-neon/5 rounded-full flex items-center justify-center mb-8 border border-accent-neon/10">
-                                    <FileTextIcon className="w-8 h-8 text-accent-neon/40" />
+                                    <FileTextIcon className={`w-8 h-8 ${tradeHistory.length >= 5 ? 'text-accent-blue animate-pulse' : 'text-accent-neon/40'}`} />
                                 </div>
-                                <h4 className="text-white font-black text-xs uppercase tracking-widest mb-3">BÁO CÁO HIỆU SUẤT_STANDBY</h4>
+                                <h4 className="text-white font-black text-xs uppercase tracking-widest mb-3">
+                                    {tradeHistory.length >= 5 ? 'BÁO CÁO_SẴN SÀNG' : 'BÁO CÁO HIỆU SUẤT_STANDBY'}
+                                </h4>
                                 <p className="text-white/30 text-[10px] uppercase font-bold tracking-widest mb-8 max-w-[200px] leading-relaxed">
-                                    Insufficient neural bandwidth for full performance ledger.
+                                    {tradeHistory.length >= 5
+                                        ? 'Dữ liệu đã đủ để biên soạn báo cáo sinh tồn. Nhấn GENERATE để bắt đầu.'
+                                        : 'Insufficient neural bandwidth for full performance ledger.'}
                                 </p>
-                                <div className="w-full max-w-[240px] space-y-4 bg-black/40 p-5 rounded-xl border border-white/5">
-                                    <p className="text-[8px] font-black text-accent-yellow uppercase tracking-widest flex items-center gap-2">
-                                        <div className="w-1 h-3 bg-accent-yellow" /> DATA_THRESHOLD:
-                                    </p>
-                                    <div className="space-y-3">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-[9px] font-bold text-white/30 uppercase tracking-widest">MIN_SESSIONS</span>
-                                            <span className={`text-[9px] font-black ${tradeHistory.length >= 5 ? 'text-accent-neon' : 'text-white/20'}`}>
-                                                {tradeHistory.length}/5
-                                            </span>
+
+                                {tradeHistory.length >= 5 ? (
+                                    <button
+                                        onClick={onGetWeeklyReport}
+                                        className="w-full max-w-[200px] py-4 bg-accent-blue text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)]"
+                                    >
+                                        COMPILE_LEDGER
+                                    </button>
+                                ) : (
+                                    <div className="w-full max-w-[240px] space-y-4 bg-black/40 p-5 rounded-xl border border-white/5">
+                                        <p className="text-[8px] font-black text-accent-yellow uppercase tracking-widest flex items-center gap-2">
+                                            <div className="w-1 h-3 bg-accent-yellow" /> DATA_THRESHOLD:
+                                        </p>
+                                        <div className="space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[9px] font-bold text-white/30 uppercase tracking-widest">MIN_SESSIONS</span>
+                                                <span className={`text-[9px] font-black ${tradeHistory.length >= 5 ? 'text-accent-neon' : 'text-white/20'}`}>
+                                                    {tradeHistory.length}/5
+                                                </span>
+                                            </div>
+                                            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                                <motion.div
+                                                    initial={{ width: 0 }}
+                                                    animate={{ width: `${Math.min(tradeHistory.length / 5 * 100, 100)}%` }}
+                                                    className="h-full bg-accent-neon shadow-[0_0_8px_rgba(0,255,157,0.5)]"
+                                                />
+                                            </div>
                                         </div>
-                                        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                                            <motion.div
-                                                initial={{ width: 0 }}
-                                                animate={{ width: `${Math.min(tradeHistory.length / 5 * 100, 100)}%` }}
-                                                className="h-full bg-accent-neon shadow-[0_0_8px_rgba(0,255,157,0.5)]"
-                                            />
-                                        </div>
-                                    </div>
-                                    {tradeHistory.length < 5 && (
-                                        <p className="text-[8px] font-black text-accent-neon uppercase animate-pulse">
+                                        <p className="text-[8px] font-black text-accent-neon uppercase animate-pulse text-left">
                                             {">>"} ACCUMULATE_{Math.max(0, 5 - tradeHistory.length)}_MORE_ENTRIES
                                         </p>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                         {weeklyReport && <WeeklyReportCard report={weeklyReport} />}

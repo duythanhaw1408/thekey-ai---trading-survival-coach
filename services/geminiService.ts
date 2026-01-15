@@ -648,22 +648,26 @@ export const getWeeklyGoals = async (tradeHistory: Trade[], stats: TraderStats, 
     const identifiedIssues = analyzeTradePatternsForGoals(recentTrades, stats);
 
     const content = `
-    USER CLASSIFICATION:
-    - Level: ${userLevel}
-    - Days active: ${stats.survivalDays}
-    - Consecutive Losses: ${stats.consecutiveLosses}
-    - Discipline Score: ${stats.disciplineScore}%
+    --- BỐI CẢNH NGƯỜI DÙNG ---
+    - Cấp độ: ${userLevel}
+    - Số ngày sống sót: ${stats.survivalDays}
+    - Chuỗi thua hiện tại: ${stats.consecutiveLosses}
+    - Điểm kỷ luật: ${stats.disciplineScore}%
 
-    LAST WEEK ANALYSIS (based on last 30 trades):
-    - Trades: ${recentTrades.length}
-    - Rule compliance: ${stats.disciplineScore}%
-    - Identified issues: ${identifiedIssues}
-    - What went well: ${stats.disciplineScore > 80 ? 'High rule compliance.' : 'Survived another week.'}
+    --- PHÂN TÍCH TUẦN QUA (30 lệnh gần nhất) ---
+    - Tổng số lệnh: ${recentTrades.length}
+    - Tỷ lệ tuân thủ quy tắc: ${stats.disciplineScore}%
+    - Các vấn đề phát hiện: ${identifiedIssues}
+    - Điểm sáng: ${stats.disciplineScore > 80 ? 'Tuân thủ quy tắc rất tốt.' : 'Đã sống sót qua một tuần đầy thử thách.'}
 
-    RECENT CHECK-IN INSIGHTS (use these themes to personalize goals):
-    ${checkinHistory.map(c => `- ${c.insights}`).join('\n') || 'No check-in history available.'}
+    --- CHI TIẾT LỊCH SỬ GIAO DỊCH (Tóm tắt) ---
+    ${recentTrades.slice(0, 10).map(t => `- ${t.asset}: ${t.status} | PnL: ${t.pnl} | Lý do: ${t.reasoning} | AI Decision: ${t.decision}`).join('\n')}
 
-    Generate weekly goals based on all this data.
+    --- INSIGHTS TỪ CHECK-IN TÂM LÝ ---
+    ${checkinHistory.slice(0, 5).map(c => `- ${c.insights}`).join('\n') || 'Chưa có lịch sử check-in.'}
+
+    Dựa trên dữ liệu chi tiết trên, hãy tạo 2 mục tiêu tuần mới THỰC SỰ HỮU ÍCH và CÁ NHÂN HÓA cho người dùng này. 
+    Mỗi mục tiêu phải nhắm thẳng vào các vấn đề cụ thể họ đang gặp phải (vd: FOMO, gồng lỗ, hoặc quá tự tin).
     `;
 
     try {
@@ -1108,16 +1112,25 @@ export const getWeeklyReport = async (tradeHistory: Trade[]): Promise<WeeklyRepo
         : 100;
 
     const context = `
-    REPORTING PERIOD: Last 7 days
-    TRADING ACTIVITY:
-    - Total trades: ${total_trades}
-    - Winning trades: ${wins}
-    - Losing trades: ${losses}
-    - Net PnL: $${net_pnl.toFixed(2)}
-    BEHAVIORAL METRICS:
-    - Rule compliance: ${Math.round(compliance_score)}%
+    THỜI GIAN BÁO CÁO: 7 ngày qua
     
-    Generate a comprehensive weekly report based on this data.
+    --- TÓM TẮT HOẠT ĐỘNG ---
+    - Tổng số lệnh: ${total_trades}
+    - Số lệnh thắng: ${wins}
+    - Số lệnh thua: ${losses}
+    - PnL ròng: $${net_pnl.toFixed(2)}
+    
+    --- CHỈ SỐ HÀNH VI ---
+    - Điểm tuân thủ quy trình (Compliance): ${Math.round(compliance_score)}%
+    
+    --- DỮ LIỆU CHI TIẾT LỊCH SỬ (Source of Truth) ---
+    ${tradeHistory.slice(0, 15).map(t => `- ${t.asset}: Decision=${t.decision}, PnL=${t.pnl}, Lý do vào lệnh="${t.reasoning}"`).join('\n')}
+
+    YÊU CẦU:
+    - Tạo một báo cáo hiệu suất toàn diện, mang tính kể chuyện (narrative-driven).
+    - KHÔNG chỉ lặp lại con số. Hãy phân tích CHI TIẾT nguyên nhân thắng/thua dựa trên lý do vào lệnh.
+    - So sánh sự khác biệt giữa các lệnh được AI 'ALLOW' và những lệnh bị 'WARN' nhưng vẫn vào.
+    - Đưa ra nhận xét sắc bén về kỷ luật và tâm lý giao dịch của user.
     `;
 
     try {
