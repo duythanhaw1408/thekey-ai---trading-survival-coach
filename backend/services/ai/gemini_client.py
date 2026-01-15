@@ -11,14 +11,13 @@ class GeminiClient:
     Backend client for Google Gemini API.
     Handles central AI logic for THEKEY.
     """
-    # Available models for this API key (verified via list_models)
-    # Note: gemini-1.5-flash is NOT available for this API key
-    # Using 2.0-flash-lite for best free tier performance
+    # Optimized Model List based on real-world diagnostic tests
+    # 'gemini-flash-latest' is the most stable fallback for free tier
     MODELS = [
-        'models/gemini-2.0-flash',       # Primary: Fast, latest 2.0 version
-        'models/gemini-2.0-flash-lite',  # Lite: Efficient
-        'models/gemini-1.5-flash',       # Stable Fallback
-        'models/gemini-1.5-pro',         # High Capability Fallback
+        'models/gemini-flash-latest',    # Primary Status: Working/High Quota (1.5 Flash)
+        'models/gemini-2.0-flash',       # Fast, but prone to 0-limit on some accounts
+        'models/gemini-2.0-flash-lite',  # Lightweight 2.0
+        'models/gemini-pro-latest',      # High Capability (2.5 Pro)
     ]
 
     # =========================================
@@ -418,24 +417,29 @@ Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
 
         LANGUAGE: Vietnamese. Return ONLY valid JSON.
         """
-        try:
-            # Use 8 second timeout to avoid UI stuck
-            async with asyncio.timeout(8):
-                async with self._semaphore:
-                    safe_prompt = self.SAFETY_RAILS + prompt
+        # Use unified generation to get market analysis
+        # We try to use google search if the model supports it
+        async def try_market_search():
+            for model_id in self.MODELS:
+                try:
+                    # Search is best for market context
                     response = await self.client.aio.models.generate_content(
-                        model='models/gemini-2.0-flash',
-                        contents=safe_prompt,
-                        config={
-                            'tools': [{'google_search': {}}]
-                        }
+                        model=model_id,
+                        contents=self.SAFETY_RAILS + prompt,
+                        config={'tools': [{'google_search': {}}]}
                     )
-                    
-                    if not response or not response.text:
-                        # Fallback to normal generation if search fails or model unavailable
-                        response_text = await self._generate(prompt)
-                    else:
-                        response_text = response.text
+                    if response and response.text:
+                        return response.text
+                except Exception as e:
+                    print(f"⚠️ Search failed for {model_id}: {e}")
+                    continue
+            # If all search attempts fail, fallback to standard generate
+            return await self._generate(prompt)
+
+        try:
+            # Use 10 second timeout for search
+            async with asyncio.timeout(10):
+                response_text = await try_market_search()
 
             result = self._clean_and_parse_json(response_text)
             
