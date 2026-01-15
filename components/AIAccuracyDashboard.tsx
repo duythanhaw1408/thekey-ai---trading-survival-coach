@@ -98,7 +98,7 @@ const AIAccuracyDashboard: React.FC = () => {
             <div className="flex justify-between items-center mb-10 relative z-10">
                 <div className="flex items-center gap-4">
                     <div className="w-1.5 h-6 bg-accent-neon shadow-[0_0_8px_rgba(0,255,157,0.8)]" />
-                    <h2 className="text-[11px] font-black text-white/60 uppercase tracking-[0.5em]">AI_NEURAL_ACCURACY_MATRIX</h2>
+                    <h2 className="text-[11px] font-black text-white/40 uppercase tracking-[0.5em]">AI_NEURAL_ACCURACY_MATRIX</h2>
                 </div>
                 <span className="text-[10px] font-black text-accent-neon/60 bg-accent-neon/5 border border-accent-neon/20 px-4 py-1.5 rounded-full uppercase tracking-widest">
                     TOTAL_EVALUATIONS: {stats.total_evaluated}
@@ -108,7 +108,7 @@ const AIAccuracyDashboard: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-10">
                 {/* Overall Accuracy */}
                 <div className="bg-black/60 border border-white/5 rounded-2xl p-6 flex flex-col items-center group-hover:border-accent-neon/20 transition-all duration-500">
-                    <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-8">SYSTEM_PRECISION</h3>
+                    <h3 className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] mb-8">SYSTEM_PRECISION</h3>
                     <div className="relative w-32 h-32">
                         <svg className="w-full h-full transform -rotate-90">
                             <circle
@@ -142,7 +142,7 @@ const AIAccuracyDashboard: React.FC = () => {
 
                 {/* Accuracy by Decision Type */}
                 <div className="bg-black/60 border border-white/5 rounded-2xl p-6 group-hover:border-accent-neon/20 transition-all duration-500">
-                    <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-6">DECISION_VECTOR_ANALYSIS</h3>
+                    <h3 className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] mb-6">DECISION_VECTOR_ANALYSIS</h3>
                     <div className="space-y-5">
                         {(['BLOCK', 'WARN', 'ALLOW'] as const).map(type => {
                             const data = stats.by_decision[type];
@@ -178,12 +178,12 @@ const AIAccuracyDashboard: React.FC = () => {
 
                 {/* Override Analysis */}
                 <div className="bg-black/60 border border-white/5 rounded-2xl p-6 group-hover:border-accent-neon/20 transition-all duration-500">
-                    <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-6">NEURAL_OVERRIDE_LOG</h3>
+                    <h3 className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] mb-6">NEURAL_OVERRIDE_LOG</h3>
                     {stats.override_analysis.total_overrides > 0 ? (
                         <div className="grid grid-cols-2 gap-4">
                             <div className="col-span-2 p-4 bg-black/40 border border-white/5 rounded-xl text-center">
                                 <span className="text-2xl font-black text-white italic block mb-1">{stats.override_analysis.total_overrides}</span>
-                                <span className="text-[8px] font-black text-white/50 uppercase tracking-widest">TOTAL_MANUAL_INTERVENTIONS</span>
+                                <span className="text-[8px] font-black text-white/30 uppercase tracking-widest">TOTAL_MANUAL_INTERVENTIONS</span>
                             </div>
                             <div className="p-4 bg-accent-neon/5 border border-accent-neon/10 rounded-xl text-center">
                                 <span className="text-lg font-black text-accent-neon italic block mb-1">{stats.override_analysis.successful_overrides}</span>
@@ -209,7 +209,7 @@ const AIAccuracyDashboard: React.FC = () => {
             {/* Insights */}
             {stats.insights.length > 0 && (
                 <div className="mt-8 pt-8 border-t border-accent-neon/5 relative z-10">
-                    <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em] mb-6">AI_SYSTEM_REFLECTIONS</h3>
+                    <h3 className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] mb-6">AI_SYSTEM_REFLECTIONS</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {stats.insights.map((insight, index) => (
                             <motion.div

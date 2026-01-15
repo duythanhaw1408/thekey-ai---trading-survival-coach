@@ -174,7 +174,7 @@ export const DashboardView: React.FC<DashboardViewProps> = (props) => {
                                     <div className="w-1.5 h-4 bg-accent-neon mr-3 shadow-[0_0_8px_rgba(0,255,157,0.8)]" />
                                     {t('dashboard.biometricStatus')}
                                 </h3>
-                                <span className="text-[8px] font-bold text-white/50 uppercase tracking-widest ml-4.5">Core_Link_Established</span>
+                                <span className="text-[8px] font-bold text-white/20 uppercase tracking-widest ml-4.5">Core_Link_Established</span>
                             </div>
                             <TrustBattery
                                 score={props.shadowScore?.score || 100}
@@ -193,7 +193,7 @@ export const DashboardView: React.FC<DashboardViewProps> = (props) => {
 
                     <div className="bento-card !p-0 overflow-hidden relative">
                         <div className="absolute top-4 left-6 z-10">
-                            <h4 className="text-[9px] font-black text-white/50 uppercase tracking-[0.3em]">{t('nav.progress')} // GROWTH_VECTORS</h4>
+                            <h4 className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">{t('nav.progress')} // GROWTH_VECTORS</h4>
                         </div>
                         <GrowthGarden
                             score={props.stats.disciplineScore}

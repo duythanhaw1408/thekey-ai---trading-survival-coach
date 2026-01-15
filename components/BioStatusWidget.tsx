@@ -39,11 +39,11 @@ export const BioStatusWidget: React.FC = () => {
             <div className="flex-shrink-0 relative">
                 <div className="absolute inset-0 bg-accent-neon/20 blur-xl animate-pulse rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="p-3 bg-black border border-accent-neon/20 rounded-2xl group-hover:border-accent-neon/40 transition-all duration-500 shadow-inner relative z-10">
-                    <BrainCircuitIcon className={`w-10 h-10 ${status ? 'text-accent-neon drop-shadow-[0_0_8px_rgba(0,255,157,0.6)]' : 'text-white/40'}`} />
+                    <BrainCircuitIcon className={`w-10 h-10 ${status ? 'text-accent-neon drop-shadow-[0_0_8px_rgba(0,255,157,0.6)]' : 'text-white/20'}`} />
                 </div>
             </div>
             <div className="text-left flex-1 min-w-0">
-                <p className="text-[10px] font-black text-white/60 uppercase tracking-[0.3em] mb-2">{t('dashboard.biometricStatus') || 'BIO_LINK'}</p>
+                <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-2">{t('dashboard.biometricStatus') || 'BIO_LINK'}</p>
                 {isLoading && (
                     <div className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-accent-neon animate-ping rounded-full" />
@@ -59,7 +59,7 @@ export const BioStatusWidget: React.FC = () => {
                             <span className="text-[8px] font-bold text-accent-neon/60 uppercase tracking-widest">STRESS_MITIGATED</span>
                         </div>
                         <div className="flex flex-col items-end">
-                            <p className="text-sm font-black text-white/60 tracking-widest font-mono group-hover:text-white transition-colors">
+                            <p className="text-sm font-black text-white/40 tracking-widest font-mono group-hover:text-white/60 transition-colors">
                                 {status.heartRate} <span className="text-[9px]">BPM</span>
                             </p>
                             <div className="flex gap-0.5 mt-1">

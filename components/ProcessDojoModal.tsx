@@ -341,12 +341,23 @@ export const ProcessDojoModal: React.FC<ProcessDojoModalProps> = ({ trade, onClo
                                         ADVANCE_CORE <ArrowRightIcon className="w-4 h-4" />
                                     </button>
                                 ) : (
-                                    <button
-                                        type="submit"
-                                        className="px-12 py-5 bg-accent-neon text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:scale-105 transition-all active:scale-95 shadow-[0_0_30px_rgba(0,255,157,0.4)]"
-                                    >
-                                        GENERATE_NEURAL_SCORE
-                                    </button>
+                                    <div className="flex flex-col items-end gap-2">
+                                        {evaluation.reflection.trim().length < 10 && (
+                                            <p className="text-[9px] font-black text-accent-yellow uppercase tracking-widest animate-pulse">
+                                                ⚠ Vui lòng nhập ít nhất 10 ký tự để hoàn thành
+                                            </p>
+                                        )}
+                                        <button
+                                            type="submit"
+                                            disabled={evaluation.reflection.trim().length < 10}
+                                            className={`px-12 py-5 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl transition-all active:scale-95 ${evaluation.reflection.trim().length < 10
+                                                    ? 'bg-white/10 text-white/30 cursor-not-allowed'
+                                                    : 'bg-accent-neon text-black hover:scale-105 shadow-[0_0_30px_rgba(0,255,157,0.4)]'
+                                                }`}
+                                        >
+                                            GENERATE_NEURAL_SCORE
+                                        </button>
+                                    </div>
                                 )}
                             </div>
                         </div>

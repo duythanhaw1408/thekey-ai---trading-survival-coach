@@ -901,7 +901,7 @@ const App: React.FC = () => {
             lastActiveDate={lastActiveDate}
           />
 
-          <main className="flex-1 p-6 pb-28 md:pb-6 relative overflow-y-auto custom-scrollbar">
+          <main className="flex-1 p-6 relative overflow-y-auto custom-scrollbar">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}

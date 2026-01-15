@@ -38,7 +38,7 @@ export const MarketIntelWidget: React.FC<MarketIntelWidgetProps> = ({ analysis }
         <div className="space-y-6">
             {/* Header */}
             <div className="flex items-center justify-between pb-4 border-b border-accent-neon/5">
-                <h3 className="text-[10px] font-black text-white/60 uppercase tracking-[0.4em] flex items-center">
+                <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em] flex items-center">
                     <ActivityIcon className="w-4 h-4 mr-3 text-accent-neon drop-shadow-[0_0_5px_rgba(0,255,157,0.5)]" />
                     Market_Intelligence
                 </h3>
@@ -53,7 +53,7 @@ export const MarketIntelWidget: React.FC<MarketIntelWidgetProps> = ({ analysis }
                 <div className="p-5 bg-black/40 border border-accent-neon/5 rounded-2xl relative group overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-br from-orange-500/[0.03] to-transparent pointer-events-none" />
                     <div className="flex items-center justify-between mb-4 relative z-10">
-                        <div className="flex items-center text-[9px] font-black text-white/60 uppercase tracking-[0.2em]">
+                        <div className="flex items-center text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">
                             <FireIcon className="w-4 h-4 mr-2 text-orange-500/60" />
                             SENTIMENT_INDEX
                         </div>
@@ -106,7 +106,7 @@ export const MarketIntelWidget: React.FC<MarketIntelWidgetProps> = ({ analysis }
             {/* Risk Factors */}
             {analysis.risk_factors && analysis.risk_factors.length > 0 && (
                 <div className="space-y-4">
-                    <h4 className="text-[10px] font-black text-white/60 uppercase tracking-[0.4em] flex items-center">
+                    <h4 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] flex items-center">
                         <ShieldExclamationIcon className="w-4 h-4 mr-3 text-accent-red/60" />
                         CRITICAL_RISK_FACTORS
                     </h4>
@@ -118,7 +118,7 @@ export const MarketIntelWidget: React.FC<MarketIntelWidgetProps> = ({ analysis }
                                 </div>
                                 <div className="flex-grow min-w-0">
                                     <p className="text-xs font-black text-white uppercase tracking-tighter truncate">{risk.factor}</p>
-                                    <p className="text-[9px] text-white/50 font-bold uppercase tracking-wider mt-1 truncate">{risk.description}</p>
+                                    <p className="text-[9px] text-white/30 font-bold uppercase tracking-wider mt-1 truncate">{risk.description}</p>
                                 </div>
                                 {risk.impact && (
                                     <div className={`text-[8px] font-black px-3 py-1 rounded-full border ${risk.impact === 'HIGH' ? 'bg-accent-red/10 border-accent-red/30 text-accent-red' :
