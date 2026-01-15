@@ -143,56 +143,15 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ userProfile, onSave,
 
           <ArchetypeDisplay archetype={profile.archetype} rationale={archetypeRationale} onDiscover={handleDiscover} isLoading={isDiscovering} />
 
-          {/* Capital Management */}
-          <div className="bg-black/40 p-6 rounded-2xl border border-white/5 hover:border-accent-green/10 transition-all duration-500">
-            <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mb-8 flex items-center">
-              <span className="w-1.5 h-4 bg-accent-green mr-3 shadow-[0_0_10px_rgba(0,229,255,0.8)]"></span>
-              CAPITAL_DEPLOYMENT_CORE
-            </h3>
-            <div className="space-y-8">
+          {/* Capital Management - Link to Mindset */}
+          <div className="bg-black/40 p-6 rounded-2xl border border-accent-neon/10 hover:border-accent-neon/30 transition-all duration-500">
+            <div className="flex items-center justify-between">
               <div>
-                <label className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] block mb-3">TOTAL_OPERATIONAL_BALANCE</label>
-                <div className="relative group">
-                  <span className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 font-black tracking-widest">$</span>
-                  <input
-                    type="number"
-                    value={profile.accountBalance}
-                    onChange={(e) => setProfile(prev => ({ ...prev, accountBalance: Number(e.target.value) }))}
-                    onFocus={(e) => e.target.select()}
-                    className="w-full bg-black border border-white/10 rounded-xl py-5 pl-12 pr-6 text-3xl font-black text-white font-sans italic tracking-widest focus:border-accent-green focus:ring-0 outline-none transition-all shadow-inner"
-                  />
-                  <div className="absolute inset-0 border border-accent-green/20 opacity-0 group-focus-within:opacity-100 rounded-xl pointer-events-none transition-opacity" />
-                </div>
+                <h3 className="text-[10px] font-black text-accent-neon uppercase tracking-[0.3em] mb-2">CAPITAL_&_RISK_MANAGEMENT</h3>
+                <p className="text-sm text-white/50">Vốn: <span className="text-accent-neon font-bold">${profile.accountBalance.toLocaleString()}</span></p>
+                <p className="text-[10px] text-white/30 mt-2">Cài đặt rủi ro chi tiết tại <span className="text-accent-neon">Tab Tư Duy</span></p>
               </div>
-
-              <div className="grid grid-cols-2 gap-8">
-                <div className="space-y-3">
-                  <label className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] block">MAX_POSITION_SIZE_VECT</label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      value={profile.tradingRules.maxPositionSizeUSD || 0}
-                      onChange={(e) => handleChange('tradingRules', 'maxPositionSizeUSD', Number(e.target.value))}
-                      onFocus={(e) => e.target.select()}
-                      className="w-full bg-black/60 border border-white/5 rounded-xl py-4 px-6 text-xl font-black text-accent-blue font-sans italic tracking-widest focus:border-accent-blue outline-none transition-all shadow-inner"
-                    />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[8px] font-black text-white/20 uppercase">USD</span>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <label className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] block">RISK_PER_PROTOCOL (%)</label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      value={profile.tradingRules.riskPerTradePct || 0}
-                      onChange={(e) => handleChange('tradingRules', 'riskPerTradePct', Number(e.target.value))}
-                      onFocus={(e) => e.target.select()}
-                      className="w-full bg-black/60 border border-white/5 rounded-xl py-4 px-6 text-xl font-black text-accent-green font-sans italic tracking-widest focus:border-accent-green outline-none transition-all shadow-inner"
-                    />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[8px] font-black text-white/20 uppercase">%</span>
-                  </div>
-                </div>
-              </div>
+              <div className="text-4xl">⚙️</div>
             </div>
           </div>
 

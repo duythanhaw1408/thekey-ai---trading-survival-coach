@@ -66,10 +66,30 @@ export const ProtectionSettings: React.FC<ProtectionSettingsProps> = ({ profile,
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
+            {/* Account Balance Section */}
+            <div className="bg-black/40 border border-accent-neon/20 rounded-2xl p-6">
+                <div className="flex items-center gap-2 mb-4">
+                    <div className="w-1 h-4 bg-accent-neon" />
+                    <h4 className="text-[10px] font-black text-accent-neon uppercase tracking-[0.3em]">VỐN TÀI KHOẢN</h4>
+                </div>
+                <div className="flex items-center gap-4">
+                    <span className="text-2xl text-white/30">$</span>
+                    <input
+                        type="number"
+                        value={profile.accountBalance}
+                        onChange={(e) => onUpdate({ accountBalance: Number(e.target.value) })}
+                        className="flex-1 bg-transparent border-b-2 border-accent-neon/30 text-4xl font-black text-accent-neon focus:border-accent-neon focus:outline-none transition-colors font-mono"
+                        placeholder="10000"
+                    />
+                </div>
+                <p className="text-[10px] text-white/30 mt-3 uppercase tracking-wide">Số vốn thực tế bạn đang giao dịch. AI sẽ cảnh báo dựa trên con số này.</p>
+            </div>
+
+            {/* Protection Level Section */}
             <div className="flex items-center gap-2 mb-2">
                 <ShieldCheckIcon className="w-5 h-5 text-indigo-400" />
-                <h3 className="text-lg font-semibold text-white">Chế Độ Bảo Vệ (Safety Net)</h3>
+                <h3 className="text-lg font-semibold text-white">Chế Độ Bảo Vệ</h3>
             </div>
 
             <div className="grid grid-cols-1 gap-4">

@@ -145,33 +145,31 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({
           </button>
         </div>
 
-        {/* Risk Settings HUD */}
-        <div className="bg-black/40 border border-accent-neon/10 rounded-xl px-4 py-3 flex items-center justify-between">
+        {/* Risk Settings HUD - Readonly */}
+        <div className="bg-black/40 border border-accent-neon/10 rounded-xl px-4 py-3 flex items-center justify-between group">
           <div className="flex items-center gap-6">
             <div className="flex flex-col">
               <span className="text-[8px] text-accent-neon/30 font-black uppercase tracking-widest mb-1">ACC_SIZE</span>
-              <input
-                type="number"
-                value={accountSize}
-                onChange={(e) => setAccountSize(Number(e.target.value))}
-                className="bg-transparent border-b border-white/10 text-sm font-black text-white italic tracking-tighter font-mono w-20 focus:border-accent-neon focus:outline-none transition-colors"
-                placeholder="1000"
-              />
+              <span className="text-sm font-black text-white italic tracking-tighter font-mono">${profileAccountSize.toLocaleString()}</span>
             </div>
             <div className="flex flex-col">
               <span className="text-[8px] text-accent-neon/30 font-black uppercase tracking-widest mb-1">RISK_%</span>
-              <input
-                type="number"
-                value={riskPercent}
-                onChange={(e) => setRiskPercent(Number(e.target.value))}
-                className="bg-transparent border-b border-white/10 text-sm font-black text-accent-neon italic tracking-tighter font-mono w-12 focus:border-accent-neon focus:outline-none transition-colors"
-                placeholder="2"
-              />
+              <span className="text-sm font-black text-accent-neon italic tracking-tighter font-mono">{profileRiskPercent}%</span>
             </div>
           </div>
-          <div className="text-right">
-            <span className="text-[8px] text-accent-neon/30 font-black uppercase tracking-widest mb-1 block">MAX_VOL</span>
-            <span className="text-sm font-black text-accent-yellow italic tracking-tighter font-mono">${profileMaxPositionSize}</span>
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <span className="text-[8px] text-accent-neon/30 font-black uppercase tracking-widest mb-1 block">MAX_VOL</span>
+              <span className="text-sm font-black text-accent-yellow italic tracking-tighter font-mono">${profileMaxPositionSize}</span>
+            </div>
+            <div className="relative group/tooltip">
+              <div className="w-8 h-8 rounded-lg bg-accent-neon/5 border border-accent-neon/10 flex items-center justify-center text-accent-neon/40 hover:text-accent-neon hover:border-accent-neon/30 transition-all cursor-pointer">
+                ⚙️
+              </div>
+              <div className="absolute right-0 top-full mt-2 px-3 py-2 bg-black border border-accent-neon/20 rounded-lg text-[9px] text-white/70 whitespace-nowrap opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none z-50">
+                Cài đặt tại <span className="text-accent-neon font-bold">Tư Duy</span>
+              </div>
+            </div>
           </div>
         </div>
 
