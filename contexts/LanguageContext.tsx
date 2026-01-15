@@ -32,7 +32,7 @@ const translations: Record<Language, Translations> = {
 
         // Navigation
         nav: {
-            survival: 'SINH TỒN',
+            survival: 'TỔNG QUAN',
             execution: 'THỰC HIỆN',
             mindset: 'TƯ DUY',
             progress: 'TIẾN TRÌNH',
