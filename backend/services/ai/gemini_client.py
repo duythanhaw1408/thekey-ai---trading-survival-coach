@@ -361,9 +361,40 @@ Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
             }
 
     async def generate_market_analysis(self) -> Dict:
-        """Analyze market danger level with real-time web search and 10-minute caching."""
+        """Analyze market danger level with real-time web search, 8s timeout, and 10-minute caching."""
         import time
+        import asyncio
+        import random
         now = time.time()
+        
+        # Random trading tips for engaging fallback
+        TRADING_TIPS = [
+            {"headline": "Kỷ luật là vũ khí mạnh nhất của trader.", "tip": "Đặt stop loss trước khi vào lệnh."},
+            {"headline": "Không có phân tích thị trường? Không vào lệnh.", "tip": "Chờ dữ liệu ổn định trước khi giao dịch."},
+            {"headline": "Một ngày không trade cũng là chiến thắng.", "tip": "Đứng ngoài khi không chắc chắn."},
+            {"headline": "Bảo vệ vốn quan trọng hơn lợi nhuận.", "tip": "Giảm 50% khối lượng khi thị trường mờ mịt."},
+            {"headline": "Trader giỏi biết khi nào KHÔNG vào lệnh.", "tip": "Kiên nhẫn chờ cơ hội rõ ràng."},
+            {"headline": "Revenge trade = Tự hủy tài khoản.", "tip": "Nghỉ 30 phút sau mỗi lệnh thua."},
+            {"headline": "Trend is your friend, cho đến khi nó kết thúc.", "tip": "Luôn xác định xu hướng trước khi trade."},
+            {"headline": "Volume nhỏ, rủi ro nhỏ, sống lâu hơn.", "tip": "Max 2% rủi ro mỗi lệnh."},
+        ]
+        
+        def get_random_fallback():
+            tip = random.choice(TRADING_TIPS)
+            return {
+                "danger_level": "CAUTION",
+                "danger_score": 50,
+                "color_code": "🟡",
+                "headline": tip["headline"],
+                "risk_factors": [{"factor": "Chờ dữ liệu", "severity": "MEDIUM", "description": tip["tip"]}],
+                "factors": {"volatility": 50, "liquidity": 50, "leverage": 50, "sentiment": 50, "events": 50},
+                "recommendation": {
+                    "action": "WAIT",
+                    "position_adjustment": "Giảm 50% hoặc đứng ngoài.",
+                    "stop_adjustment": "Nới rộng stop loss nếu đã có lệnh.",
+                    "rationale": tip["tip"]
+                }
+            }
         
         # Return cache if less than 10 minutes old (600 seconds)
         if self._market_cache and (now - self._market_cache_time < 600):
@@ -388,22 +419,23 @@ Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
         LANGUAGE: Vietnamese. Return ONLY valid JSON.
         """
         try:
-            # Use search for market analysis to avoid "I don't know" or "Lỗi kết nối"
-            async with self._semaphore:
-                safe_prompt = self.SAFETY_RAILS + prompt
-                response = await self.client.aio.models.generate_content(
-                    model='models/gemini-2.0-flash',
-                    contents=safe_prompt,
-                    config={
-                        'tools': [{'google_search': {}}]
-                    }
-                )
-                
-                if not response or not response.text:
-                    # Fallback to normal generation if search fails or model unavailable
-                    response_text = await self._generate(prompt)
-                else:
-                    response_text = response.text
+            # Use 8 second timeout to avoid UI stuck
+            async with asyncio.timeout(8):
+                async with self._semaphore:
+                    safe_prompt = self.SAFETY_RAILS + prompt
+                    response = await self.client.aio.models.generate_content(
+                        model='models/gemini-2.0-flash',
+                        contents=safe_prompt,
+                        config={
+                            'tools': [{'google_search': {}}]
+                        }
+                    )
+                    
+                    if not response or not response.text:
+                        # Fallback to normal generation if search fails or model unavailable
+                        response_text = await self._generate(prompt)
+                    else:
+                        response_text = response.text
 
             result = self._clean_and_parse_json(response_text)
             
@@ -411,27 +443,19 @@ Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
             self._market_cache = result
             self._market_cache_time = now
             return result
+        except asyncio.TimeoutError:
+            print("⏱️ Market analysis timeout (8s) - returning cached or fallback")
+            if self._market_cache:
+                return self._market_cache
+            return get_random_fallback()
         except Exception as e:
             print(f"❌ Gemini Error (generate_market_analysis): {e}")
             
             # If AI fails, still return previous cache if available, even if old
             if self._market_cache:
                 return self._market_cache
-                
-            return {
-                "danger_level": "CAUTION",
-                "danger_score": 45,
-                "color_code": "🟡",
-                "headline": "Kết nối dữ liệu thị trường bị gián đoạn.",
-                "risk_factors": [{"factor": "Lỗi kết nối", "severity": "MEDIUM", "description": "Hệ thống không thể lấy dữ liệu thời gian thực."}],
-                "factors": {"volatility": 50, "liquidity": 50, "leverage": 50, "sentiment": 50, "events": 50},
-                "recommendation": {
-                    "action": "REDUCE_SIZE",
-                    "position_adjustment": "Giảm 50% khối lượng.",
-                    "stop_adjustment": "Nới lỏng stop loss hoặc đứng ngoài.",
-                    "rationale": "Khi dữ liệu không ổn định, ưu tiên bảo toàn vốn."
-                }
-            }
+            
+            return get_random_fallback()
 
     async def generate_chat_response(self, message: str, history: List[Dict], mode: str = "COACH") -> Dict:
         """Generate a response for the AI Coach/Protector chat using Kaito persona."""
