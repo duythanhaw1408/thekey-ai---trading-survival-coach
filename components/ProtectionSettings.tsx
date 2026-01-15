@@ -59,6 +59,8 @@ export const ProtectionSettings: React.FC<ProtectionSettingsProps> = ({ profile,
             updates.consecutiveLossLimit = level.lossLimit;
             updates.risk_per_trade_pct = level.riskPct;
             updates.max_position_size_pct = level.maxPositionPct;
+            // Calculate USD value from percentage
+            updates.max_position_size_usd = Math.round(profile.accountBalance * (level.maxPositionPct / 100));
         }
         onUpdate(updates);
     };

@@ -171,7 +171,7 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({
           </div>
           <div className="text-right">
             <span className="text-[8px] text-accent-neon/30 font-black uppercase tracking-widest mb-1 block">MAX_VOL</span>
-            <span className="text-sm font-black text-accent-yellow italic tracking-tighter font-mono">${Math.round(accountSize * (profileMaxPositionSize / 100) / 100) * 100}</span>
+            <span className="text-sm font-black text-accent-yellow italic tracking-tighter font-mono">${profileMaxPositionSize}</span>
           </div>
         </div>
 
