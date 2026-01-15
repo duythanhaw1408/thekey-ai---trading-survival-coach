@@ -1,17 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #0a0b0e;
+  --color-background: #08090b;
   --color-panel: #111218;
 
-  /* Neon Cyberpunk Palette */
-  --color-accent-neon: #00ff9d;
-  --color-accent-red: #ff0055;
-  --color-accent-yellow: #ffee00;
-  --color-accent-blue: #006fff;
+  /* Refined Professional Palette */
+  --color-accent-neon: #00f59b;
+  /* Emerald Tint */
+  --color-accent-red: #ff3366;
+  /* Soft Rose */
+  --color-accent-yellow: #facc15;
+  /* Golden Sand */
+  --color-accent-blue: #3b82f6;
+  /* Slate Blue */
 
-  --color-text-main: #ffffff;
-  --color-text-secondary: #80ffca;
+  --color-text-main: #f8fafc;
+  --color-text-secondary: #94a3b8;
 
   --font-sans: "Outfit", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
@@ -20,71 +24,96 @@
 
   /* Animations */
   --animate-entrance: slideUpFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  --animate-pulse-slow: pulseSlow 8s ease-in-out infinite;
+  --animate-scan-slow: scanSlow 12s linear infinite;
 }
 
 @layer base {
   :root {
-    --bg-black: #0a0b0e;
-    --panel-glass: rgba(16, 18, 24, 0.45);
-    --panel-border: rgba(0,255,157,0.1);
-    --accent-neon: #00ff9d;
-    --accent-neon-glow: 0 0 15px rgba(0, 255, 157, 0.15);
-    --accent-red: #ff0055;
-    --accent-yellow: #ffee00;
-    --accent-green: #00ff9d;
-    --text-main: #ffffff;
-    --text-secondary: #a0aec0;
-    --glass-blur: blur(20px);
-    --card-radius: 1.5rem;
-    --transition-speed: 0.3s;
-    --bento-gap: 1.5rem;
+    --bg-black: #08090b;
+    --panel-glass: rgba(15, 17, 23, 0.6);
+    --panel-border: rgba(255, 255, 255, 0.05);
+    --accent-neon: #00f59b;
+    --accent-neon-glow: 0 0 20px rgba(0, 245, 155, 0.15);
+    --accent-red: #ff3366;
+    --accent-yellow: #facc15;
+    --accent-green: #00f59b;
+    --text-main: #f8fafc;
+    --text-secondary: #64748b;
+    --glass-blur: blur(24px);
+    --card-radius: 2.5rem;
+    --transition-speed: 0.4s;
+    --bento-gap: 2rem;
   }
 
   html,
   body {
-    @apply bg-black text-white antialiased m-0 min-h-full overflow-y-auto;
+    @apply bg-background text-text-main antialiased m-0 min-h-full overflow-y-auto selection:bg-accent-neon selection:text-black;
     font-family: var(--font-sans);
   }
 }
 
 @layer components {
 
-  /* Cyber Grid Background */
+  /* High-Depth Background Layer */
   .cyber-grid {
     background-image:
-      linear-gradient(rgba(0,255,157,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,255,157,0.05) 1px, transparent 1px);
-    background-size: 40px 40px;
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
     background-position: center center;
+    mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+  }
+
+  /* Sharp Glass Stroke Utility */
+  .glass-stroke {
+    @apply border border-white/[0.05] relative after:absolute after:inset-0 after:rounded-[inherit] after:border after:border-white/[0.05] after:pointer-events-none;
   }
 
   .neon-glow {
-    @apply shadow-[0_0_10px_rgba(0,255,157,0.1),inset_0_0_5px_rgba(0,255,157,0.05)] border border-accent-neon/20 transition-all duration-300;
+    @apply shadow-[0_0_15px_rgba(0, 245, 155, 0.08), inset_0_0_8px_rgba(0, 245, 155, 0.03)] border border-accent-neon/20 transition-all duration-300;
   }
 
   .neon-text {
-    @apply text-accent-neon shadow-[0_0_10px_rgba(0,255,157,0.5)];
+    @apply text-accent-neon shadow-[0_0_12px_rgba(0, 245, 155, 0.4)];
   }
 
-  /* Glassmorphism Utility */
+  /* Premium Glassmorphism */
   .glass-panel {
-    @apply bg-black/85 backdrop-blur-[20px] border border-accent-neon/15 rounded-3xl transition-all duration-300;
+    @apply bg-white/[0.01] backdrop-blur-[32px] border border-white/[0.08] rounded-[2.5rem] transition-all duration-500;
   }
 
   .glass-panel:hover {
-    @apply border-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.8)];
+    @apply border-white/20 shadow-[0_20px_50px_rgba(0, 0, 0, 0.4)];
   }
 
-  /* Bento Grid Layout */
-  .bento-grid {
-    @apply grid grid-cols-12 gap-6 p-6;
+  /* Central Hub Structures */
+  .central-hub-container {
+    @apply max-w-[1100px] mx-auto w-full px-4 md:px-8 py-10 min-h-screen flex flex-col items-center;
+  }
+
+  .floating-pill-nav {
+    @apply fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-1.5 p-1.5 bg-black/60 backdrop-blur-3xl border border-white/[0.08] rounded-full shadow-[0_25px_50px_-12px_rgba(0, 0, 0, 0.8)] z-50 transition-all duration-500;
+  }
+
+  .soft-hub-card {
+    @apply w-full bg-white/[0.02] backdrop-blur-[40px] border border-white/[0.05] rounded-[2.5rem] shadow-[0_40px_80px_-15px_rgba(0, 0, 0, 0.6)] overflow-hidden;
   }
 
   .bento-card {
-    @apply bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] rounded-[2rem] p-8 overflow-hidden flex flex-col transition-all duration-500 hover:bg-white/[0.04] hover:border-white/20 relative shadow-[0_8px_32px_rgba(0,0,0,0.3)];
+    @apply bg-white/[0.01] backdrop-blur-[32px] border border-white/[0.03] rounded-[2.5rem] p-8 overflow-hidden flex flex-col transition-all duration-700 hover:bg-white/[0.03] hover:border-white/[0.12] relative shadow-[0_15px_35px_-5px_rgba(0, 0, 0, 0.4)] hover:shadow-[0_25px_50px_-12px_rgba(0, 0, 0, 0.6)];
   }
 
-  /* Grid Spans */
+  /* Premium Gradient Text */
+  .text-premium-gradient {
+    @apply bg-gradient-to-br from-white via-white to-white/40 bg-clip-text text-transparent;
+  }
+
+  .panel-glow {
+    @apply relative after:absolute after:inset-0 after:rounded-[inherit] after:shadow-[inset_0_0_30px_rgba(0, 245, 155, 0.02)] after:pointer-events-none;
+  }
+
+  /* Utility Spans */
   .span-full {
     @apply col-span-12;
   }
@@ -104,39 +133,41 @@
   .span-3 {
     @apply col-span-12 sm:col-span-6 lg:col-span-3;
   }
-
-  /* Premium Pro Utilities */
-  .text-gradient {
-    @apply bg-gradient-to-br from-white to-white/70 bg-clip-text text-transparent;
-  }
-
-  .panel-glow {
-    @apply relative after:absolute after:inset-0 after:rounded-[inherit] after:shadow-[inset_0_0_20px_rgba(0,163,255,0.05)] after:pointer-events-none;
-  }
-
-  /* Central Hub Redesign */
-  .central-hub-container {
-    @apply max-w-[1100px] mx-auto w-full px-4 md:px-8 py-10 min-h-screen flex flex-col items-center;
-  }
-
-  .floating-pill-nav {
-    @apply fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 p-2 bg-black/40 backdrop-blur-3xl border border-white/10 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50;
-  }
-
-  .soft-hub-card {
-    @apply w-full bg-white/[0.01] backdrop-blur-3xl border border-white/[0.05] rounded-[2.5rem] shadow-[0_30px_60px_-12px_rgba(0,0,0,0.5)] overflow-hidden;
-  }
 }
 
 @keyframes slideUpFade {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px) scale(0.98);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pulseSlow {
+
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes scanSlow {
+  from {
+    transform: translateY(-50%);
+  }
+
+  to {
+    transform: translateY(50%);
   }
 }
 
@@ -144,8 +175,16 @@
   animation: var(--animate-entrance);
 }
 
+.animate-pulse-slow {
+  animation: var(--animate-pulse-slow);
+}
+
+.animate-scan-slow {
+  animation: var(--animate-scan-slow);
+}
+
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -153,5 +192,5 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-white/10 rounded-full hover:bg-white/20;
+  @apply bg-white/[0.05] rounded-full transition-colors hover:bg-white/[0.15];
 }

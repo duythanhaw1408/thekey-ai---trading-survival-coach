@@ -845,11 +845,21 @@ const App: React.FC = () => {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-background text-white font-sans selection:bg-accent-neon/30 relative overflow-x-hidden">
-        {/* Background Decorative Elements */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none transition-all duration-1000 z-0">
-          <div className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] transition-colors duration-1000 ${crisisIntervention ? 'bg-accent-red/20 animate-pulse' : 'bg-accent-neon/5'} rounded-full blur-[120px]`}></div>
-          <div className={`absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] transition-colors duration-1000 ${crisisIntervention ? 'bg-accent-red/20 animate-pulse' : 'bg-accent-blue/5'} rounded-full blur-[120px]`}></div>
-          <div className="absolute inset-0 cyber-grid opacity-[0.03]" />
+        {/* High-Depth Background Architecture */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+          {/* Main Mesh Gradients */}
+          <div className="absolute top-[-15%] left-[-10%] w-[50%] h-[50%] bg-accent-neon/5 rounded-full blur-[140px] opacity-60 animate-pulse-slow"></div>
+          <div className="absolute bottom-[-15%] right-[-10%] w-[50%] h-[50%] bg-accent-blue/5 rounded-full blur-[140px] opacity-60 animate-pulse-slow"></div>
+          <div className="absolute top-[20%] right-[5%] w-[30%] h-[30%] bg-accent-yellow/5 rounded-full blur-[120px] opacity-30"></div>
+
+          {/* Center Spotlight */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-white/[0.01] rounded-full blur-[160px]"></div>
+
+          {/* Cyber Infrastructure Grid */}
+          <div className="absolute inset-0 cyber-grid opacity-[0.05]" />
+
+          {/* Subtle Scanning Line Effect */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.01] to-transparent h-[200%] animate-scan-slow pointer-events-none"></div>
         </div>
 
         {/* Global Modals & Notifications */}
