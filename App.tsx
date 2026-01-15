@@ -844,11 +844,12 @@ const App: React.FC = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-background text-white font-sans selection:bg-accent-neon/30 flex flex-row w-full overflow-x-hidden">
-        {/* Background Decorative Blur */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none transition-all duration-1000">
-          <div className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] transition-colors duration-1000 ${crisisIntervention ? 'bg-accent-red/20 animate-pulse' : 'bg-accent-primary/10'} rounded-full blur-[120px]`}></div>
-          <div className={`absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] transition-colors duration-1000 ${crisisIntervention ? 'bg-accent-red/20 animate-pulse' : 'bg-accent-green/10'} rounded-full blur-[120px]`}></div>
+      <div className="min-h-screen bg-background text-white font-sans selection:bg-accent-neon/30 relative overflow-x-hidden">
+        {/* Background Decorative Elements */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none transition-all duration-1000 z-0">
+          <div className={`absolute top-[-10%] left-[-10%] w-[40%] h-[40%] transition-colors duration-1000 ${crisisIntervention ? 'bg-accent-red/20 animate-pulse' : 'bg-accent-neon/5'} rounded-full blur-[120px]`}></div>
+          <div className={`absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] transition-colors duration-1000 ${crisisIntervention ? 'bg-accent-red/20 animate-pulse' : 'bg-accent-blue/5'} rounded-full blur-[120px]`}></div>
+          <div className="absolute inset-0 cyber-grid opacity-[0.03]" />
         </div>
 
         {/* Global Modals & Notifications */}
@@ -861,7 +862,6 @@ const App: React.FC = () => {
               isOpen={showRiskOnboarding}
               initialAccountBalance={userProfile.accountBalance}
               onComplete={async (settings) => {
-                // Update userProfile with new settings
                 const newProfile = {
                   ...userProfile,
                   accountBalance: settings.accountBalance,
@@ -877,37 +877,23 @@ const App: React.FC = () => {
                 };
                 handleSaveProfile(newProfile);
                 setShowRiskOnboarding(false);
-                console.log('[App] Risk Settings Onboarding completed:', settings);
               }}
               onSkip={() => setShowRiskOnboarding(false)}
             />
           )}
           {tradeToClose && <UpdatePnlModal trade={tradeToClose} onClose={() => setTradeToClose(null)} onSave={handleSavePnlAndEvaluate} />}
-
           {tradeToEvaluate && <ProcessDojoModal trade={tradeToEvaluate} onClose={() => setTradeToEvaluate(null)} onSave={handleSaveUserEvaluation} />}
           {decision?.decision === 'BLOCK' && !crisisIntervention && <BlockedScreen reason={decision.reason} cooldown={decision.cooldown || 0} onClose={() => setDecision(null)} />}
           {crisisIntervention && <CrisisInterventionModal data={crisisIntervention} onClose={() => { setCrisisIntervention(null); setStats(prev => ({ ...prev, consecutiveLosses: 0 })); }} onActionComplete={handleCrisisActionComplete} />}
           <XpPopup xpGain={lastXpGain} trigger={xpGainTrigger} />
           <LevelUpCelebration show={showLevelUp} newLevel={newLevelTitle} onComplete={() => setShowLevelUp(false)} />
-          <AchievementPopup
-            achievement={unlockedAchievement}
-            onClose={() => setUnlockedAchievement(null)}
-          />
+          <AchievementPopup achievement={unlockedAchievement} onClose={() => setUnlockedAchievement(null)} />
         </div>
 
         {/* Offline Status Banner */}
         <OfflineBanner />
 
-        <Sidebar
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          onLogout={logout}
-          isPro={user?.is_pro || false}
-          simulationMode={simulationMode}
-          setSimulationMode={setSimulationMode}
-        />
-
-        <div className="flex-1 flex flex-col relative z-10 w-full">
+        <div className="relative z-10 flex flex-col min-h-screen">
           <MainHeader
             userProfile={userProfile}
             onProfileClick={() => setShowProfile(true)}
@@ -921,14 +907,23 @@ const App: React.FC = () => {
             lastActiveDate={lastActiveDate}
           />
 
-          <main className="flex-1 p-6 relative overflow-y-auto custom-scrollbar">
+          <main className="central-hub-container pb-32">
+            <Sidebar
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              onLogout={logout}
+              isPro={user?.is_pro || false}
+              simulationMode={simulationMode}
+              setSimulationMode={setSimulationMode}
+            />
+
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.02 }}
-                transition={{ duration: 0.3, ease: [0.19, 1, 0.22, 1] }}
+                initial={{ opacity: 0, scale: 0.98, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 1.02, y: -20 }}
+                transition={{ duration: 0.4, ease: [0.19, 1, 0.22, 1] }}
                 className="w-full"
               >
                 {activeTab === 'SURVIVAL' && (

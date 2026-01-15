@@ -107,13 +107,13 @@ export const DashboardView: React.FC<DashboardViewProps> = (props) => {
             />
 
             {/* Top Row: Core Stats */}
-            <div className="bento-grid !p-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <DashboardHeader stats={props.stats} processStats={props.processStats} />
             </div>
 
-            <div className="bento-grid !p-0">
+            <div className="grid grid-cols-12 gap-8">
                 {/* Left Column: Market & Analysis Detail */}
-                <div className="span-8 space-y-8">
+                <div className="col-span-12 lg:col-span-8 space-y-8">
                     <div className="bento-card !p-0 overflow-hidden">
                         <MarketContext analysis={props.marketAnalysis} onAnalysisReceived={props.onMarketAnalysis} isLocked={false} unlockDays={0} />
                     </div>
@@ -162,7 +162,7 @@ export const DashboardView: React.FC<DashboardViewProps> = (props) => {
                 </div>
 
                 {/* Right Column: Bio & Live Feed Proxy */}
-                <div className="span-4 space-y-8">
+                <div className="col-span-12 lg:col-span-4 space-y-8">
                     <div className="bento-card !p-8 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none group-hover:opacity-10 transition-opacity duration-1000">
                             <ActivityIcon className="w-40 h-40 text-accent-neon scale-110" />
