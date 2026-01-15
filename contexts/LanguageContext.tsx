@@ -194,7 +194,29 @@ const translations: Record<Language, Translations> = {
             processScore: 'Điểm Quy Trình',
             shadowScore: 'Shadow Score',
             completeDojo: 'Hoàn thành Dojo',
-        }
+        },
+
+        // Settings View
+        settings: {
+            profile: 'Hồ sơ',
+            protocol: 'Giao thức',
+            system: 'Hệ thống',
+            notifications: 'Thông báo',
+            logout: 'ĐĂNG XUẤT',
+            identityTitle: 'Định danh Operator',
+            usernameLabel: 'Username Hiển Thị',
+            emailLabel: 'Email (Read-Only)',
+            tradingProtocol: 'Trading Protocol',
+            simulationEngine: 'Simulation Engine',
+            simulationDesc: 'Chế độ luyện tập không ảnh hưởng đến vốn thật. AI vẫn phân tích kỷ luật 1:1.',
+            dataPrivacy: 'Dữ liệu & Quyền riêng tư',
+            exportData: 'Xuất dữ liệu (.json)',
+            exportDesc: 'Tải về toàn bộ lịch sử trade & check-in',
+            deleteAccount: 'Xoá vĩnh viễn tài khoản',
+            deleteDesc: 'Hành động này không thể hoàn tác',
+            saveAll: 'LƯU TẤT CẢ CÀI ĐẶT',
+            saveSuccess: 'Cài đặt đã được lưu',
+        },
     },
 
     en: {
@@ -368,7 +390,29 @@ const translations: Record<Language, Translations> = {
             processScore: 'Process Score',
             shadowScore: 'Shadow Score',
             completeDojo: 'Complete Dojo',
-        }
+        },
+
+        // Settings View
+        settings: {
+            profile: 'Profile',
+            protocol: 'Protocol',
+            system: 'System',
+            notifications: 'Notifications',
+            logout: 'LOGOUT',
+            identityTitle: 'Operator Identity',
+            usernameLabel: 'Display Username',
+            emailLabel: 'Email (Read-Only)',
+            tradingProtocol: 'Trading Protocol',
+            simulationEngine: 'Simulation Engine',
+            simulationDesc: 'Practice mode does not affect real capital. AI still analyzes discipline 1:1.',
+            dataPrivacy: 'Data & Privacy',
+            exportData: 'Export Data (.json)',
+            exportDesc: 'Download all trade & check-in history',
+            deleteAccount: 'Delete Account Permanently',
+            deleteDesc: 'This action cannot be undone',
+            saveAll: 'SAVE ALL SETTINGS',
+            saveSuccess: 'Settings saved successfully',
+        },
     },
 };
 

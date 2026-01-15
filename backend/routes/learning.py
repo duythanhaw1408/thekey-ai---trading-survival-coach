@@ -227,8 +227,8 @@ async def get_correlations():
 
 
 @router.get("/insights")
-async def get_active_insights():
-    """Get all active learning insights"""
+async def get_active_insights(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Get all active learning insights. If none exist, try to generate some dynamically."""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -245,17 +245,77 @@ async def get_active_insights():
         cursor.close()
         conn.close()
         
-        return [
+        if rows:
+            return [
+                {
+                    "id": str(row[0]),
+                    "insight_type": row[1],
+                    "confidence": float(row[2]),
+                    "description": row[3],
+                    "is_actionable": row[4],
+                    "recommendation": row[5]
+                }
+                for row in rows
+            ]
+        
+        # If no insights in DB, generate some dynamically using Gemini
+        # Fetch user's recent data for context
+        from models import Trade, Checkin
+        recent_trades = db.query(Trade).filter(Trade.user_id == user.id).order_by(Trade.entry_time.desc()).limit(15).all()
+        recent_checkins = db.query(Checkin).filter(Checkin.user_id == user.id).order_by(Checkin.created_at.desc()).limit(5).all()
+        
+        if len(recent_trades) < 3:
+            return [] # Still too little data for even dynamic analysis
+            
+        # Prepare context for Gemini
+        trade_data = [
             {
-                "id": str(row[0]),
-                "insight_type": row[1],
-                "confidence": float(row[2]),
-                "description": row[3],
-                "is_actionable": row[4],
-                "recommendation": row[5]
+                "symbol": t.symbol,
+                "side": t.side,
+                "pnl": float(t.pnl) if t.pnl else 0,
+                "score": t.process_score,
+                "eval": t.user_process_evaluation
             }
-            for row in rows
+            for t in recent_trades
         ]
+        
+        checkin_data = [
+            {"emotional_state": c.emotional_state, "insights": c.insights}
+            for c in recent_checkins
+        ]
+        
+        # Call Gemini to discover patterns
+        prompt = f"""
+        Bạn là Hệ thống Tự Học (Self-Learning Engine) của THEKEY AI. 
+        Dựa trên 15 lệnh gần nhất và 5 lần check-in của trader này, hãy tìm ra 2-3 'Insight' (Sự thấu thị) sâu sắc về hành vi và kết quả của họ.
+        
+        DỮ LIỆU:
+        - Trades: {json.dumps(trade_data, ensure_ascii=False)}
+        - Check-ins: {json.dumps(checkin_data, ensure_ascii=False)}
+        
+        YÊU CẦU:
+        Trả về JSON list các đối tượng:
+        {{
+          "id": "chuỗi ngẫu nhiên",
+          "insight_type": "CORRELATION" | "PATTERN" | "ANOMALY" | "TREND",
+          "confidence": 0.0-1.0,
+          "description": "Mô tả ngắn gọn, sắc bén bằng tiếng Việt",
+          "is_actionable": true,
+          "recommendation": "Lời khuyên hành động cụ thể"
+        }}
+        
+        Tập trung vào mối liên hệ giữa tâm lý (check-in) và kết quả (PnL/Score).
+        """
+        
+        try:
+            dynamic_insights = await gemini_client.generate_json_response(prompt, system_prompt="Bạn là chuyên gia phân tích dữ liệu trading.")
+            if isinstance(dynamic_insights, list):
+                return dynamic_insights
+        except Exception as ai_err:
+            print(f"[Learning] Dynamic insight generation failed: {ai_err}")
+            
+        return []
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

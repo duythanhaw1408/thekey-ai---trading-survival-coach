@@ -103,6 +103,12 @@ async def close_trade(trade_id: str, pnl: float, exit_price: float, user: User =
     from datetime import timezone
     db_trade.exit_time = datetime.now(timezone.utc)
     db_trade.status = "CLOSED"
+    
+    # Update AI Tracker outcome
+    from services.ai.ai_tracking import AITracker
+    tracker = AITracker(db)
+    tracker.update_outcome(db_trade.id, pnl)
+    
     db.commit()
     db.refresh(db_trade)
     return db_trade

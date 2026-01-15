@@ -16,6 +16,7 @@ import { Sidebar, type AppTab } from './components/Layout/Sidebar';
 import { ExecutionView } from './components/views/ExecutionView';
 import { MindsetView } from './components/views/MindsetView';
 import { ProgressView } from './components/views/ProgressView';
+import { SettingsView } from './components/views/SettingsView';
 import type { TraderStats, Trade, TradeDecision, ChatMessage, UserProfile, CheckinQuestion, TradeAnalysis, CrisisData, DetectedPattern, CheckinAnalysisResult, MarketAnalysis, Notification as NotificationType, MasteryData, Pod, ProcessStats, UserProcessEvaluation, ShadowScore, BehavioralReport, WeeklyGoals, WeeklyReport, TraderArchetypeAnalysis, DojoInteractionData } from './types';
 import { SmartNotificationEngine } from './services/notificationService';
 import { virtualTradingEngine } from './services/simulationService';
@@ -68,7 +69,9 @@ const DEFAULT_USER_PROFILE: UserProfile = {
   sleepSchedule: { start: '23:00', end: '07:00' },
   max_position_size_usd: 500,
   risk_per_trade_pct: 2,
-  daily_trade_limit: 5
+  daily_trade_limit: 5,
+  xp: 0,
+  level: '1'
 };
 
 // DEPRECATED: LeftPanelTab is replaced by AppTab in Sidebar
@@ -221,7 +224,7 @@ const App: React.FC = () => {
           email: me.email,
           accountBalance: me.account_balance || 1000,
           xp: me.xp || 0,
-          level: me.level || 1,
+          level: String(me.level || '1'),
           protectionLevel: me.protection_level || 'SURVIVAL',
           cooldownMinutes: me.cooldown_minutes || 30,
           consecutiveLossLimit: me.consecutive_loss_limit || 2,
@@ -568,9 +571,18 @@ const App: React.FC = () => {
 
   const handleCloseTrade = (tradeToClose: Trade) => setTradeToClose(tradeToClose);
 
-  const handleSavePnlAndEvaluate = (pnl: number) => {
+  const handleSavePnlAndEvaluate = async (pnl: number) => {
     if (!tradeToClose) return;
     const closedTrade: Trade = { ...tradeToClose, status: 'CLOSED', pnl };
+
+    // Update backend
+    try {
+      await api.closeTrade(String(tradeToClose.id), pnl, tradeToClose.entryPrice); // Simple exit price for now
+      console.log('[App] Trade closed in backend successfully');
+    } catch (error) {
+      console.error('[App] Error closing trade in backend:', error);
+    }
+
     setTradeHistory(prev => {
       const newHistory = prev.map(t => t.id === tradeToClose.id ? closedTrade : t);
       setStats(s => ({ ...s, consecutiveLosses: pnl < 0 ? s.consecutiveLosses + 1 : 0, consecutiveWins: pnl > 0 ? s.consecutiveWins + 1 : 0 }));
@@ -578,6 +590,7 @@ const App: React.FC = () => {
     });
     setTradeToClose(null); setTradeToEvaluate(closedTrade);
   };
+
 
   const handleSaveUserEvaluation = async (userEvaluation: UserProcessEvaluation, interactionData: DojoInteractionData) => {
     if (!tradeToEvaluate) return;
@@ -700,6 +713,12 @@ const App: React.FC = () => {
   const handleSaveProfileSettings = async () => {
     try {
       setIsLoading(true);
+      // Update Username if present
+      if (userProfile.username) {
+        await api.updateUsername(userProfile.username);
+        console.log("[Profile] Username updated");
+      }
+
       await api.updateSettings({
         protection_level: userProfile.protectionLevel || 'SURVIVAL',
         cooldown_minutes: Number(userProfile.cooldownMinutes) || 30,
@@ -1002,10 +1021,16 @@ const App: React.FC = () => {
                 )}
 
                 {activeTab === 'SETTINGS' && (
-                  <div className="bento-card p-12 text-center">
-                    <h2 className="text-2xl font-black uppercase tracking-[0.3em] mb-4">Under Construction</h2>
-                    <p className="text-text-secondary">Trading Rules and System Settings are coming soon.</p>
-                  </div>
+                  <SettingsView
+                    profile={userProfile}
+                    onUpdateProfile={handleUpdateProfile}
+                    onSaveProfile={handleSaveProfileSettings}
+                    onLogout={logout}
+                    simulationMode={simulationMode}
+                    setSimulationMode={setSimulationMode}
+                    xp={userProfile.xp || 0}
+                    level={String(userProfile.level || '1')}
+                  />
                 )}
               </motion.div>
             </AnimatePresence>

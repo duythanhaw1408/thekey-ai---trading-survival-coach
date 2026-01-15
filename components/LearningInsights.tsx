@@ -55,10 +55,15 @@ export const LearningInsights: React.FC = () => {
             {insights.length === 0 ? (
                 <div className="bg-black/40 backdrop-blur-md border border-accent-neon/10 border-dashed rounded-3xl p-10 text-center relative overflow-hidden group">
                     <div className="absolute inset-0 cyber-grid opacity-[0.05] pointer-events-none" />
-                    <p className="text-[10px] font-black text-accent-neon/40 uppercase tracking-widest leading-relaxed relative z-10 max-w-[300px] mx-auto">
-                        SYSTEM_IDLE: AWAITING_NEURAL_DENSITY_THRESHOLD. <br />
-                        <span className="text-white/20 mt-4 block italic font-medium">Capture 5+ sessions to initiate pattern recognition.</span>
-                    </p>
+                    <div className="relative z-10">
+                        <div className="w-12 h-12 bg-accent-neon/5 rounded-xl border border-accent-neon/10 flex items-center justify-center mx-auto mb-6">
+                            <BeakerIcon className="w-6 h-6 text-accent-neon/40 animate-pulse" />
+                        </div>
+                        <p className="text-[10px] font-black text-accent-neon/40 uppercase tracking-widest leading-relaxed max-w-[350px] mx-auto">
+                            SYSTEM_IDLE: AWAITING_NEURAL_DENSITY_THRESHOLD. <br />
+                            <span className="text-white/20 mt-4 block italic font-medium lowercase first-letter:uppercase">Cần ít nhất 3 lệnh để AI bắt đầu tìm kiếm các mẫu hành vi và sự thấu thị cá nhân hóa.</span>
+                        </p>
+                    </div>
                 </div>
             ) : (
                 <div className="grid gap-4">

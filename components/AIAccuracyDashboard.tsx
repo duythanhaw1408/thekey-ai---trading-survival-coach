@@ -71,14 +71,29 @@ const AIAccuracyDashboard: React.FC = () => {
     if (error || !stats || stats.total_evaluated === 0) {
         return (
             <motion.div
-                className="ai-accuracy-dashboard empty"
+                className="bg-black/40 backdrop-blur-xl border border-white/10 border-dashed rounded-3xl p-12 text-center relative overflow-hidden group"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
             >
-                <div className="empty-state">
-                    <span className="empty-icon">📊</span>
-                    <h3>AI Accuracy Dashboard</h3>
-                    <p>Chưa có đủ dữ liệu để phân tích. Hãy thực hiện thêm giao dịch để xem AI có đúng hay không!</p>
+                <div className="absolute inset-0 cyber-grid opacity-[0.03] pointer-events-none" />
+                <div className="relative z-10 flex flex-col items-center">
+                    <div className="w-16 h-16 bg-accent-neon/10 rounded-full flex items-center justify-center mb-6 border border-accent-neon/20 animate-pulse">
+                        <span className="text-2xl">📊</span>
+                    </div>
+                    <h3 className="text-[12px] font-black text-white/60 uppercase tracking-[0.4em] mb-4">NEURAL_ACCURACY_MATRIX: OFFLINE</h3>
+                    <p className="text-[11px] text-white/30 font-medium max-w-[400px] leading-relaxed italic mb-8">
+                        AI cần ít nhất 1 lệnh ĐÃ ĐÓNG để bắt đầu tính toán độ chính xác. Hãy thực hiện giao dịch và ghi nhận kết quả để kích hoạt ma trận này.
+                    </p>
+                    <div className="flex gap-2 items-center">
+                        <div className="flex gap-1">
+                            {[1, 2, 3].map(i => (
+                                <div key={i} className="w-8 h-1 bg-white/5 rounded-full overflow-hidden">
+                                    <div className="w-0 h-full bg-accent-neon" />
+                                </div>
+                            ))}
+                        </div>
+                        <span className="text-[8px] font-black text-white/20 uppercase tracking-widest ml-2">Progress: 0%</span>
+                    </div>
                 </div>
             </motion.div>
         );

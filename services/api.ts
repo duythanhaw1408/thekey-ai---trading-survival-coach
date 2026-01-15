@@ -145,6 +145,9 @@ export const api = {
         body: JSON.stringify(trade),
     }),
     getTradeHistory: () => request('/api/trades/'),  // No userId needed - backend uses auth token
+    closeTrade: (tradeId: string, pnl: number, exitPrice: number) => request(`/api/trades/${tradeId}/close?pnl=${pnl}&exit_price=${exitPrice}`, {
+        method: 'PUT'
+    }),
 
     // User Profile
     updateUsername: (username: string) => request('/api/users/username', {
