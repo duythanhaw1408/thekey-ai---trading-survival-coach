@@ -403,55 +403,62 @@ Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
             return self._market_cache
 
         prompt = f"""
-        Analyze the CURRENT crypto market conditions (BTC, ETH, and overall sentiment).
-        Directly search for 'crypto market sentiment', 'BTC price action today', and 'crypto liquidations'.
+        Bạn là chuyên gia phân tích thị trường crypto với nhiều năm kinh nghiệm.
         
-        Task: Decide if the current market is 'SAFE', 'CAUTION', or 'DANGER'.
-        Provide exactly this JSON:
+        Hãy đưa ra đánh giá cảnh báo thị trường dựa trên kiến thức của bạn về:
+        - Xu hướng chung của BTC và ETH
+        - Tâm lý thị trường phổ biến
+        - Các yếu tố rủi ro tiềm ẩn
+        
+        Mức độ: 'SAFE' (thị trường ổn), 'CAUTION' (cần cảnh giác), 'DANGER' (rủi ro cao), 'EXTREME' (cực kỳ nguy hiểm)
+        
+        Trả về ĐÚNG JSON sau:
         {{
-          "danger_level": "SAFE" | "CAUTION" | "DANGER",
+          "danger_level": "SAFE" | "CAUTION" | "DANGER" | "EXTREME",
           "danger_score": 0-100,
           "color_code": "🟢" | "🟡" | "🔴",
-          "headline": "One short Vietnamese warning headline",
-          "risk_factors": [{{"factor": "...", "severity": "HIGH/MEDIUM/LOW", "description": "..."}}],
+          "headline": "Một câu cảnh báo ngắn tiếng Việt",
+          "risk_factors": [
+            {{"factor": "Tên yếu tố", "severity": "HIGH/MEDIUM/LOW", "description": "Mô tả ngắn", "impact": "HIGH/MEDIUM/LOW"}}
+          ],
           "factors": {{"volatility": 0-100, "liquidity": 0-100, "leverage": 0-100, "sentiment": 0-100, "events": 0-100}},
-          "recommendation": {{"action": "Wait/Trade/Reduce", "position_adjustment": "...", "stop_adjustment": "...", "rationale": "..."}}
+          "recommendation": {{
+            "action": "WAIT/TRADE/REDUCE_SIZE",
+            "position_adjustment": "Khuyến nghị điều chỉnh vị thế",
+            "stop_adjustment": "Khuyến nghị điều chỉnh stop loss",
+            "rationale": "Lý do"
+          }}
         }}
 
-        LANGUAGE: Vietnamese. Return ONLY valid JSON.
+        CHỈ trả về JSON hợp lệ, không có text khác.
         """
-        # Use unified generation to get market analysis
-        # We try to use google search if the model supports it
-        async def try_market_search():
-            for model_id in self.MODELS:
-                try:
-                    # Search is best for market context
-                    response = await self.client.aio.models.generate_content(
-                        model=model_id,
-                        contents=self.SAFETY_RAILS + prompt,
-                        config={'tools': [{'google_search': {}}]}
-                    )
-                    if response and response.text:
-                        return response.text
-                except Exception as e:
-                    print(f"⚠️ Search failed for {model_id}: {e}")
-                    continue
-            # If all search attempts fail, fallback to standard generate
-            return await self._generate(prompt)
 
         try:
-            # Use 10 second timeout for search
-            async with asyncio.timeout(10):
-                response_text = await try_market_search()
+            # Use standard generation (same as chat) - more reliable
+            async with asyncio.timeout(15):
+                response_text = await self._generate(prompt)
+
+            if not response_text:
+                print("⚠️ Market analysis: Empty response")
+                if self._market_cache:
+                    return self._market_cache
+                return get_random_fallback()
 
             result = self._clean_and_parse_json(response_text)
             
-            # Update cache on success
-            self._market_cache = result
-            self._market_cache_time = now
-            return result
+            if result and "danger_level" in result:
+                # Update cache on success
+                self._market_cache = result
+                self._market_cache_time = now
+                return result
+            else:
+                print("⚠️ Market analysis: Invalid JSON structure")
+                if self._market_cache:
+                    return self._market_cache
+                return get_random_fallback()
+                
         except asyncio.TimeoutError:
-            print("⏱️ Market analysis timeout (8s) - returning cached or fallback")
+            print("⏱️ Market analysis timeout (15s) - returning cached or fallback")
             if self._market_cache:
                 return self._market_cache
             return get_random_fallback()
