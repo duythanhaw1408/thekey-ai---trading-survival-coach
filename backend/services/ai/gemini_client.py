@@ -63,14 +63,19 @@ Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
         self._lock = asyncio.Lock()
         self._semaphore = asyncio.Semaphore(2) # Allow max 2 concurrent AI calls
     
-    async def _generate(self, prompt: str) -> str:
-        """Helper to generate content with multiple model fallback and concurrency control."""
+    async def _generate(self, prompt: str, skip_safety_rails: bool = False) -> str:
+        """Helper to generate content with multiple model fallback and concurrency control.
+        
+        Args:
+            prompt: The prompt to send to the AI
+            skip_safety_rails: If True, don't prepend SAFETY_RAILS (for non-chat prompts like market analysis)
+        """
         async with self._semaphore:
             max_retries_per_model = 2
             last_exception = None
             
-            # Prepend safety rails to every prompt
-            safe_prompt = self.SAFETY_RAILS + prompt
+            # Prepend safety rails to every prompt (unless skipped)
+            safe_prompt = prompt if skip_safety_rails else (self.SAFETY_RAILS + prompt)
             
             for model_id in self.MODELS:
                 delay = 1
@@ -437,7 +442,7 @@ Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
             print("[MarketAnalysis] Starting AI generation...")
             # Use standard generation (same as chat) - more reliable
             async with asyncio.timeout(15):
-                response_text = await self._generate(prompt)
+                response_text = await self._generate(prompt, skip_safety_rails=True)
 
             print(f"[MarketAnalysis] Got response, length: {len(response_text) if response_text else 0}")
 
