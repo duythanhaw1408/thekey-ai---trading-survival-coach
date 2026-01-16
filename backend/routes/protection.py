@@ -163,9 +163,42 @@ async def check_trade(data: Dict, user: User = Depends(get_current_user), db: Se
 
 @router.get("/market-context")
 async def get_market_context(user: User = Depends(get_current_user)):
-    """Get AI-generated market danger analysis."""
-    analysis = await gemini_client.generate_market_analysis()
-    return analysis
+    """Get AI-generated market danger analysis with fallback."""
+    try:
+        analysis = await gemini_client.generate_market_analysis()
+        if analysis:
+            return analysis
+    except Exception as e:
+        print(f"[MarketContext] Gemini API failed: {e}")
+    
+    # Fallback response when AI is unavailable
+    return {
+        "danger_level": "CAUTION",
+        "danger_score": 50,
+        "color_code": "🟡",
+        "headline": "Hệ thống AI tạm thời không khả dụng. Hãy giao dịch thận trọng.",
+        "risk_factors": [
+            {
+                "factor": "AI Timeout",
+                "severity": "HIGH",
+                "description": "Không thể phân tích thị trường. Giảm khối lượng giao dịch.",
+                "impact": "HIGH"
+            }
+        ],
+        "factors": {
+            "volatility": 50,
+            "liquidity": 50,
+            "leverage": 50,
+            "sentiment": 50,
+            "events": 10
+        },
+        "recommendation": {
+            "action": "REDUCE_SIZE",
+            "position_adjustment": "Giảm 50% khối lượng giao dịch cho đến khi AI khả dụng.",
+            "stop_adjustment": "Thắt chặt stop-loss thêm 20%.",
+            "rationale": "Khi không có phân tích AI, hãy giao dịch với kỷ luật cao nhất và khối lượng nhỏ nhất."
+        }
+    }
 
 @router.post("/analyze-trade")
 async def analyze_trade(trade_data: Dict, user: User = Depends(get_current_user)):
