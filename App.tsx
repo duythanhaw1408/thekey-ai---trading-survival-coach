@@ -41,6 +41,7 @@ import { RiskSettingsOnboarding } from './components/RiskSettingsOnboarding';
 import { OfflineBanner } from './components/OfflineBanner';
 import { AchievementPopup } from './components/AchievementPopup';
 import { GoalProgressCard } from './components/GoalProgressCard';
+import { OnboardingTutorial } from './components/OnboardingTutorial';
 
 // PERFORMANCE: Lazy load heavy view components
 const CoachView = lazy(() => import('./components/views/CoachView').then(m => ({ default: m.CoachView })));
@@ -157,6 +158,7 @@ const App: React.FC = () => {
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [newLevelTitle, setNewLevelTitle] = useState('');
   const [unlockedAchievement, setUnlockedAchievement] = useState<Achievement | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // Sync userProfile.id with authenticated user
   useEffect(() => {
@@ -286,8 +288,12 @@ const App: React.FC = () => {
         })));
       }
 
-      // Show check-in modal if not done today
-      if (!todayCheckin.done_today) {
+      // Show check-in modal if not done today (but not during onboarding)
+      const hasCompletedOnboarding = localStorage.getItem('thekey_onboarding_completed');
+      if (!hasCompletedOnboarding) {
+        // First time user - show onboarding tutorial
+        setShowOnboarding(true);
+      } else if (!todayCheckin.done_today) {
         const { questions } = await api.getCheckinQuestions();
         if (questions && questions.length > 0) {
           setDailyQuestions(questions);
@@ -882,6 +888,21 @@ const App: React.FC = () => {
         {/* Global Modals & Notifications */}
         <div className="relative z-[100]">
           {inAppNotification && <InAppNotification notification={inAppNotification} onClose={() => setInAppNotification(null)} />}
+
+          {/* Onboarding Tutorial for new users */}
+          {showOnboarding && (
+            <OnboardingTutorial
+              onComplete={() => {
+                localStorage.setItem('thekey_onboarding_completed', 'true');
+                setShowOnboarding(false);
+                // After onboarding, check if we should show daily check-in
+                if (dailyQuestions && dailyQuestions.length > 0) {
+                  setShowCheckin(true);
+                }
+              }}
+            />
+          )}
+
           {showCheckin && dailyQuestions && <DailyCheckinModal questions={dailyQuestions} onSubmit={handleCheckinSubmit} />}
           {showProfile && <ProfileModal userProfile={userProfile} onSave={handleSaveProfile} onClose={() => setShowProfile(false)} onDiscoverArchetype={handleDiscoverArchetype} />}
           {showRiskOnboarding && (
