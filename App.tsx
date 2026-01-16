@@ -93,6 +93,11 @@ const DEFAULT_USER_PROFILE: UserProfile = {
 const App: React.FC = () => {
   const { user, logout, isAuthenticated } = useAuth();
 
+  // PERFORMANCE: Refs to prevent duplicate API calls
+  const hasHydratedRef = React.useRef(false);
+  const masterySyncTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const lastSyncedMasteryRef = React.useRef<{ xp: number; level: string } | null>(null);
+
   // Wake up Render server immediately
   useEffect(() => {
     api.ping();
@@ -299,14 +304,16 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [isAuthenticated, user, userProfile.id]);
+  }, [isAuthenticated, user]); // FIXED: Removed userProfile.id to prevent re-hydration loop
 
   // Run rehydration when authentication status changes to true
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !hasHydratedRef.current) {
+      hasHydratedRef.current = true;
       rehydrateUser();
-    } else {
+    } else if (!isAuthenticated) {
       // Clear sensitive states on logout
+      hasHydratedRef.current = false;
       setTradeHistory([]);
       setMessages([]);
       setStats({
@@ -350,20 +357,42 @@ const App: React.FC = () => {
     setMasteryData({ ...newMasteryBase, quests });
   }, [stats, relevantHistory, activePattern, shadowScore, checkinHistory]);
 
-  // Sync Mastery to Backend
+  // Sync Mastery to Backend (OPTIMIZED: Debounced to prevent duplicate calls)
   useEffect(() => {
-    if (masteryData && isAuthenticated) {
-      const needsSync = (masteryData.xp !== userProfile.xp) || (masteryData.level !== userProfile.level);
-      if (needsSync) {
-        api.updateSettings({
-          xp: masteryData.xp,
-          level: masteryData.level
-        }).then(() => {
-          setUserProfile(prev => ({ ...prev, xp: masteryData.xp, level: masteryData.level }));
-          console.log(`[Mastery] Sync successful: LVL ${masteryData.level}, XP ${masteryData.xp}`);
-        }).catch(err => console.error('[Mastery] Sync failed:', err));
-      }
+    if (!masteryData || !isAuthenticated) return;
+
+    // Check if values actually changed from last sync
+    const lastSynced = lastSyncedMasteryRef.current;
+    if (lastSynced && lastSynced.xp === masteryData.xp && lastSynced.level === String(masteryData.level)) {
+      return; // Already synced these values
     }
+
+    // Check if values differ from userProfile
+    const needsSync = (masteryData.xp !== userProfile.xp) || (String(masteryData.level) !== String(userProfile.level));
+    if (!needsSync) return;
+
+    // Clear any pending sync
+    if (masterySyncTimeoutRef.current) {
+      clearTimeout(masterySyncTimeoutRef.current);
+    }
+
+    // Debounce: wait 2 seconds before syncing to batch updates
+    masterySyncTimeoutRef.current = setTimeout(() => {
+      api.updateSettings({
+        xp: masteryData.xp,
+        level: masteryData.level
+      }).then(() => {
+        lastSyncedMasteryRef.current = { xp: masteryData.xp, level: String(masteryData.level) };
+        setUserProfile(prev => ({ ...prev, xp: masteryData.xp, level: String(masteryData.level) }));
+        console.log(`[Mastery] Sync successful: LVL ${masteryData.level}, XP ${masteryData.xp}`);
+      }).catch(err => console.error('[Mastery] Sync failed:', err));
+    }, 2000);
+
+    return () => {
+      if (masterySyncTimeoutRef.current) {
+        clearTimeout(masterySyncTimeoutRef.current);
+      }
+    };
   }, [masteryData, isAuthenticated]);
 
   // Streak & Welcome Back Logic
