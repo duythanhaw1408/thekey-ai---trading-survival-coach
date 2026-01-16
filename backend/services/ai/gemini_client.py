@@ -434,9 +434,12 @@ Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
         """
 
         try:
+            print("[MarketAnalysis] Starting AI generation...")
             # Use standard generation (same as chat) - more reliable
             async with asyncio.timeout(15):
                 response_text = await self._generate(prompt)
+
+            print(f"[MarketAnalysis] Got response, length: {len(response_text) if response_text else 0}")
 
             if not response_text:
                 print("⚠️ Market analysis: Empty response")
@@ -445,14 +448,16 @@ Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
                 return get_random_fallback()
 
             result = self._clean_and_parse_json(response_text)
+            print(f"[MarketAnalysis] Parsed JSON, has danger_level: {'danger_level' in result if result else False}")
             
             if result and "danger_level" in result:
                 # Update cache on success
                 self._market_cache = result
                 self._market_cache_time = now
+                print(f"[MarketAnalysis] SUCCESS - danger_level: {result.get('danger_level')}")
                 return result
             else:
-                print("⚠️ Market analysis: Invalid JSON structure")
+                print(f"⚠️ Market analysis: Invalid JSON structure - {result}")
                 if self._market_cache:
                     return self._market_cache
                 return get_random_fallback()
@@ -463,7 +468,7 @@ Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
                 return self._market_cache
             return get_random_fallback()
         except Exception as e:
-            print(f"❌ Gemini Error (generate_market_analysis): {e}")
+            print(f"❌ Gemini Error (generate_market_analysis): {type(e).__name__}: {e}")
             
             # If AI fails, still return previous cache if available, even if old
             if self._market_cache:
