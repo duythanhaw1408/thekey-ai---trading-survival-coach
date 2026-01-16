@@ -1,6 +1,6 @@
 
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BlockedScreen } from './components/BlockedScreen';
 import { DailyCheckinModal } from './components/DailyCheckinModal';
@@ -11,12 +11,7 @@ import { InAppNotification } from './components/InAppNotification';
 import { UpdatePnlModal } from './components/UpdatePnlModal';
 import { TerminalView } from './components/views/TerminalView';
 import { DashboardView } from './components/views/DashboardView';
-import { CoachView } from './components/views/CoachView';
 import { Sidebar, type AppTab } from './components/Layout/Sidebar';
-import { ExecutionView } from './components/views/ExecutionView';
-import { MindsetView } from './components/views/MindsetView';
-import { ProgressView } from './components/views/ProgressView';
-import { SettingsView } from './components/views/SettingsView';
 import type { TraderStats, Trade, TradeDecision, ChatMessage, UserProfile, CheckinQuestion, TradeAnalysis, CrisisData, DetectedPattern, CheckinAnalysisResult, MarketAnalysis, Notification as NotificationType, MasteryData, Pod, ProcessStats, UserProcessEvaluation, ShadowScore, BehavioralReport, WeeklyGoals, WeeklyReport, TraderArchetypeAnalysis, DojoInteractionData } from './types';
 import { SmartNotificationEngine } from './services/notificationService';
 import { virtualTradingEngine } from './services/simulationService';
@@ -46,6 +41,23 @@ import { RiskSettingsOnboarding } from './components/RiskSettingsOnboarding';
 import { OfflineBanner } from './components/OfflineBanner';
 import { AchievementPopup } from './components/AchievementPopup';
 import { GoalProgressCard } from './components/GoalProgressCard';
+
+// PERFORMANCE: Lazy load heavy view components
+const CoachView = lazy(() => import('./components/views/CoachView').then(m => ({ default: m.CoachView })));
+const MindsetView = lazy(() => import('./components/views/MindsetView').then(m => ({ default: m.MindsetView })));
+const ProgressView = lazy(() => import('./components/views/ProgressView').then(m => ({ default: m.ProgressView })));
+const ExecutionView = lazy(() => import('./components/views/ExecutionView').then(m => ({ default: m.ExecutionView })));
+const SettingsView = lazy(() => import('./components/views/SettingsView').then(m => ({ default: m.SettingsView })));
+
+// Loading fallback component
+const ViewLoadingFallback = () => (
+  <div className="flex items-center justify-center h-full min-h-[400px]">
+    <div className="text-center">
+      <div className="w-12 h-12 border-2 border-accent-neon/30 border-t-accent-neon rounded-full animate-spin mx-auto mb-4" />
+      <p className="text-xs text-white/40 uppercase tracking-widest">LOADING_MODULE...</p>
+    </div>
+  </div>
+);
 
 const DEFAULT_USER_PROFILE: UserProfile = {
   id: '', // Will be set from auth context
@@ -968,50 +980,56 @@ const App: React.FC = () => {
 
 
                 {activeTab === 'MINDSET' && (
-                  <MindsetView
-                    behavioralReport={behavioralReport}
-                    traderArchetype={traderArchetype}
-                    isAnalyzing={isAnalyzingMindset}
-                    shadowScore={shadowScore}
-                    processStats={processStats}
-                    onGenerateReport={handleGenerateMindsetReport}
-                    tradeCount={tradeHistory.length}
-                    dojoTradesCount={tradeHistory.filter(t => t.userProcessEvaluation).length}
-                    profile={userProfile}
-                    onUpdateProfile={handleUpdateProfile}
-                    onSaveProfile={handleSaveProfileSettings}
-                  />
+                  <Suspense fallback={<ViewLoadingFallback />}>
+                    <MindsetView
+                      behavioralReport={behavioralReport}
+                      traderArchetype={traderArchetype}
+                      isAnalyzing={isAnalyzingMindset}
+                      shadowScore={shadowScore}
+                      processStats={processStats}
+                      onGenerateReport={handleGenerateMindsetReport}
+                      tradeCount={tradeHistory.length}
+                      dojoTradesCount={tradeHistory.filter(t => t.userProcessEvaluation).length}
+                      profile={userProfile}
+                      onUpdateProfile={handleUpdateProfile}
+                      onSaveProfile={handleSaveProfileSettings}
+                    />
+                  </Suspense>
                 )}
 
                 {activeTab === 'PROGRESS' && (
-                  <ProgressView
-                    masteryData={masteryData}
-                    pod={pod}
-                    onSendPodMessage={handleSendPodMessage}
-                    shadowScore={shadowScore}
-                    weeklyGoals={weeklyGoals}
-                    isLoadingGoals={isLoadingGoals}
-                    onGetWeeklyGoals={handleGetWeeklyGoals}
-                    weeklyReport={weeklyReport}
-                    isLoadingReport={isLoadingReport}
-                    onGetWeeklyReport={handleGetWeeklyReport}
-                    tradeHistory={currentTradeHistory}
-                    stats={stats}
-                    checkinCount={checkinHistory.length}
-                  />
+                  <Suspense fallback={<ViewLoadingFallback />}>
+                    <ProgressView
+                      masteryData={masteryData}
+                      pod={pod}
+                      onSendPodMessage={handleSendPodMessage}
+                      shadowScore={shadowScore}
+                      weeklyGoals={weeklyGoals}
+                      isLoadingGoals={isLoadingGoals}
+                      onGetWeeklyGoals={handleGetWeeklyGoals}
+                      weeklyReport={weeklyReport}
+                      isLoadingReport={isLoadingReport}
+                      onGetWeeklyReport={handleGetWeeklyReport}
+                      tradeHistory={currentTradeHistory}
+                      stats={stats}
+                      checkinCount={checkinHistory.length}
+                    />
+                  </Suspense>
                 )}
 
                 {activeTab === 'SETTINGS' && (
-                  <SettingsView
-                    profile={userProfile}
-                    onUpdateProfile={handleUpdateProfile}
-                    onSaveProfile={handleSaveProfileSettings}
-                    onLogout={logout}
-                    simulationMode={simulationMode}
-                    setSimulationMode={setSimulationMode}
-                    xp={userProfile.xp || 0}
-                    level={String(userProfile.level || '1')}
-                  />
+                  <Suspense fallback={<ViewLoadingFallback />}>
+                    <SettingsView
+                      profile={userProfile}
+                      onUpdateProfile={handleUpdateProfile}
+                      onSaveProfile={handleSaveProfileSettings}
+                      onLogout={logout}
+                      simulationMode={simulationMode}
+                      setSimulationMode={setSimulationMode}
+                      xp={userProfile.xp || 0}
+                      level={String(userProfile.level || '1')}
+                    />
+                  </Suspense>
                 )}
               </motion.div>
             </AnimatePresence>
