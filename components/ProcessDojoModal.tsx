@@ -230,10 +230,14 @@ export const ProcessDojoModal: React.FC<ProcessDojoModalProps> = ({ trade, onClo
                             value={evaluation.reflection}
                             onChange={(e) => handleChange('reflection', e.target.value)}
                             onKeyDown={(e) => { if (e.key === 'Enter') e.stopPropagation(); }}
-                            placeholder="Input survival lessons here... Focus on behavioral mechanics over PnL results."
-                            className="w-full bg-black border border-accent-neon/20 rounded-2xl p-6 text-sm text-white placeholder:text-white/10 focus:outline-none focus:border-accent-neon/50 focus:ring-1 focus:ring-accent-neon/20 transition-all font-medium leading-relaxed shadow-inner"
+                            placeholder="Nhập bài học rút ra từ giao dịch này... Tập trung vào hành vi và kỷ luật, không phải kết quả PnL."
+                            className="w-full bg-gray-900/80 border-2 border-accent-neon/40 rounded-2xl p-6 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-accent-neon focus:ring-2 focus:ring-accent-neon/30 transition-all font-medium leading-relaxed resize-none"
+                            style={{ minHeight: '180px' }}
+                            autoFocus
                         />
-                        <div className="absolute bottom-4 right-6 text-[8px] font-black text-accent-neon/30 uppercase tracking-widest">Awaiting_neural_input...</div>
+                        <div className="absolute bottom-4 right-6 text-[8px] font-black text-accent-neon/50 uppercase tracking-widest">
+                            {evaluation.reflection.length}/10 ký tự
+                        </div>
                     </div>
                 </div>
             );
@@ -351,8 +355,8 @@ export const ProcessDojoModal: React.FC<ProcessDojoModalProps> = ({ trade, onClo
                                             type="submit"
                                             disabled={evaluation.reflection.trim().length < 10}
                                             className={`px-12 py-5 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl transition-all active:scale-95 ${evaluation.reflection.trim().length < 10
-                                                    ? 'bg-white/10 text-white/30 cursor-not-allowed'
-                                                    : 'bg-accent-neon text-black hover:scale-105 shadow-[0_0_30px_rgba(0,255,157,0.4)]'
+                                                ? 'bg-white/10 text-white/30 cursor-not-allowed'
+                                                : 'bg-accent-neon text-black hover:scale-105 shadow-[0_0_30px_rgba(0,255,157,0.4)]'
                                                 }`}
                                         >
                                             GENERATE_NEURAL_SCORE
