@@ -14,15 +14,16 @@ export interface ModelConfig {
 }
 
 // Model configurations - Using Gemini 2.5 Flash (Free Tier - Most Powerful)
+// Stable version: gemini-2.5-flash (released June 17, 2025)
 export const MODEL_CONFIGS: Record<ModelTier, ModelConfig> = {
     PRO: {
-        model: 'gemini-2.5-flash-preview-05-20', // Free tier: Most powerful available
+        model: 'gemini-2.5-flash', // Free tier: Most powerful available (stable)
         costPer1kTokens: 0, // Free tier
         maxTokens: 8192,
         temperature: 0.7,
     },
     FLASH: {
-        model: 'gemini-2.5-flash-preview-05-20', // Same model for consistency
+        model: 'gemini-2.5-flash', // Same model for consistency
         costPer1kTokens: 0, // Free tier
         maxTokens: 8192,
         temperature: 0.7,

@@ -12,11 +12,11 @@ class GeminiClient:
     Handles central AI logic for THEKEY.
     """
     # Optimized Model List - Using Gemini 2.5 Flash (Free Tier - Most Powerful)
-    # https://ai.google.dev/pricing (Free tier uses 2.5 Flash)
+    # Stable version: gemini-2.5-flash (released June 17, 2025)
     MODELS = [
-        'models/gemini-2.5-flash-preview-05-20',  # Primary: Gemini 2.5 Flash (FREE, Most Powerful)
-        'models/gemini-2.0-flash',                 # Fallback: Gemini 2.0 Flash
-        'models/gemini-2.0-flash-lite',            # Fallback: Lightweight 2.0
+        'models/gemini-2.5-flash',         # Primary: Gemini 2.5 Flash STABLE (FREE)
+        'models/gemini-2.0-flash-exp',     # Fallback: Gemini 2.0 Flash Experimental
+        'models/gemini-1.5-flash',         # Legacy fallback
     ]
 
     # =========================================

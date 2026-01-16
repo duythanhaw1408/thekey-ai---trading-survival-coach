@@ -92,9 +92,9 @@ class AICallLog(Base):
         """Calculate cost in USD based on model and tokens."""
         # Pricing as of Jan 2026 - Gemini 2.5 Flash is FREE tier
         pricing = {
-            "gemini-2.5-flash-preview-05-20": {"input": 0, "output": 0},  # FREE tier
-            "gemini-2.0-flash": {"input": 0, "output": 0},  # FREE tier
-            "gemini-2.0-flash-lite": {"input": 0, "output": 0},  # FREE tier
+            "gemini-2.5-flash": {"input": 0, "output": 0},  # FREE tier (stable)
+            "gemini-2.0-flash-exp": {"input": 0, "output": 0},  # FREE tier
+            "gemini-1.5-flash": {"input": 0, "output": 0},  # Legacy FREE tier
             # Legacy pricing for old models (for historical records)
             "gemini-1.5-flash-latest": {"input": 0.00025, "output": 0.0005},
             "gemini-1.5-pro-latest": {"input": 0.0025, "output": 0.005},
