@@ -384,7 +384,11 @@ Hãy tập trung vào quy trình của bạn thay vì dự đoán giá."
                 "danger_score": 50,
                 "color_code": "🟡",
                 "headline": tip["headline"],
-                "risk_factors": [{"factor": "Chờ dữ liệu", "severity": "MEDIUM", "description": tip["tip"]}],
+                "risk_factors": [
+                    {"factor": "AI Không khả dụng", "severity": "MEDIUM", "description": "Hệ thống phân tích AI tạm ngưng. Giao dịch thận trọng.", "impact": "MEDIUM"},
+                    {"factor": "Không có dữ liệu realtime", "severity": "MEDIUM", "description": "Thiếu thông tin thị trường thực. Giảm khối lượng 50%.", "impact": "MEDIUM"},
+                    {"factor": "Cảnh báo kỷ luật", "severity": "HIGH", "description": tip["tip"], "impact": "HIGH"},
+                ],
                 "factors": {"volatility": 50, "liquidity": 50, "leverage": 50, "sentiment": 50, "events": 50},
                 "recommendation": {
                     "action": "WAIT",
