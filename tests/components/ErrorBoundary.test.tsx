@@ -3,7 +3,7 @@
  * Tests for ErrorBoundary component
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach, afterAll } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ErrorBoundary from '../../components/ErrorBoundary';
 

@@ -186,6 +186,8 @@ export interface DetectedPattern {
 export interface TraderArchetypeAnalysis {
     archetype: TraderArchetype;
     rationale: string;
+    primary_strength?: string;
+    primary_weakness?: string;
 }
 
 export interface WeeklyGoal {
@@ -577,6 +579,8 @@ export interface BehavioralReport {
         primaryDriver: string;
         emotionalTrigger: string;
         riskTendency: string;
+        primaryStrength?: string;
+        primaryWeakness?: string;
     };
     activePattern: {
         name: string;
@@ -590,5 +594,6 @@ export interface BehavioralReport {
     recommendations: {
         action: string;
         metric: string;
+        microHabit?: string;
     };
 }

@@ -13,17 +13,17 @@ export interface ModelConfig {
     temperature: number;
 }
 
-// Model configurations
+// Model configurations - Using Gemini 2.5 Flash (Free Tier - Most Powerful)
 export const MODEL_CONFIGS: Record<ModelTier, ModelConfig> = {
     PRO: {
-        model: 'gemini-1.5-pro-latest',
-        costPer1kTokens: 0.00125,
+        model: 'gemini-2.5-flash-preview-05-20', // Free tier: Most powerful available
+        costPer1kTokens: 0, // Free tier
         maxTokens: 8192,
         temperature: 0.7,
     },
     FLASH: {
-        model: 'gemini-1.5-flash-latest',
-        costPer1kTokens: 0.000075,
+        model: 'gemini-2.5-flash-preview-05-20', // Same model for consistency
+        costPer1kTokens: 0, // Free tier
         maxTokens: 8192,
         temperature: 0.7,
     },

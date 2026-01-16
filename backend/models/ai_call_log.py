@@ -90,15 +90,17 @@ class AICallLog(Base):
     @staticmethod
     def calculate_cost(model: str, input_tokens: int, output_tokens: int) -> float:
         """Calculate cost in USD based on model and tokens."""
-        # Pricing as of Jan 2026 (approximate)
+        # Pricing as of Jan 2026 - Gemini 2.5 Flash is FREE tier
         pricing = {
-            "gemini-1.5-flash-latest": {"input": 0.00025, "output": 0.0005},  # per 1K tokens
+            "gemini-2.5-flash-preview-05-20": {"input": 0, "output": 0},  # FREE tier
+            "gemini-2.0-flash": {"input": 0, "output": 0},  # FREE tier
+            "gemini-2.0-flash-lite": {"input": 0, "output": 0},  # FREE tier
+            # Legacy pricing for old models (for historical records)
+            "gemini-1.5-flash-latest": {"input": 0.00025, "output": 0.0005},
             "gemini-1.5-pro-latest": {"input": 0.0025, "output": 0.005},
-            "gemini-1.5-flash": {"input": 0.00025, "output": 0.0005},
-            "gemini-1.5-pro": {"input": 0.0025, "output": 0.005},
         }
         
-        model_pricing = pricing.get(model, pricing["gemini-1.5-flash-latest"])
+        model_pricing = pricing.get(model, {"input": 0, "output": 0})  # Default to free
         
         input_cost = (input_tokens / 1000) * model_pricing["input"]
         output_cost = (output_tokens / 1000) * model_pricing["output"]

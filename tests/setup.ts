@@ -4,6 +4,7 @@
  * Configures global testing utilities and mocks
  */
 
+import { vi } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 
 // Mock window.matchMedia for responsive components

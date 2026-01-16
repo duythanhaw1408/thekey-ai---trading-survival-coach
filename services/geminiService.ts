@@ -8,6 +8,7 @@ import { biofeedbackAnalyzer } from './biofeedbackService';
 import { cacheService } from './cacheService';
 import { modelRouter, type TaskType } from './modelRouter';
 import { learningEngine } from './learningEngine';
+import { api } from './api';
 
 
 // FIX: Use VITE_ prefix for environment variables in Vite projects
@@ -738,67 +739,27 @@ const marketNarrativeSchema = {
 };
 
 export const getMarketAnalysis = async (): Promise<MarketAnalysis> => {
-    const model = modelRouter.getModelName('MARKET_ANALYSIS');
-    const dangerReport = marketRadar.calculateScore();
-
-    const content = `
-    MARKET DANGER REPORT (from internal engine):
-    - Danger Score: ${dangerReport.score}
-    - Danger Level: ${dangerReport.level}
-    - Primary Risk Factors: ${dangerReport.primaryRisks.map(r => r.factor).join(', ')}
-    
-    Generate the narrative parts ('headline' and 'recommendation') for this report.
-    `;
-
+    // Route through backend to protect API key
     try {
-        const response = await ai.models.generateContent({
-            model,
-            contents: content,
-            config: {
-                systemInstruction: MARKET_NARRATIVE_PROMPT,
-                responseMimeType: 'application/json',
-                responseSchema: marketNarrativeSchema,
-                temperature: 0.5,
-            },
-        });
-        const narrative = cleanAndParseJson<{ headline: string, recommendation: any }>(response.text);
-
+        const analysis = await api.getMarketContext() as MarketAnalysis;
+        return analysis;
+    } catch (error) {
+        console.error("Error getting market analysis from backend:", error);
+        // Fallback to local calculation without AI narrative
+        const dangerReport = marketRadar.calculateScore();
         const color_map = { 'SAFE': '🟢', 'CAUTION': '🟡', 'DANGEROUS': '🟠', 'EXTREME': '🔴' };
-
         return {
             danger_level: dangerReport.level,
             danger_score: dangerReport.score,
             color_code: color_map[dangerReport.level],
-            headline: narrative.headline,
+            headline: "Đang cập nhật dữ liệu thị trường...",
             risk_factors: dangerReport.primaryRisks,
             factors: dangerReport.factors,
-            recommendation: narrative.recommendation,
-        }
-
-    } catch (error) {
-        console.error("Error getting market analysis narrative:", error);
-        return {
-            danger_level: 'CAUTION',
-            danger_score: 45,
-            color_code: '🟡',
-            headline: "Không thể lấy dữ liệu thị trường trực tiếp.",
-            risk_factors: [{
-                factor: "Lỗi API",
-                severity: "HIGH",
-                description: "Không thể kết nối với dịch vụ phân tích thị trường. Dữ liệu có thể không chính xác.",
-            }],
-            factors: {
-                volatility: 45,
-                liquidity: 50,
-                leverage: 60,
-                sentiment: 30,
-                events: 10,
-            },
             recommendation: {
                 action: 'REDUCE_SIZE',
                 position_adjustment: "Giảm 50% khối lượng giao dịch.",
                 stop_adjustment: "Không có đề xuất.",
-                rationale: "Khi không có dữ liệu thị trường đáng tin cậy, việc giảm rủi ro là hành động phòng thủ tốt nhất."
+                rationale: "Không thể lấy phân tích từ AI, sử dụng engine cục bộ."
             }
         };
     }

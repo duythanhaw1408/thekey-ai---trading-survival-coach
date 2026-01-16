@@ -9,6 +9,7 @@ client = genai.Client(api_key=api_key)
 try:
     print("Listing available models...")
     for model in client.models.list():
-        print(f"Name: {model.name}, Supported Methods: {model.supported_generate_methods}")
+        print(f"Name: {model.name}")
+        # print(f"Supported Methods: {getattr(model, 'supported_methods', 'N/A')}")
 except Exception as e:
     print(f"Error: {e}")

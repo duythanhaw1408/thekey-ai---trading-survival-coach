@@ -140,7 +140,6 @@ const App: React.FC = () => {
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [newLevelTitle, setNewLevelTitle] = useState('');
   const [unlockedAchievement, setUnlockedAchievement] = useState<Achievement | null>(null);
-  const [dojoCount, setDojoCount] = useState(0);
 
   // Sync userProfile.id with authenticated user
   useEffect(() => {
@@ -152,6 +151,17 @@ const App: React.FC = () => {
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [daysAway, setDaysAway] = useState(0);
   const [previousLevel, setPreviousLevel] = useState<string | null>(null);
+
+  // OPTIMIZATION: Memoize derived state to prevent expensive recalculations
+  const relevantHistory = useMemo(() =>
+    tradeHistory.filter(t => (simulationMode ? t.mode === 'SIMULATION' : t.mode === 'LIVE')),
+    [tradeHistory, simulationMode]
+  );
+
+  const dojoCount = useMemo(() =>
+    tradeHistory.filter(t => t.userProcessEvaluation).length,
+    [tradeHistory]
+  );
 
   const notificationEngine = useMemo(() => new SmartNotificationEngine(), []);
 
@@ -172,21 +182,24 @@ const App: React.FC = () => {
     }
   }, [stats, tradeHistory, crisisIntervention]);
 
-  // Centralized Rehydration & Sync logic
+  // Centralized Rehydration & Sync logic (OPTIMIZED: Parallel API calls)
   const rehydrateUser = React.useCallback(async () => {
     if (!isAuthenticated || !user) return;
     setIsLoading(true);
     try {
       console.log('[App] Rehydrating data for user:', user.email);
-      // Load Trade History
-      const rawHistory = await api.getTradeHistory();
+
+      // OPTIMIZATION: Parallelize independent API calls
+      const [rawHistory, summary, me, checkinData, todayCheckin, initialMsg] = await Promise.all([
+        api.getTradeHistory(),
+        api.getProgressSummary(),
+        api.getCurrentUser(),
+        api.getCheckinHistory().catch(() => ({ checkins: [] })),
+        api.getTodayCheckin().catch(() => ({ done_today: true })),
+        api.getInitialMessage().catch(() => "Chào bạn!")
+      ]);
+
       console.log('[App] Loaded trade history from API:', rawHistory?.length || 0, 'trades');
-      // Debug: Check if API returns process_evaluation
-      if (rawHistory && rawHistory.length > 0) {
-        console.log('[App] DEBUG First trade raw data:', JSON.stringify(rawHistory[0], null, 2));
-        console.log('[App] DEBUG Has process_evaluation:', !!rawHistory[0].process_evaluation);
-        console.log('[App] DEBUG Has user_process_evaluation:', !!rawHistory[0].user_process_evaluation);
-      }
 
       // Transform API response to frontend Trade format
       const transformedHistory = (rawHistory || []).map((trade: any) => ({
@@ -204,19 +217,12 @@ const App: React.FC = () => {
         reasoning: trade.notes || trade.reasoning,
         decisionReason: trade.ai_reason || trade.decisionReason,
         mode: simulationMode ? 'SIMULATION' : 'LIVE',
-        // Process Dojo evaluation data
         userProcessEvaluation: trade.user_process_evaluation,
         processEvaluation: trade.process_evaluation
       }));
-      console.log('[App] Transformed trades:', transformedHistory.length, 'trades');
       setTradeHistory(transformedHistory);
-
-      // Load Progress Summary
-      const summary = await api.getProgressSummary();
       setStats(prev => ({ ...prev, ...summary }));
 
-      // Load Settings & Profile
-      const me = await api.getCurrentUser();
       if (me) {
         setUserProfile(prev => ({
           ...prev,
@@ -239,51 +245,32 @@ const App: React.FC = () => {
           }
         }));
 
-        // Trigger Risk Settings Onboarding for first-time users
-        // Show if user hasn't customized their risk settings (still using default $500)
         if (me.max_position_size_usd === null || me.max_position_size_usd === undefined) {
           setShowRiskOnboarding(true);
-          console.log('[App] First-time user detected - showing Risk Settings Onboarding');
         }
 
-        // Mastery hydration
-        if (me.xp !== undefined || me.level !== undefined) {
-          // We might need to manually set seed data for mastery engine or trust the backend
-          console.log(`[App] Hydrated Gamification: LVL ${me.level}, XP ${me.xp}`);
-        }
-
-        // Load Shadow Score from database
         if (me.shadow_score) {
           try {
-            const parsedShadowScore = JSON.parse(me.shadow_score);
-            setShadowScore(parsedShadowScore);
-            console.log('[App] Loaded Shadow Score from DB:', parsedShadowScore);
+            setShadowScore(JSON.parse(me.shadow_score));
           } catch (error) {
             console.error('[App] Error parsing shadow score:', error);
           }
         }
       }
 
-      // Load check-in history from backend
-      try {
-        const { checkins } = await api.getCheckinHistory();
-        if (checkins && checkins.length > 0) {
-          setCheckinHistory(checkins.map((c: any) => ({
-            insights: c.insights,
-            action_items: c.action_items,
-            encouragement: c.encouragement || '',
-            emotional_state: c.emotional_state
-          })));
-        }
-      } catch (historyError) {
-        console.warn("[App] Could not load check-in history:", historyError);
+      // Process check-in history
+      const { checkins } = checkinData;
+      if (checkins && checkins.length > 0) {
+        setCheckinHistory(checkins.map((c: any) => ({
+          insights: c.insights,
+          action_items: c.action_items,
+          encouragement: c.encouragement || '',
+          emotional_state: c.emotional_state
+        })));
       }
 
-      // Check if user has already done check-in today (backend check)
-      const { done_today } = await api.getTodayCheckin();
-
-      if (!done_today) {
-        // Show check-in modal for first-time today
+      // Show check-in modal if not done today
+      if (!todayCheckin.done_today) {
         const { questions } = await api.getCheckinQuestions();
         if (questions && questions.length > 0) {
           setDailyQuestions(questions);
@@ -291,10 +278,7 @@ const App: React.FC = () => {
         }
       }
 
-
-      const initialMsg = await api.getInitialMessage();
       setMessages([{ id: Date.now() + Math.random(), sender: 'ai', type: 'text', text: initialMsg || "Chào bạn!" }]);
-
       behavioralGraphEngine.buildGraphFromHistory(transformedHistory);
       marketDataService.startAutoRefresh();
 
@@ -326,20 +310,15 @@ const App: React.FC = () => {
 
 
   useEffect(() => {
-    const relevantHistory = tradeHistory.filter(t => (simulationMode ? t.mode === 'SIMULATION' : t.mode === 'LIVE'));
     if (relevantHistory.length > 0) {
       const disciplinedTrades = relevantHistory.filter(t => t.decision !== 'BLOCK').length;
       const score = Math.round((disciplinedTrades / relevantHistory.length) * 100);
       if (!isNaN(score)) setStats(prev => ({ ...prev, disciplineScore: score }));
     } else { setStats(prev => ({ ...prev, disciplineScore: 92 })); }
-  }, [tradeHistory, simulationMode]);
+  }, [relevantHistory]);
 
   useEffect(() => {
-    // FIX: Corrected the malformed ternary operator which was causing a syntax error.
-    // The filter now correctly selects trades based on the simulationMode.
-    const relevantHistory = tradeHistory.filter(t => (simulationMode ? t.mode === 'SIMULATION' : t.mode === 'LIVE'));
     const newMasteryBase = masteryEngine.calculateMastery(stats, relevantHistory, shadowScore);
-    // Pass checkinHistory.length and relevantHistory for real quest progress tracking
     const quests = masteryEngine.generateQuests({ ...newMasteryBase, quests: [] }, activePattern, checkinHistory.length, relevantHistory);
 
     // XP Change & Level-Up Detection
@@ -357,7 +336,7 @@ const App: React.FC = () => {
     setPreviousLevel(newMasteryBase.levelTitle);
 
     setMasteryData({ ...newMasteryBase, quests });
-  }, [stats, tradeHistory, simulationMode, activePattern, shadowScore, checkinHistory]);
+  }, [stats, relevantHistory, activePattern, shadowScore, checkinHistory]);
 
   // Sync Mastery to Backend
   useEffect(() => {
@@ -424,14 +403,11 @@ const App: React.FC = () => {
   // Check for new achievements whenever relevant data changes
   useEffect(() => {
     if (tradeHistory.length > 0 || checkinHistory.length > 0) {
-      const currentDojoCount = tradeHistory.filter(t => t.userProcessEvaluation).length;
-      setDojoCount(currentDojoCount);
-
       const newAchievements = achievementService.checkAndUnlock(
         tradeHistory,
         stats,
         checkinHistory.length,
-        currentDojoCount
+        dojoCount
       );
 
       // Show popup for first unlocked achievement
@@ -456,7 +432,7 @@ const App: React.FC = () => {
           .catch(err => console.error('[Achievements] Sync failed:', err));
       }
     }
-  }, [tradeHistory, stats, checkinHistory]);
+  }, [tradeHistory, stats, checkinHistory, dojoCount]);
 
   const handleRequestNotificationPermission = async () => {
     if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
