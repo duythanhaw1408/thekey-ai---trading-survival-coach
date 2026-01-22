@@ -92,7 +92,7 @@
 
   /* Central Hub Structures - Compact centered layout */
   .central-hub-container {
-    @apply max-w-[900px] mx-auto w-full px-4 md:px-6 py-8 min-h-screen flex flex-col items-center;
+    @apply max-w-[1000px] mx-auto w-full px-4 md:px-6 py-6 min-h-screen flex flex-col items-center;
   }
 
   .floating-pill-nav {
