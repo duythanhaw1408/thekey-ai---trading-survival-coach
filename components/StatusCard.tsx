@@ -16,10 +16,10 @@ export const StatusCard: React.FC<StatusCardProps> = ({ icon, label, value, isHi
     : 'border-white/[0.03] shadow-[0_8px_30px_rgba(0,0,0,0.2)]';
 
   const content = (
-    <div className={`group relative bg-white/[0.01] backdrop-blur-3xl p-5 flex items-center space-x-4 transition-all duration-700 border rounded-[2rem] hover:bg-white/[0.03] hover:border-white/20 hover:shadow-[0_20px_45px_rgba(0,0,0,0.4)] ${highlightClass}`}>
+    <div className={`group relative bg-white/[0.01] backdrop-blur-3xl p-3 sm:p-5 flex items-center space-x-3 sm:space-x-4 transition-all duration-700 border rounded-[1.5rem] sm:rounded-[2rem] hover:bg-white/[0.03] hover:border-white/20 hover:shadow-[0_20px_45px_rgba(0,0,0,0.4)] ${highlightClass}`}>
       <div className="flex-shrink-0 relative">
         <div className="absolute inset-0 bg-accent-neon/10 blur-xl opacity-0 group-hover:opacity-40 transition-opacity duration-700" />
-        <div className="relative bg-black border border-white/5 p-4 rounded-2xl group-hover:bg-accent-neon group-hover:border-accent-neon transition-all duration-500 shadow-2xl">
+        <div className="relative bg-black border border-white/5 p-3 sm:p-4 rounded-xl sm:rounded-2xl group-hover:bg-accent-neon group-hover:border-accent-neon transition-all duration-500 shadow-2xl">
           <div className="group-hover:text-black group-hover:scale-110 transition-all duration-500">
             {icon}
           </div>
@@ -36,7 +36,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({ icon, label, value, isHi
             </span>
           )}
         </div>
-        <p className="text-2xl font-black text-premium-gradient tracking-tighter uppercase italic group-hover:scale-[1.02] origin-left transition-all duration-500 truncate">
+        <p className="text-lg sm:text-2xl font-black text-premium-gradient tracking-tighter uppercase italic group-hover:scale-[1.02] origin-left transition-all duration-500 truncate">
           {value}
         </p>
       </div>

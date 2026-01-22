@@ -109,11 +109,11 @@ export const DashboardView: React.FC<DashboardViewProps> = (props) => {
             />
 
             {/* Top Row: Core Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                 <DashboardHeader stats={props.stats} processStats={props.processStats} />
             </div>
 
-            <div className="grid grid-cols-12 gap-10">
+            <div className="grid grid-cols-12 gap-4 sm:gap-6 lg:gap-10">
                 {/* Left Column: Market & Analysis Detail */}
                 <div className="col-span-12 lg:col-span-8 space-y-10">
                     <div className="bento-card !p-10 overflow-hidden relative group">

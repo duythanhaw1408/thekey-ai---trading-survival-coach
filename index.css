@@ -309,3 +309,94 @@
   transform: translateY(-8px);
   transition: opacity 0.1s ease-in, transform 0.1s ease-in;
 }
+
+/* =========================================
+   MOBILE RESPONSIVE - SMALL PHONES (≤480px)
+   ========================================= */
+@media (max-width: 480px) {
+
+  /* Compact container */
+  .central-hub-container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.5rem;
+    padding-bottom: 5rem;
+  }
+
+  /* Smaller cards */
+  .bento-card {
+    border-radius: 1.25rem;
+    padding: 1rem !important;
+  }
+
+  .glass-panel {
+    border-radius: 1.25rem;
+  }
+
+  /* Compact floating nav */
+  .floating-pill-nav {
+    bottom: 0.75rem;
+    left: 0.5rem;
+    right: 0.5rem;
+    transform: none;
+    padding: 0.5rem;
+    gap: 0.25rem;
+    border-radius: 1.25rem;
+  }
+
+  /* Reduce text sizes */
+  .text-3xl {
+    font-size: 1.5rem !important;
+  }
+
+  .text-2xl {
+    font-size: 1.25rem !important;
+  }
+
+  .text-xl {
+    font-size: 1rem !important;
+  }
+
+  /* Compact spacing */
+  .space-y-10>*+* {
+    margin-top: 1.5rem !important;
+  }
+
+  .space-y-8>*+* {
+    margin-top: 1rem !important;
+  }
+
+  .gap-10 {
+    gap: 1.5rem !important;
+  }
+
+  .gap-8 {
+    gap: 1rem !important;
+  }
+
+  /* Full width columns on mobile */
+  .col-span-8,
+  .col-span-4 {
+    grid-column: span 12 / span 12 !important;
+  }
+}
+
+/* =========================================
+   MOBILE RESPONSIVE - TABLETS (≤640px)
+   ========================================= */
+@media (max-width: 640px) {
+  .central-hub-container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .bento-card {
+    border-radius: 1.5rem;
+    padding: 1.25rem !important;
+  }
+
+  .floating-pill-nav {
+    bottom: 1rem;
+    gap: 0.5rem;
+  }
+}
