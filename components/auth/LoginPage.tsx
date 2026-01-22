@@ -48,7 +48,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToSignup, onForgot
         }
     };
 
-    const inputClasses = "w-full px-5 py-4 bg-black border border-accent-neon/20 rounded-xl text-white font-medium placeholder-white/20 focus:outline-none focus:border-accent-neon focus:ring-1 focus:ring-accent-neon/50 transition-all tracking-wide disabled:opacity-50";
+    const inputClasses = "w-full px-4 py-3 sm:px-5 sm:py-4 bg-black border border-accent-neon/20 rounded-xl text-white font-medium placeholder-white/20 focus:outline-none focus:border-accent-neon focus:ring-1 focus:ring-accent-neon/50 transition-all tracking-wide disabled:opacity-50 text-sm sm:text-base";
 
     return (
         <AuthLayout title="Đăng nhập" subtitle="Chào mừng trở lại, Operator">
