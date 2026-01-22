@@ -1,3 +1,5 @@
+// Disable console.log in production - must be first import
+import './utils/logger';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
