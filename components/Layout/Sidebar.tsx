@@ -70,8 +70,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isCol
                     <button
                         key={item.id}
                         onClick={() => setActiveTab(item.id as AppTab)}
-                        className={`flex items-center gap-2.5 px-6 py-3 rounded-full transition-all relative group ${activeTab === item.id
-                            ? 'bg-accent-neon text-black shadow-[0_0_20px_rgba(0,255,157,0.3)]'
+                        className={`flex items-center gap-1.5 sm:gap-2.5 px-3 sm:px-6 py-2 sm:py-3 rounded-full transition-all relative group ${activeTab === item.id
+                            ? 'bg-accent-neon text-black shadow-[0_0_20px_rgba(0,255,136,0.3)]'
                             : 'text-white/40 hover:text-white hover:bg-white/5'
                             }`}
                     >
@@ -89,7 +89,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isCol
 
                 <button
                     onClick={() => setActiveTab('SETTINGS')}
-                    className={`flex items-center justify-center w-12 h-12 rounded-full transition-all group ${activeTab === 'SETTINGS'
+                    className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full transition-all group ${activeTab === 'SETTINGS'
                         ? 'bg-white/10 text-accent-neon'
                         : 'text-white/20 hover:text-white hover:bg-white/5'
                         }`}
