@@ -61,7 +61,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onSwitchToLogin }) => {
         }
     };
 
-    const inputClasses = "w-full px-5 py-4 bg-black border border-accent-neon/20 rounded-xl text-white font-bold placeholder-white/20 focus:outline-none focus:border-accent-neon focus:ring-1 focus:ring-accent-neon/50 transition-all uppercase tracking-wider disabled:opacity-50";
+    const inputClasses = "w-full px-5 py-4 bg-black border border-accent-neon/20 rounded-xl text-white font-medium placeholder-white/20 focus:outline-none focus:border-accent-neon focus:ring-1 focus:ring-accent-neon/50 transition-all tracking-wide disabled:opacity-50";
 
     if (success) {
         return (

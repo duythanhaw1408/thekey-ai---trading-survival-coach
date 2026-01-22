@@ -90,9 +90,9 @@
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
   }
 
-  /* Central Hub Structures */
+  /* Central Hub Structures - Compact centered layout */
   .central-hub-container {
-    @apply max-w-[1100px] mx-auto w-full px-4 md:px-8 py-10 min-h-screen flex flex-col items-center;
+    @apply max-w-[900px] mx-auto w-full px-4 md:px-6 py-8 min-h-screen flex flex-col items-center;
   }
 
   .floating-pill-nav {
@@ -277,4 +277,35 @@
   will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
+}
+
+/* GPU acceleration for view transitions - prevents jank on tab switch */
+.view-container {
+  will-change: opacity, transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Smoother page transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.1s ease-in, transform 0.1s ease-in;
 }

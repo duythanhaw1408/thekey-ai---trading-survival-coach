@@ -279,7 +279,7 @@ export const ChatWindowEnhanced: React.FC<ChatWindowEnhancedProps> = ({
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder={isLoading ? "Neural connection active..." : "Neural link established. Input query..."}
-                            className="flex-1 bg-transparent px-6 py-4 text-white placeholder:text-accent-neon/20 text-sm focus:outline-none uppercase tracking-widest font-bold"
+                            className="flex-1 bg-transparent px-6 py-4 text-white placeholder:text-accent-neon/20 text-sm focus:outline-none tracking-wide font-medium"
                             disabled={isLoading}
                         />
                         <button

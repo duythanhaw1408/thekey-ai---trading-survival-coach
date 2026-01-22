@@ -126,7 +126,7 @@ export const TradeInputForm: React.FC<TradeInputFormProps> = ({
   }
 
   const isWarn = decision?.decision === 'WARN';
-  const inputClasses = "w-full bg-black border border-accent-neon/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-accent-neon/20 focus:outline-none focus:border-accent-neon focus:ring-1 focus:ring-accent-neon/50 transition-all duration-500 uppercase tracking-widest font-bold";
+  const inputClasses = "w-full bg-black border border-accent-neon/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-accent-neon/20 focus:outline-none focus:border-accent-neon focus:ring-1 focus:ring-accent-neon/50 transition-all tracking-wide font-medium";
 
   return (
     <div className="p-8 bg-black/40 backdrop-blur-xl rounded-[2.5rem] border border-accent-neon/20 relative overflow-hidden group shadow-2xl">
